@@ -17,9 +17,9 @@ ALLOWED_HOSTS    = ['localhost']
 ROOT_URLCONF     = 'settings.urls'
 LOGIN_URL        = '/login/'
 WSGI_APPLICATION = 'settings.wsgi.application'
-STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
+STATICFILES_DIRS = ('/var/lib/autodidact/static',)
 STATIC_URL       = '/static/'
-MEDIA_ROOT       = '/srv/photoserver'
+MEDIA_ROOT       = '/var/lib/autodidact/uploads'
 MEDIA_URL        = '/media/'
 TEMPLATE_DIRS    = [os.path.join(BASE_DIR, 'templates')]
 LANGUAGE_CODE    = 'en-us'
@@ -35,6 +35,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'autodidact',
 )
 
 MIDDLEWARE_CLASSES = (
