@@ -30,6 +30,7 @@ USE_L10N         = False
 USE_TZ           = True
 
 INSTALLED_APPS = (
+    'polymorphic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

@@ -19,17 +19,17 @@ class Assignment(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
     result = models.FileField(blank=True)
-    course = models.ManyToManyField(Course, related_name='assignments')
+    course = models.ForeignKey(Course)
 
     def __str__(self):
         return self.description
 
 class Session(models.Model):
-    number = models.IntegerField()
-    courses = models.ManyToManyField(Course, related_name='modules')
+    name = models.CharField(max_length=255)
+    course = models.ForeignKey(Course)
 
     def __str__(self):
-        return 'Session ' + self.name
+        return '%s - %s' % (self.course, self.name)
 
 class Download(models.Model):
     description = models.CharField(max_length=255)
@@ -41,54 +41,53 @@ class Download(models.Model):
 
 class Question(PolymorphicModel):
     text = models.TextField()
-    type = models.CharField(max_length=10, choices=(
-        ('Bool', 'True/False'),
-        ('Int', 'Integer'),
-        ('Float', 'Floating-point number'),
-        ('String', 'Text input'),
-        ('Radio', 'Select the right answer'),
-        ('Checkbox', 'Select multiple right answers'),
-    ))
+    reusable = models.BooleanField(default=False)
+
     def __str__(self):
-        return self.description
+        return self.text
 
-class BoolQuestion(Question):
-    correct_answer = models.BooleanField();
+class BooleanQuestion(Question):
+    correct_answer = models.BooleanField(default=True, choices=(
+        (True, 'True'),
+        (False, 'False'),
+    ))
 
-class IntQuestion(Question):
-    correct_answer = models.IntegerField();
+class IntegerQuestion(Question):
+    correct_answer = models.IntegerField()
 
-class FloatQuestion(Question):
-    integer_part = models.IntegerField();
-    fractional_part = models.IntegerField();
-    precision = models.IntegerField();
+class DecimalQuestion(Question):
+    integer_part = models.IntegerField()
+    fractional_part = models.IntegerField()
+    precision = models.IntegerField()
 
 class StringQuestion(Question):
-    correct_answer = models.CharField(max_length=255);
+    correct_answer = models.CharField(max_length=255)
+    case_sensitive = models.BooleanField(default=False)
 
-class RadioQuestion(Question):
-    pass
-
-class CheckboxQuestion(Question):
+class MultipleChoiceQuestion(Question):
     pass
 
 class MultipleChoiceAnswer(models.Model):
-    text = models.CharField(max_length=255)
+    answer = models.CharField(max_length=255)
     correct = models.BooleanField()
     question = models.ForeignKey(Question)
 
 class Activity(PolymorphicModel):
     title = models.CharField(max_length=255)
-    session = models.ManyToManyField(Session, related_name='activities')
+    session = models.ForeignKey(Session, related_name='activities')
 
     def __str__(self):
         return self.title
 
-class ReadingActivity(Activity):
+    class Meta:
+        verbose_name_plural = 'activities'
+
+class Instructions(Activity):
     wall_of_text = models.TextField()
 
-class QuestionActivity(Activity):
-    question = models.ForeignKey(Question)
+class Assessment(Activity):
+    description = models.TextField()
+    questions = models.ManyToManyField(Question)
 
 class CompletedActivity(models.Model):
     activity = models.ForeignKey(Activity)
