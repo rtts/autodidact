@@ -1,0 +1,15 @@
+Source: autodidact
+Section: web
+Priority: extra
+Maintainer: Wessel Dankers <wsl@fruit.je>
+Build-Depends: debhelper (>= 7), python
+Standards-Version: 3.9.1
+
+Package: autodidact
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, django
+Description: CMS for creating self-learning activities
+ Autodidact is a simple content-management system (CMS) for creating
+ self-learning activities. It is used at Tilburg University for the "Best
+ Practices in Statistics" series of lab sessions, soon to be made available
+ to the general public at https://bps.uvt.nl/
