@@ -2,12 +2,13 @@ Source: autodidact
 Section: web
 Priority: extra
 Maintainer: Wessel Dankers <wsl@fruit.je>
-Build-Depends: debhelper (>= 7), python
+Build-Depends: debhelper (>= 7), dh-apache2, python-all, dh-python, python-setuptools
 Standards-Version: 3.9.1
 
 Package: autodidact
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, django
+Depends: ${python:Depends}, ${misc:Depends}, python-django, python-django-polymorphic
+Recommends: ${misc:Recommends}
 Description: CMS for creating self-learning activities
  Autodidact is a simple content-management system (CMS) for creating
  self-learning activities. It is used at Tilburg University for the "Best

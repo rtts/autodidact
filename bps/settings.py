@@ -2,27 +2,27 @@ import os
 from django.core.exceptions import ImproperlyConfigured
 
 try:
-    from settings.secret import SECRET_KEY
+    from secret import SECRET_KEY
 except ImportError:
     raise ImproperlyConfigured("Please specify a value for the variable SECRET_KEY in project/secret.py")
 
 try:
-    from settings.debug import DEBUG
+    from debug import DEBUG
 except ImportError:
     DEBUG = False
 
 BASE_DIR         = os.path.dirname(os.path.dirname(__file__))
 TEMPLATE_DEBUG   = DEBUG
 ALLOWED_HOSTS    = ['localhost']
-ROOT_URLCONF     = 'settings.urls'
+ROOT_URLCONF     = 'bps.urls'
 LOGIN_URL        = '/login/'
-WSGI_APPLICATION = 'settings.wsgi.application'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
-STATIC_ROOT      = '/var/lib/autodidact/static'
+WSGI_APPLICATION = 'wsgi.application'
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'bps', 'static')]
+STATIC_ROOT      = '/var/lib/bps/static'
 STATIC_URL       = '/static/'
-MEDIA_ROOT       = '/var/lib/autodidact/uploads'
+MEDIA_ROOT       = '/var/lib/bps/uploads'
 MEDIA_URL        = '/media/'
-TEMPLATE_DIRS    = [os.path.join(BASE_DIR, 'templates')]
+TEMPLATE_DIRS    = [os.path.join(BASE_DIR, 'bps', 'templates')]
 LANGUAGE_CODE    = 'en-us'
 TIME_ZONE        = 'UTC'
 USE_I18N         = False
@@ -30,13 +30,13 @@ USE_L10N         = False
 USE_TZ           = True
 
 INSTALLED_APPS = (
-    'polymorphic',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'polymorphic',
     'autodidact',
 )
 

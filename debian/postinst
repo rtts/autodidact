@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+#DEBHELPER#
+
+cd /usr/share/bps
+python manage.py collectstatic

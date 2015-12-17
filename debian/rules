@@ -1,4 +1,9 @@
 #! /usr/bin/make -f
 
+export PYBUILD_NAME = autodidact
+
 %:
-	exec dh $@
+	dh $@ --with python2 --with apache2 --buildsystem=pybuild
+
+override_dh_install:
+	dh_install bps /usr/share
