@@ -13,7 +13,7 @@ except ImportError:
 
 BASE_DIR         = os.path.dirname(os.path.dirname(__file__))
 TEMPLATE_DEBUG   = DEBUG
-ALLOWED_HOSTS    = ['localhost']
+ALLOWED_HOSTS    = ['localhost', 'bps.created.today', 'bps-beta.uvt.nl', 'bps.uvt.nl']
 ROOT_URLCONF     = 'urls'
 LOGIN_URL        = '/login/'
 WSGI_APPLICATION = 'wsgi.application'
@@ -53,41 +53,17 @@ MIDDLEWARE_CLASSES = (
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
-    'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse',
-        },
-        'require_debug_true': {
-            '()': 'django.utils.log.RequireDebugTrue',
-        },
-    },
-    'formatters': {
-        'verbose': {
-            'format': '%(process)-5d %(thread)d %(name)-50s %(levelname)-8s %(message)s'
-        },
-        'simple': {
-            'format': '[%(asctime)s] %(name)s %(levelname)s %(message)s',
-            'datefmt': '%d/%b/%Y %H:%M:%S'
-        },
-    },
     'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'filters': ['require_debug_true'],
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
         'syslog': {
-         'level': 'DEBUG',
+         'level': 'INFO',
          'class': 'logging.handlers.SysLogHandler',
          'facility': 'local7',
          'address': '/dev/log',
-         'formatter': 'verbose'
        },
     },
     'loggers': {
-        '':{
-            'handlers': ['console', 'syslog'],
+        'django':{
+            'handlers': ['syslog'],
             'level': 'INFO',
             'disabled': False
         },
