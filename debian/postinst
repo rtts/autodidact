@@ -5,4 +5,8 @@ set -e
 #DEBHELPER#
 
 cd /usr/share/bps
+
+echo Generating secret key ...
+echo "SECRET_KEY = '$(cat /dev/urandom | tr -dc [:graph:] | tr -d \' | head -c 50)'" > secret.py
+
 python manage.py collectstatic
