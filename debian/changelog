@@ -1,5 +1,9 @@
-autodidact (0~0) UNRELEASED; urgency=low
+autodidact (0~0+nmu1) UNRELEASED; urgency=low
 
+  [ Wessel Dankers ]
   * First attempt at packaging.
 
- -- Wessel Dankers <wsl@fruit.je>  Wed, 09 Dec 2015 15:38:58 +0100
+  [ Jaap Joris Vens ]
+  * Functional package following Python and Apache guidelines
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Thu, 17 Dec 2015 15:08:17 +0100
