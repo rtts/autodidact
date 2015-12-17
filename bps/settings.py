@@ -1,4 +1,5 @@
 import os
+import ConfigParser
 from django.core.exceptions import ImproperlyConfigured
 
 try:
@@ -10,6 +11,17 @@ try:
     from debug import DEBUG
 except ImportError:
     DEBUG = False
+
+try:
+    configParser = ConfigParser.RawConfigParser()
+    configParser.read('/etc/bps/config.ini')
+    db_engine = configParser.get('database', 'engine')
+    db_name = configParser.get('database', 'name')
+    db_host = configParser.get('database', 'hostname')
+    db_user = configParser.get('database', 'username')
+    db_pass = configParser.get('database', 'password')
+except ConfigParser.Error as e:
+    raise ImproperlyConfigured("Error parsing configuration file /etc/bps/config.ini: " + e.message)
 
 BASE_DIR         = os.path.dirname(os.path.dirname(__file__))
 TEMPLATE_DEBUG   = DEBUG
@@ -72,7 +84,10 @@ LOGGING = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.' + db_engine,
+        'NAME': db_name,
+        'HOST': db_host,
+        'USER': db_user,
+        'PASSWORD': db_pass,
     }
 }

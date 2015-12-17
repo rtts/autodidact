@@ -7,3 +7,4 @@ export PYBUILD_NAME = autodidact
 
 override_dh_install:
 	dh_install bps /usr/share
+	dh_install config.ini /etc/bps # TODO: use conffiles or similar
