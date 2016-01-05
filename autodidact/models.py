@@ -10,6 +10,7 @@ class Discipline(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=255)
+    slug = models.SlugField()
     discipline = models.ForeignKey(Discipline, related_name='courses')
 
     def __str__(self):

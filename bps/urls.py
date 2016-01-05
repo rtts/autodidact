@@ -4,7 +4,10 @@ from django.contrib import admin
 from django.conf import settings
 from autodidact import views
 
-urlpatterns = patterns('',
-    url(r'^$', views.itworks),
+urlpatterns = [
+    url(r'^$', views.homepage, name='homepage'),
     url(r'^admin/', include(admin.site.urls)),
-) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    url(r'^([^/]+)/$', views.course, name='course'),
+]
+
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

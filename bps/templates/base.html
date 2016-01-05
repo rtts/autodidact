@@ -1,0 +1,48 @@
+{% load static %}
+
+<!doctype html>
+<html>
+  <head>
+    <title>{% block title %}Best Practices in Statistics - Tilburg University{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <!--[if lt IE 9]>
+        <script src="{% static 'html5shiv.min.js' %}"></script>
+    <![endif]-->
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}"/>
+    {% block extrahead %}{% endblock %}
+  </head>
+  <body>
+
+    <header>
+      <h1><a href="{% url 'homepage' %}">Best Practices in Statistics</a></h1>
+      <h2>Online statistics practice for students in the social sciences</h2>
+    </header>
+
+    <nav>
+      <ul>
+        <li><a href="{% url 'homepage' %}">Home</a></li>
+        <li>
+          Courses:
+          <ul>
+            {% for course in courses %}
+            <li><a href="{% url 'course' course.slug %}">{{course.name}}</a></li>
+            {% empty %}
+            No courses are available
+            {% endfor %}
+          </ul>
+        </li>
+      </ul>
+    </nav>
+
+    <article>
+      {% block content %}
+      {% endblock %}
+    </article>
+
+    <footer>
+    </footer>
+
+    {% block extrascript %}{% endblock %}
+  </body>
+</html>

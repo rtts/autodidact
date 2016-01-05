@@ -22,11 +22,28 @@ You can then install the package with:
 
     sudo debi
 
-After installation, please specify the database credentials and other
-configuration options in `/etc/bps/config.ini`. You can call the
-regular Django database management commands from inside the project
-directory `/usr/share/bps`. A configuration file has been included for
-the Apache web server. Enable it with the following commands:
+Congratulations, the Autodidact django application has now been
+installed and is ready to use in your own projects!
+
+Deploying the BPS project
+-------------------------
+
+To run the included BPS project, a few additional steps are
+needed. First, please create a database using your favorite database
+management system. You can specify the database credentials in the
+file `/etc/bps/config.ini`. Now the database tables can be created
+with the following commands:
+
+    cd /usr/share/bps
+    ./manage.py migrate
+
+Second, you will have to create at least one superuser:
+
+    ./manage.py createsuperuser
+
+Finally, Apache needs to be configured to serve BPS. For this purpose,
+a configuration file has already been included. Enable it with the
+following commands:
 
     sudo apt-get install apache2 libapache2-mod-wsgi
     cd /etc/apache2/conf-enabled
@@ -34,12 +51,3 @@ the Apache web server. Enable it with the following commands:
     sudo systemctl restart apache2
 
 BPS should now be up and running!
-
-Hacking
--------
-
-It is highly encouraged to transform Autodidact into your own custom
-learning solution. For starters you should adapt the default templates
-to your liking. You can easily include the "autodidact" app in an
-existing Django project, or use the BPS project as a starting point to
-develop your own learning platform. Happy hacking!
