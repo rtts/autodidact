@@ -1,9 +1,10 @@
-autodidact (0~0+nmu1) UNRELEASED; urgency=low
+autodidact (0.1) UNRELEASED; urgency=low
 
   [ Wessel Dankers ]
   * First attempt at packaging.
 
   [ Jaap Joris Vens ]
   * Functional package following Python and Apache guidelines
+  * BPS project now has a fully functioning admin and basic templates
 
- -- Jaap Joris Vens <jj@rtts.eu>  Thu, 17 Dec 2015 15:08:17 +0100
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 05 Jan 2016 14:40:25 +0100

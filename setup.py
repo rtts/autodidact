@@ -4,7 +4,7 @@ from distutils.core import setup
 
 setup(
     name = 'autodidact',
-    version = '0.0',
+    version = '0.1',
     url = 'https://github.com/JaapJoris/autodidact',
     license = 'AGPL',
     packages = ['autodidact', 'cas'],
