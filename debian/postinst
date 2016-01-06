@@ -4,9 +4,16 @@ set -e
 
 #DEBHELPER#
 
-cd /usr/share/bps
-
-echo Generating secret key ...
-echo "SECRET_KEY = '$(cat /dev/urandom | tr -dc [:graph:] | tr -d \' | head -c 50)'" > secret.py
-
-python manage.py collectstatic
+case $1 in configure)
+	if [ ! -e /etc/bps/secret.py ]
+	then
+		(
+			umask 027
+			echo "SECRET_KEY = '$(makepasswd --chars=50)'" >/etc/bps/secret.py
+		)
+	fi
+	(
+		cd /usr/share/bps
+		python manage.py collectstatic
+	)
+esac
