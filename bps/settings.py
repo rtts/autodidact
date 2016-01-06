@@ -1,11 +1,13 @@
 import os
+import sys
 import ConfigParser
 from django.core.exceptions import ImproperlyConfigured
 
 try:
+    sys.path.append("/etc/bps")
     from secret import SECRET_KEY
-except ImportError:
-    raise ImproperlyConfigured("Please specify a value for the variable SECRET_KEY in project/secret.py")
+except ImportError as e:
+    raise ImproperlyConfigured("Error reading SECRET_KEY from /etc/bps/secret.py: " + e.message)
 
 try:
     from debug import DEBUG
@@ -49,7 +51,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'adminsortable',
-    'autodidact'
+    'autodidact',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -61,6 +63,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
+
+if DEBUG:
+    MIDDLEWARE_CLASSES += ('livereload.middleware.LiveReloadScript',)
 
 LOGGING = {
     'version': 1,
