@@ -7,7 +7,7 @@ setup(
     version = '0.1',
     url = 'https://github.com/JaapJoris/autodidact',
     license = 'AGPL',
-    packages = ['autodidact', 'cas'],
+    packages = ['autodidact', 'cas', 'adminsortable'],
     author = 'Jaap Joris Vens',
     author_email = 'jj@rtts.eu',
     maintainer = 'Wessel Dankers',
