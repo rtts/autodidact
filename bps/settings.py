@@ -65,7 +65,11 @@ MIDDLEWARE_CLASSES = (
 )
 
 if DEBUG:
-    MIDDLEWARE_CLASSES += ('livereload.middleware.LiveReloadScript',)
+    try:
+        import livereload.middleware
+        MIDDLEWARE_CLASSES += ('livereload.middleware.LiveReloadScript',)
+    except ImportError:
+        pass
 
 LOGGING = {
     'version': 1,
