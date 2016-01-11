@@ -28,7 +28,7 @@ except ConfigParser.Error as e:
 PACKAGE_DIR      = os.path.dirname(__file__)
 TEMPLATE_DEBUG   = DEBUG
 ALLOWED_HOSTS    = ['localhost', 'bps.created.today', 'dev.bps.uvt.nl', 'beta.bps.uvt.nl', 'bps.uvt.nl']
-ROOT_URLCONF     = 'urls'
+ROOT_URLCONF     = 'bps.urls'
 LOGIN_URL        = '/login/'
 WSGI_APPLICATION = 'wsgi.application'
 TEMPLATE_DIRS    = [os.path.join(PACKAGE_DIR, 'templates')]
