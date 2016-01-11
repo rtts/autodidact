@@ -10,6 +10,7 @@ case $1 in configure)
 		(
 			umask 027
 			echo "SECRET_KEY = '$(makepasswd --chars=50)'" >/etc/bps/secret.py
+			chgrp www-data /etc/bps/secret.py
 		)
 	fi
 	(
