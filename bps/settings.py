@@ -6,8 +6,8 @@ from django.core.exceptions import ImproperlyConfigured
 try:
     sys.path.append("/etc/bps")
     from secret import SECRET_KEY
-except ImportError as e:
-    raise ImproperlyConfigured("Error reading SECRET_KEY from /etc/bps/secret.py: " + e.message)
+except ImportError:
+    raise ImproperlyConfigured("Error retrieving SECRET_KEY")
 
 try:
     from debug import DEBUG
@@ -23,20 +23,20 @@ try:
     db_user = configParser.get('database', 'username')
     db_pass = configParser.get('database', 'password')
 except ConfigParser.Error as e:
-    raise ImproperlyConfigured("Error parsing configuration file /etc/bps/config.ini: " + e.message)
+    raise ImproperlyConfigured("Error parsing /etc/bps/config.ini: " + e.message)
 
-BASE_DIR         = os.path.dirname(os.path.dirname(__file__))
+PACKAGE_DIR      = os.path.dirname(__file__)
 TEMPLATE_DEBUG   = DEBUG
-ALLOWED_HOSTS    = ['localhost', 'bps.created.today', 'bps-beta.uvt.nl', 'bps.uvt.nl']
+ALLOWED_HOSTS    = ['localhost', 'bps.created.today', 'dev.bps.uvt.nl', 'beta.bps.uvt.nl', 'bps.uvt.nl']
 ROOT_URLCONF     = 'urls'
 LOGIN_URL        = '/login/'
 WSGI_APPLICATION = 'wsgi.application'
-STATICFILES_DIRS = [os.path.join(BASE_DIR, 'bps', 'static')]
+TEMPLATE_DIRS    = [os.path.join(PACKAGE_DIR, 'templates')]
+STATICFILES_DIRS = [os.path.join(PACKAGE_DIR, 'static')]
 STATIC_ROOT      = '/var/lib/bps/static'
 STATIC_URL       = '/static/'
 MEDIA_ROOT       = '/var/lib/bps/uploads'
 MEDIA_URL        = '/media/'
-TEMPLATE_DIRS    = [os.path.join(BASE_DIR, 'bps', 'templates')]
 LANGUAGE_CODE    = 'en-us'
 TIME_ZONE        = 'UTC'
 USE_I18N         = False
