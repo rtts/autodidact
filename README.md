@@ -34,7 +34,7 @@ management system. You can specify the database credentials in the
 file `/etc/bps/config.ini`. Now the database tables can be created
 with the following commands:
 
-    cd /usr/share/bps
+    cd /usr/lib/python2.7/dist-packages/bps/
     ./manage.py migrate
 
 Second, you will have to create at least one superuser:
