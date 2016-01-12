@@ -14,7 +14,7 @@ case $1 in configure)
 		)
 	fi
 	(
-		cd /usr/share/bps
+		cd `python -c 'import os,bps; print os.path.dirname(bps.__file__)'`
 		python manage.py collectstatic
 	)
 esac
