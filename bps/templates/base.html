@@ -14,31 +14,38 @@
   </head>
   <body>
 
-    <header>
-      <h1><a href="{% url 'homepage' %}">Best Practices in Statistics</a></h1>
-      <h2>Online statistics practice for students in the social sciences</h2>
+    <header id="logo">
+      <img src="{% static 'tiulogo.jpg' %}" />
+      <img src="{% static 'tiuslogan.jpg' %}" />
     </header>
 
-    <nav>
-      <ul>
-        <li><a href="{% url 'homepage' %}">Home</a></li>
-        <li>
-          Courses:
-          <ul>
-            {% for course in courses %}
-            <li><a href="{% url 'course' course.slug %}">{{course.name}}</a></li>
-            {% empty %}
-            No courses are available
-            {% endfor %}
-          </ul>
-        </li>
-      </ul>
-    </nav>
+    <header id="banner">
+      <div id="banner_image">
+        <div id="banner_text">
+          <h1>Best Practices in Statistics</h1>
+          <h2>Online statistics practice for students in the social sciences</h2>
+        </div>
+      </div>
+    </header>
 
-    <article>
-      {% block content %}
-      {% endblock %}
-    </article>
+    <div id="content_wrapper">
+      <nav>
+        <ul>
+          <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+          <li class="currentPage">Courses:</li>
+          {% for course in courses %}
+          <li class="futurePage"><a href="{% url 'course' course.slug %}">{{course.name}}</a></li>
+          {% empty %}
+          <li class="empty">No courses are available</li>
+          {% endfor %}
+        </ul>
+      </nav>
+
+      <article>
+        {% block content %}
+        {% endblock %}
+      </article>
+    </div>
 
     <footer>
     </footer>
