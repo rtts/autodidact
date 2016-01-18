@@ -1,5 +1,17 @@
 {% extends 'base.html' %}
 
+{% block navigation %}
+<li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+<li class="currentPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+{% for session in course.sessions.all %}
+<li class="futurePage"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+{% empty %}
+<li class="empty">No sessions available</li>
+{% endfor %}
+{% endblock %}
+
+
 {% block content %}
-Course page for course {{course.name}}
+<h1>{{course.name}}</h1>
+{{course.description|safe}}
 {% endblock %}

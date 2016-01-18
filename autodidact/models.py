@@ -3,7 +3,7 @@ from django.conf import settings
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey
 
-class Discipline(models.Model):
+class Programme(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
@@ -12,39 +12,48 @@ class Discipline(models.Model):
 class Course(SortableMixin):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    discipline = models.ForeignKey(Discipline, related_name='courses')
+    description = models.TextField()
+    programmes = models.ManyToManyField(Programme, related_name='courses')
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
+    def colloquial_name(self):
+        return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
+
     def __str__(self):
-        return self.name
+        return '%s (%s)' % (self.name, self.colloquial_name())
 
     class Meta:
         ordering = ['order']
 
 class Session(SortableMixin):
     name = models.CharField(max_length=255)
-    course = SortableForeignKey(Course)
+    description = models.TextField()
+    course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
-        return '%s - %s' % (self.course, self.name)
+        return '%s: %s' % (self.course.colloquial_name(), self.name)
 
     class Meta:
         ordering = ['order']
 
-class Download(models.Model):
-    description = models.CharField(max_length=255)
-    file = models.FileField(blank=True)
-    session = models.ManyToManyField(Session, related_name='downloads')
+class Assignment(SortableMixin):
+    name = models.CharField(max_length=255)
+    session = SortableForeignKey(Session, related_name="assignments")
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
-        return self.description
+        return '%s: %s' % (self.session.name, self.name)
+
+    class Meta:
+        ordering = ['order']
 
 class Activity(SortableMixin):
-    title = models.CharField(max_length=255)
-    session = SortableForeignKey(Session, related_name='activities')
-    wall_of_text = models.TextField()
+    name = models.CharField(max_length=255)
+    assignment = SortableForeignKey(Assignment, related_name='activities')
+    description = models.TextField()
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+    answer_required = models.BooleanField(default=False)
 
     def __str__(self):
         return self.title
@@ -60,7 +69,17 @@ class CompletedActivity(models.Model):
     answer = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s has completed %s' % (self.student.user.username, self.module.name)
+        return '%s has completed %s' % (self.whom.username, self.activity.name)
 
     class Meta:
         verbose_name_plural = 'completed activities'
+
+class Download(models.Model):
+    name = models.CharField(max_length=255)
+    description = models.TextField()
+    file = models.FileField(blank=True)
+    session = models.ManyToManyField(Session, related_name='downloads')
+
+    def __str__(self):
+        return self.name
+

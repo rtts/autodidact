@@ -17,13 +17,25 @@ class Migration(migrations.Migration):
             name='Activity',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('title', models.CharField(max_length=255)),
-                ('wall_of_text', models.TextField()),
+                ('name', models.CharField(max_length=255)),
+                ('description', models.TextField()),
                 ('order', models.PositiveIntegerField(default=0, editable=False, db_index=True)),
+                ('answer_required', models.BooleanField(default=False)),
             ],
             options={
                 'ordering': ['order'],
                 'verbose_name_plural': 'activities',
+            },
+        ),
+        migrations.CreateModel(
+            name='Assignment',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255)),
+                ('order', models.PositiveIntegerField(default=0, editable=False, db_index=True)),
+            ],
+            options={
+                'ordering': ['order'],
             },
         ),
         migrations.CreateModel(
@@ -45,6 +57,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
                 ('slug', models.SlugField()),
+                ('description', models.TextField()),
                 ('order', models.PositiveIntegerField(default=0, editable=False, db_index=True)),
             ],
             options={
@@ -52,18 +65,19 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Discipline',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
             name='Download',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', models.CharField(max_length=255)),
+                ('name', models.CharField(max_length=255)),
+                ('description', models.TextField()),
                 ('file', models.FileField(upload_to=b'', blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='Programme',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('name', models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
@@ -71,8 +85,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
+                ('description', models.TextField()),
                 ('order', models.PositiveIntegerField(default=0, editable=False, db_index=True)),
-                ('course', adminsortable.fields.SortableForeignKey(to='autodidact.Course')),
+                ('course', adminsortable.fields.SortableForeignKey(related_name='sessions', to='autodidact.Course')),
             ],
             options={
                 'ordering': ['order'],
@@ -85,12 +100,17 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='course',
-            name='discipline',
-            field=models.ForeignKey(related_name='courses', to='autodidact.Discipline'),
+            name='programmes',
+            field=models.ManyToManyField(related_name='courses', to='autodidact.Programme'),
+        ),
+        migrations.AddField(
+            model_name='assignment',
+            name='session',
+            field=adminsortable.fields.SortableForeignKey(related_name='assignments', to='autodidact.Session'),
         ),
         migrations.AddField(
             model_name='activity',
-            name='session',
-            field=adminsortable.fields.SortableForeignKey(related_name='activities', to='autodidact.Session'),
+            name='assignment',
+            field=adminsortable.fields.SortableForeignKey(related_name='activities', to='autodidact.Assignment'),
         ),
     ]

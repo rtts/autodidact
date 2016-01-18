@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block navigation %}
+<li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+<li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+<li class="currentPage"><a href="{% url 'session' course.slug session_nr %}">Session {{session_nr}}</a></li>
+{% for assignment in session.assignments.all %}
+<li class="futurePage"><a href="{% url 'assignment' course.slug session_nr forloop.counter %}">{{forloop.counter}}. {{assignment.name}}</a></li>
+{% empty %}
+<li class="empty">No assignments available</li>
+{% endfor %}
+{% endblock %}
+
+
+{% block content %}
+<h1>Session {{session_nr}}: {{session.name}}</h1>
+
+{{session.description|safe}}
+{% endblock %}

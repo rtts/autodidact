@@ -5,7 +5,6 @@
   <head>
     <title>{% block title %}Best Practices in Statistics - Tilburg University{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <!--[if lt IE 9]>
         <script src="{% static 'html5shiv.min.js' %}"></script>
     <![endif]-->
@@ -22,8 +21,10 @@
     <header id="banner">
       <div id="banner_image">
         <div id="banner_text">
+          {% block banner %}
           <h1>Best Practices in Statistics</h1>
-          <h2>Online statistics practice for students in the social sciences</h2>
+          <h2>Online Statistics Practice for Students in the Social Sciences</h2>
+          {% endblock %}
         </div>
       </div>
     </header>
@@ -31,13 +32,8 @@
     <div id="content_wrapper">
       <nav>
         <ul>
-          <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
-          <li class="currentPage">Courses:</li>
-          {% for course in courses %}
-          <li class="futurePage"><a href="{% url 'course' course.slug %}">{{course.name}}</a></li>
-          {% empty %}
-          <li class="empty">No courses are available</li>
-          {% endfor %}
+          {% block navigation %}
+          {% endblock %}
         </ul>
       </nav>
 
@@ -48,6 +44,13 @@
     </div>
 
     <footer>
+      <p>
+        Copyright 2016 Tilburg University
+      </p>
+
+      <p>
+        BPS is built using <a href="https://github.com/JaapJoris/autodidact">Autodidact</a>. Autodidact is free software: you can redistribute it and/or modify	it under the terms of the <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU Affero General Public License</a>.
+      </p>
     </footer>
 
     {% block extrascript %}{% endblock %}

@@ -28,13 +28,14 @@ body, html {
       top: 30px;
       left: 60px;
       height: 80px;
-      width: 50%; }
+      width: 60%; }
       #banner #banner_image #banner_text h1 {
         font-size: 20px;
-        line-height: 1; }
+        margin: 17px 0 0 0; }
       #banner #banner_image #banner_text h2 {
-        font-size: 15px;
-        line-height: 1; }
+        font-size: 18px;
+        margin: 0;
+        font-weight: normal; }
       #banner #banner_image #banner_text :before {
         content: "";
         position: absolute;
@@ -58,6 +59,8 @@ nav {
   width: 230px;
   margin-right: 10px;
   float: left; }
+  nav code {
+    font-size: 0.8em; }
   nav ul {
     font-size: 13px;
     padding-bottom: 20px;
@@ -66,70 +69,71 @@ nav {
     nav ul li {
       list-style-type: none;
       border-bottom: 1px solid #e1ddd8; }
+      nav ul li a {
+        transition: all 0.1s ease-out;
+        text-decoration: none;
+        color: #003366;
+        color: #003366;
+        background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
+        padding: 6px 0px 5px 35px;
+        background-color: #F0EEEC;
+        display: block; }
     nav ul li.visitedPage a {
       background: #e9e7e4 url("/static/nav_arrow_visited.png") 15px 15px no-repeat;
       padding: 10px 5px 5px 35px;
       margin-bottom: 1px;
       display: block;
       font-size: 16px; }
-  nav .currentPage {
-    background: #FFFFFF;
-    font-weight: bold !important;
-    color: #000000;
-    padding: 10px 5px 5px 15px;
-    margin-bottom: 1px;
-    font-size: 16px;
-    display: block; }
-  nav .currentSmall {
-    background: url("/static/nav_arrow_list.png") no-repeat 15px 12px #FFFFFF;
-    font-weight: bold;
-    padding: 10px 5px 5px 35px;
-    margin-bottom: 1px;
-    font-size: 13px;
-    display: block; }
-  nav .activePage {
-    background: #e9e7e4;
-    font-weight: bold;
-    height: 25px;
-    padding: 10px 5px 0px 35px;
-    margin-bottom: 1px;
-    font-size: 13px;
-    display: block; }
-  nav ul li:last-child {
-    border-bottom: 2px solid #e1ddd8; }
-  nav ul li a {
-    color: #003366;
-    background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
-    padding: 6px 0px 5px 35px;
-    background-color: #F0EEEC;
-    display: block; }
-  nav ul li.empty {
-    color: #666;
-    padding: 6px 0px 5px 16px;
-    background-color: #F0EEEC;
-    display: block; }
-  nav ul li a:hover {
-    color: #008ec6;
-    background-color: #e1ddd8; }
-  nav ul li.futurePage a:hover {
-    background: url("/static/nav_arrow_list.png") 20px 10px no-repeat;
-    background-color: #e1ddd8; }
-  nav a {
-    transition: all 0.1s ease-out;
-    text-decoration: none;
-    color: #003366; }
+    nav ul li.visitedPage a:hover {
+      background-color: #e1ddd8; }
+    nav ul li.currentPage a {
+      background: #FFFFFF;
+      font-weight: bold !important;
+      color: #000000;
+      padding: 10px 5px 5px 15px;
+      margin-bottom: 1px;
+      font-size: 14px;
+      display: block; }
+    nav ul li.futurePage a:hover {
+      background: url("/static/nav_arrow_list.png") 20px 10px no-repeat;
+      background-color: #e1ddd8;
+      color: #008ec6; }
+    nav ul li.heading {
+      color: #666;
+      padding: 6px 0px 5px 16px;
+      background-color: #F0EEEC;
+      display: block; }
+    nav ul li.empty {
+      color: #666;
+      padding: 6px 0px 5px 16px;
+      background-color: #F0EEEC;
+      display: block; }
 
 #content_wrapper {
   width: 960px;
   margin: auto; }
 
 article {
-  height: 1000px;
   margin-left: 250px;
+  font-size: 14px;
+  line-height: 24px;
+  color: #003366;
   padding: 20px;
   box-shadow: 0px 1px 6px #b8afa2; }
+  article a {
+    color: #008ec6; }
+  article h1:first-child {
+    margin-top: 0; }
 
 footer {
-  height: 100px; }
+  clear: both;
+  width: 960px;
+  margin: auto;
+  padding-top: 20px;
+  height: 100px;
+  color: #c3bcb2;
+  font-size: 12px; }
+  footer a {
+    color: #A8D7E1; }
 
 /*# sourceMappingURL=main.css.map */

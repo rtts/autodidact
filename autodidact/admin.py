@@ -2,10 +2,10 @@ from django.contrib import admin
 from django.db import models
 from django.forms import RadioSelect
 from .models import *
-from adminsortable.admin import SortableAdmin
+from adminsortable.admin import SortableAdmin, SortableStackedInline
 
-@admin.register(Discipline)
-class DisciplineAdmin(admin.ModelAdmin):
+@admin.register(Programme)
+class ProgrammeAdmin(admin.ModelAdmin):
     pass
 
 class InlineSessionAdmin(admin.TabularInline):
@@ -15,14 +15,18 @@ class InlineSessionAdmin(admin.TabularInline):
 class CourseAdmin(SortableAdmin):
     inlines = [InlineSessionAdmin]
 
-@admin.register(Download)
-class DownloadAdmin(admin.ModelAdmin):
-    list_filter = ['session']
+class InlineActivityAdmin(SortableStackedInline):
+    model = Activity
 
-@admin.register(Activity)
-class ActivityAdmin(SortableAdmin):
-    list_filter = ['session']
+@admin.register(Assignment)
+class AssignmentAdmin(SortableAdmin):
+    inlines = [InlineActivityAdmin]
+    list_filter = ['session__course']
 
 @admin.register(CompletedActivity)
 class CompletedActivityAdmin(admin.ModelAdmin):
     pass
+
+@admin.register(Download)
+class DownloadAdmin(admin.ModelAdmin):
+    list_filter = ['session']
