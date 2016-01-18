@@ -13,5 +13,13 @@
 
 {% block content %}
 <h1>{{course.name}}</h1>
+
 {{course.description|safe}}
+
+{% if request.user.is_staff %}
+<p>
+  <a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">edit</a>
+</p>
+{% endif %}
+
 {% endblock %}

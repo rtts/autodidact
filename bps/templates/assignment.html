@@ -1,12 +1,45 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block navigation %}
 <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
 <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
 <li class="visitedPage"><a href="{% url 'session' course.slug session_nr %}">Session {{session_nr}}</a></li>
 <li class="currentPage"><a href="{% url 'assignment' course.slug session_nr assignment_nr %}">Assignment {{assignment_nr}}: {{assignment.name}}</a></li>
+{% if request.user.is_staff %}<li class="futurePage"><a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">edit</a>{% endif %}</li>
 {% endblock %}
 
 {% block content %}
-Activities go here
+
+<div id="step_header">
+  <img id="checkbox" src="{% if completed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
+  <h1>Step {{activity_nr}} of {{count}}: {{activity.name}}</h1>
+</div>
+
+<p>
+  {{activity.description|safe}}
+</p>
+
+<form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{activity_nr}}">
+  {% csrf_token %}
+  {% if activity.answer_required %}
+  <div id="answer">
+    Your answer:
+    <textarea id="answerbox" name="answer">{{completed.answer}}</textarea>
+  </div>
+  {% endif %}
+
+  <div id="step_footer">
+    {% if not first %}
+    <input class="left button" type="submit" name="direction" value="Previous" />
+    {% endif %}
+    {% if not last %}
+    <input class="right button" type="submit" name="direction" value="Next" />
+    {% else %}
+    <input class="right button finish" type="submit" name="direction" value="Finish!" />
+    {% endif %}
+  </div>
+</form>
+
+
 {% endblock %}

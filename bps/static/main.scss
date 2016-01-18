@@ -185,3 +185,60 @@ footer {
     color: #A8D7E1;
   }
 }
+
+a.editlink {
+  font-weight: bold;
+  color: #f45b3d !important;
+}
+
+#step_header {
+  border-bottom: 2px solid #036;
+  margin-top: -15px;
+  padding: 10px;
+
+  img {
+    margin-left: -12px;
+    vertical-align: top;
+  }
+
+  h1, h2 {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 3px 0 0 4px;
+  }
+
+  h2 {
+    float: right;
+  }
+}
+
+#answer {
+  margin-bottom: 15px;
+  text-align: right;
+  font-weight: bold;
+
+  textarea {
+    vertical-align: top;
+    width: 400px;
+    height: 5em;
+  }
+}
+
+#step_footer {
+  border-top: 2px solid #036;
+  padding: 15px 0;
+
+  input[type=submit] {
+    width: 100px;
+    padding: 5px;
+  }
+
+  input.left {
+    float: left;
+  }
+
+  input.right {
+    float: right;
+  }
+}

@@ -136,4 +136,43 @@ footer {
   footer a {
     color: #A8D7E1; }
 
+a.editlink {
+  font-weight: bold;
+  color: #f45b3d !important; }
+
+#step_header {
+  border-bottom: 2px solid #036;
+  margin-top: -15px;
+  padding: 10px; }
+  #step_header img {
+    margin-left: -12px;
+    vertical-align: top; }
+  #step_header h1, #step_header h2 {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: normal;
+    margin: 3px 0 0 4px; }
+  #step_header h2 {
+    float: right; }
+
+#answer {
+  margin-bottom: 15px;
+  text-align: right;
+  font-weight: bold; }
+  #answer textarea {
+    vertical-align: top;
+    width: 400px;
+    height: 5em; }
+
+#step_footer {
+  border-top: 2px solid #036;
+  padding: 15px 0; }
+  #step_footer input[type=submit] {
+    width: 100px;
+    padding: 5px; }
+  #step_footer input.left {
+    float: left; }
+  #step_footer input.right {
+    float: right; }
+
 /*# sourceMappingURL=main.css.map */

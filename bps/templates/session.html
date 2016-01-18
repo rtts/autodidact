@@ -16,4 +16,11 @@
 <h1>Session {{session_nr}}: {{session.name}}</h1>
 
 {{session.description|safe}}
+
+{% if request.user.is_staff %}
+<p>
+  <a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">edit</a>
+</p>
+{% endif %}
+
 {% endblock %}

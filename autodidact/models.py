@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey
 
@@ -22,6 +23,9 @@ class Course(SortableMixin):
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
 
+    def get_absolute_url(self):
+        return reverse('course', args=[self.slug])
+
     class Meta:
         ordering = ['order']
 
@@ -34,6 +38,12 @@ class Session(SortableMixin):
     def __str__(self):
         return '%s: %s' % (self.course.colloquial_name(), self.name)
 
+    def get_number(self):
+        return self.course.sessions.filter(order__lt=self.order).count() + 1
+
+    def get_absolute_url(self):
+        return reverse('session', args=[self.course.slug, self.get_number()])
+
     class Meta:
         ordering = ['order']
 
@@ -44,6 +54,12 @@ class Assignment(SortableMixin):
 
     def __str__(self):
         return '%s: %s' % (self.session.name, self.name)
+
+    def get_number(self):
+        return self.session.assignments.filter(order__lt=self.order).count() + 1
+
+    def get_absolute_url(self):
+        return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
 
     class Meta:
         ordering = ['order']
@@ -56,14 +72,14 @@ class Activity(SortableMixin):
     answer_required = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.title
+        return self.name
 
     class Meta:
         verbose_name_plural = 'activities'
         ordering = ['order']
 
 class CompletedActivity(models.Model):
-    activity = models.ForeignKey(Activity)
+    activity = models.ForeignKey(Activity, related_name='completed')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL)
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
