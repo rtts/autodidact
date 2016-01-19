@@ -3,21 +3,21 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from autodidact.models import *
 
-@login_required
+#@login_required
 def homepage(request):
     programmes = Programme.objects.all()
     return render(request, 'homepage.html', {
         'programmes': programmes,
     })
 
-@login_required
+#@login_required
 def course(request, course):
     course = get_object_or_404(Course, slug=course)
     return render(request, 'course.html', {
         'course': course,
     })
 
-@login_required
+#@login_required
 def session(request, course, session_nr):
     session_nr = int(session_nr)
     course = get_object_or_404(Course, slug=course)
@@ -28,7 +28,7 @@ def session(request, course, session_nr):
         'session_nr': session_nr,
     })
 
-@login_required
+#@login_required
 def assignment(request, course, session_nr, assignment_nr):
     session_nr = int(session_nr)
     assignment_nr = int(assignment_nr)

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import migrations, models
+from django.db import models, migrations
 import adminsortable.fields
 from django.conf import settings
 
@@ -26,6 +26,7 @@ class Migration(migrations.Migration):
                 'ordering': ['order'],
                 'verbose_name_plural': 'activities',
             },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Assignment',
@@ -37,6 +38,7 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['order'],
             },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='CompletedActivity',
@@ -44,12 +46,13 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('answer', models.TextField(blank=True)),
-                ('activity', models.ForeignKey(to='autodidact.Activity')),
+                ('activity', models.ForeignKey(related_name='completed', to='autodidact.Activity')),
                 ('whom', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
             ],
             options={
                 'verbose_name_plural': 'completed activities',
             },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Course',
@@ -63,6 +66,7 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['order'],
             },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Download',
@@ -72,6 +76,9 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('file', models.FileField(upload_to=b'', blank=True)),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Programme',
@@ -79,6 +86,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=255)),
             ],
+            options={
+            },
+            bases=(models.Model,),
         ),
         migrations.CreateModel(
             name='Session',
@@ -92,25 +102,30 @@ class Migration(migrations.Migration):
             options={
                 'ordering': ['order'],
             },
+            bases=(models.Model,),
         ),
         migrations.AddField(
             model_name='download',
             name='session',
             field=models.ManyToManyField(related_name='downloads', to='autodidact.Session'),
+            preserve_default=True,
         ),
         migrations.AddField(
             model_name='course',
             name='programmes',
             field=models.ManyToManyField(related_name='courses', to='autodidact.Programme'),
+            preserve_default=True,
         ),
         migrations.AddField(
             model_name='assignment',
             name='session',
             field=adminsortable.fields.SortableForeignKey(related_name='assignments', to='autodidact.Session'),
+            preserve_default=True,
         ),
         migrations.AddField(
             model_name='activity',
             name='assignment',
             field=adminsortable.fields.SortableForeignKey(related_name='activities', to='autodidact.Assignment'),
+            preserve_default=True,
         ),
     ]
