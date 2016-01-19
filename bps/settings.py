@@ -28,6 +28,7 @@ except ConfigParser.Error as e:
 PACKAGE_DIR      = os.path.dirname(__file__)
 TEMPLATE_DEBUG   = DEBUG
 ALLOWED_HOSTS    = ['localhost', 'bps.created.today', 'dev.bps.uvt.nl', 'beta.bps.uvt.nl', 'bps.uvt.nl']
+CAS_SERVER_URL   = "https://sso.uvt.nl/"
 ROOT_URLCONF     = 'bps.urls'
 LOGIN_URL        = '/login/'
 WSGI_APPLICATION = 'bps.wsgi.application'
@@ -62,6 +63,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'cas.middleware.CASMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'cas.backends.CASBackend',
 )
 
 from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS
