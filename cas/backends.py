@@ -44,7 +44,7 @@ def _verify_cas1(ticket, service):
     """
 
     params = {'ticket': ticket, 'service': service}
-    url = (urljoin(settings.CAS_SERVER_URL, 'validate') + '?' +
+    url = (urljoin(settings.CAS_SERVER_URL, 'serviceValidate') + '?' +
            urlencode(params))
     page = urlopen(url)
 
