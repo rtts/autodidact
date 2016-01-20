@@ -16,6 +16,10 @@
     <header id="logo">
       <img src="{% static 'tiulogo.jpg' %}" />
       <img src="{% static 'tiuslogan.jpg' %}" />
+      <div id="login">
+        You are logged in as <b>{{request.user.username}}</b>
+        <a href={% url 'logout' %}>Log out</a>
+      </div>
     </header>
 
     <header id="banner">
