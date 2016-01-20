@@ -44,7 +44,7 @@ def _verify_cas1(ticket, service):
     """
 
     params = {'ticket': ticket, 'service': service}
-    url = (urljoin(settings.CAS_SERVER_URL, 'serviceValidate') + '?' +
+    url = (urljoin(settings.CAS_SERVER_URL, 'validate') + '?' +
            urlencode(params))
     page = urlopen(url)
 
@@ -65,7 +65,7 @@ def _verify_cas2(ticket, service):
     :param: ticket
     :param: service
     """
-    return _internal_verify_cas(ticket, service, 'proxyValidate')
+    return _internal_verify_cas(ticket, service, 'serviceValidate')
 
 
 def _verify_cas3(ticket, service):
