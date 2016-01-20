@@ -5,7 +5,7 @@
 <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
 <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
 <li class="visitedPage"><a href="{% url 'session' course.slug session_nr %}">Session {{session_nr}}</a></li>
-<li class="currentPage"><a href="{% url 'assignment' course.slug session_nr assignment_nr %}">Assignment {{assignment_nr}}: {{assignment.name}}</a></li>
+<li class="currentPage"><a href="{% url 'assignment' course.slug session_nr assignment_nr %}">Assignment {{assignment_nr}}</a></li>
 {% if request.user.is_staff %}<li class="futurePage"><a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">edit</a>{% endif %}</li>
 {% endblock %}
 
