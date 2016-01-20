@@ -3,8 +3,7 @@ body, html {
   color: #003366;
   margin: 0;
   padding: 0;
-  font-size: 14px;
-  line-height: 24px; }
+  font-size: 14px; }
 
 a {
   color: #008ec6; }
@@ -18,7 +17,7 @@ a {
     vertical-align: top; }
 
 #login {
-  padding-top: 29px;
+  padding-top: 33px;
   float: right; }
 
 #banner {
@@ -126,7 +125,8 @@ nav {
 article {
   margin-left: 250px;
   padding: 20px;
-  box-shadow: 0px 1px 6px #b8afa2; }
+  box-shadow: 0px 1px 6px #b8afa2;
+  line-height: 24px; }
   article h1:first-child {
     margin-top: 0; }
 
