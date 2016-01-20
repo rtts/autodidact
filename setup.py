@@ -39,7 +39,7 @@ setup(
     version = '0.1',
     url = 'https://github.com/JaapJoris/autodidact',
     license = 'AGPL',
-    packages = find_packages(),
+    packages = find_packages(exclude=['tests']),
     package_data = find_package_data(),
     author = 'Jaap Joris Vens',
     author_email = 'jj@rtts.eu',
