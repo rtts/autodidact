@@ -17,8 +17,12 @@
       <img src="{% static 'tiulogo.jpg' %}" />
       <img src="{% static 'tiuslogan.jpg' %}" />
       <div id="login">
+		{% if request.user.is_authenticated %}
         You are logged in as <b>{{request.user.username}}</b>
         <a href={% url 'logout' %}>Log out</a>
+		{% else %}
+        <a href={% url 'login' %}>Log in</a>
+		{% endif %}
       </div>
     </header>
 
@@ -40,6 +44,11 @@
           {% endblock %}
         </ul>
       </nav>
+
+      <header id="editor">
+        {% block editor %}
+        {% endblock %}
+      </header>
 
       <article>
         {% block content %}

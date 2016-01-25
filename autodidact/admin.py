@@ -15,6 +15,10 @@ class InlineSessionAdmin(admin.TabularInline):
 class CourseAdmin(SortableAdmin):
     inlines = [InlineSessionAdmin]
 
+@admin.register(Session)
+class SessionAdmin(SortableAdmin):
+    pass
+
 class InlineActivityAdmin(SortableStackedInline):
     model = Activity
 
@@ -22,6 +26,10 @@ class InlineActivityAdmin(SortableStackedInline):
 class AssignmentAdmin(SortableAdmin):
     inlines = [InlineActivityAdmin]
     list_filter = ['session__course']
+
+@admin.register(Activity)
+class ActivityAdmin(SortableAdmin):
+    pass
 
 @admin.register(CompletedActivity)
 class CompletedActivityAdmin(admin.ModelAdmin):

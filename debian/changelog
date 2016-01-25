@@ -1,4 +1,4 @@
-autodidact (0.2) UNRELEASED; urgency=low
+autodidact (0.2) stable; urgency=low
 
   [ Wessel Dankers ]
   * First attempt at packaging.

@@ -120,11 +120,19 @@ nav {
 
 #content_wrapper {
   width: 960px;
-  margin: auto; }
+  margin: auto;
+  position: relative; }
+
+#editor {
+  position: absolute;
+  top: -23px;
+  right: 0;
+  font-size: 12px; }
 
 article {
   margin-left: 250px;
   padding: 20px;
+  padding-bottom: 35px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px; }
   article h1:first-child {

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load markdown_tag %}
 
 {% block navigation %}
 <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
@@ -11,16 +12,15 @@
 {% endfor %}
 {% endblock %}
 
+{% block editor %}
+{% if request.user.is_staff %}
+<a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <h1>Session {{session_nr}}: {{session.name}}</h1>
 
-{{session.description|safe}}
-
-{% if request.user.is_staff %}
-<p>
-  <a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">edit</a>
-</p>
-{% endif %}
+{{session.description|markdown}}
 
 {% endblock %}

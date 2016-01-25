@@ -5,10 +5,17 @@ from django.conf import settings
 import cas
 import autodidact.urls
 
+if settings.CAS_SERVER_URL:
+    login_view = 'cas.views.login'
+    logout_view = 'cas.views.logout'
+else:
+    login_view = 'django.contrib.auth.views.login'
+    logout_view = 'django.contrib.auth.views.logout'
+
 urlpatterns = [
+    url(r'^login/$', login_view, name='login'),
+    url(r'^logout/$', logout_view, name='logout'),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^login/$', 'cas.views.login', name='login'),
-    url(r'^logout/$', 'cas.views.logout', name='logout'),
     url(r'^', include(autodidact.urls)),
 ]
 
