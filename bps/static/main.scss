@@ -10,6 +10,14 @@ a {
   color: #008ec6;
 }
 
+h1 {
+  font-size: 1.5em;
+}
+
+h2 {
+  font-size: 1.25em;
+}
+
 #logo {
   width: 960px;
   height: 100px;
@@ -177,13 +185,19 @@ nav {
 article {
   margin-left: 250px;
   padding: 20px;
-  padding-bottom: 35px;
+  padding-bottom: 1px;
+  padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px;
 
   h1:first-child {
     margin-top: 0;
   }
+}
+
+section {
+  margin: 20px 0;
+  position: relative;
 }
 
 footer {
@@ -205,54 +219,149 @@ a.editlink {
   color: #f45b3d !important;
 }
 
-#step_header {
-  border-bottom: 2px solid #036;
-  margin-top: -15px;
-  padding: 10px;
+section.session {
+  margin-bottom: 50px;
+}
 
-  img {
-    margin-left: -12px;
-    vertical-align: top;
-  }
+section.progress {
+  table {
+	width: 100%;
+	border-collapse: collapse;
+	background: url('/static/grid.png');
 
-  h1, h2 {
-    display: inline-block;
-    font-size: 18px;
-    font-weight: normal;
-    margin: 3px 0 0 4px;
-  }
+	.y-axis {
+	  background: white;
+      border-right: 1px solid #036;
+      width: 8em;
+      text-align: right;
+	  padding: 6px;
+	}
 
-  h2 {
-    float: right;
+	.x-axis {
+	  background: white;
+	  border-top: 1px solid #036;
+
+	  .right {
+		float: right;
+	  }
+	  .left {
+		float: left;
+	  }
+	}
+
+	.origin {
+	  background: white;
+	}
+
+	.bar {
+	  height: 20px;
+	  background-color: #6c3;
+	  text-align: right;
+      box-sizing: border-box;
+	  padding-left: 10px;
+	  font-size: 12px;
+	}
   }
 }
 
-#answer {
-  margin-bottom: 15px;
-  text-align: right;
-  font-weight: bold;
+section.answers {
+  table {
+	border-collapse: collapse;
+	width: 100%;
+	margin-top: -20px;
 
-  textarea {
-    vertical-align: top;
-    width: 400px;
-    height: 5em;
+	h2 {
+	  margin: 0;
+	  margin-top: 20px;
+	}
+
+	pre {
+	  font-size: 12px;
+	  margin: 0;
+	  white-space: pre-wrap;
+	}
+
+	pre.missing {
+	  color: red;
+	}
+
+	td {
+	  vertical-align: top;
+	}
+	td.step {
+	  width: 77px;
+	  text-align: right;
+	  padding-right: 10px;
+	}
   }
 }
 
-#step_footer {
-  border-top: 2px solid #036;
-  padding: 15px 0;
+section.step {
+  table {
+	width: 100%;
+	min-height: 400px;
+	margin-top: -15px;
 
-  input[type=submit] {
-    width: 100px;
-    padding: 5px;
-  }
+	td {
+	  vertical-align: top;
+	}
+	td.header {
+	  border-bottom: 2px solid #036;
+	  margin-top: -15px;
+	  padding: 10px;
+	  height: 10px;
 
-  input.left {
-    float: left;
-  }
+	  img {
+		margin-left: -12px;
+		vertical-align: top;
+	  }
 
-  input.right {
-    float: right;
+	  h1, h2 {
+		display: inline-block;
+		font-size: 18px;
+		font-weight: normal;
+		margin: 3px 0 0 4px;
+	  }
+
+	  h2 {
+		float: right;
+	  }
+	}
+
+	td.content {
+	  
+	}
+
+	td.answer {
+	  padding-bottom: 15px;
+	  text-align: right;
+	  font-weight: bold;
+	  height: 70px;
+
+	  textarea {
+		vertical-align: top;
+		width: 400px;
+		height: 70px;
+	  }
+	}
+
+	td.footer {
+	  border-top: 2px solid #036;
+	  padding-top: 15px;
+	  height: 10px;
+
+	  input[type=submit] {
+		width: 100px;
+		padding: 5px;
+	  }
+
+	  input.left {
+		float: left;
+	  }
+
+	  input.right {
+		float: right;
+	  }
+	}
   }
 }

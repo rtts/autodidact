@@ -36,7 +36,7 @@ class Session(SortableMixin):
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
-        return '%s: %s' % (self.course.colloquial_name(), self.name)
+        return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
 
     def get_number(self):
         return self.course.sessions.filter(order__lt=self.order).count() + 1
@@ -74,13 +74,16 @@ class Activity(SortableMixin):
     def __str__(self):
         return self.name
 
+    def get_number(self):
+        return self.assignments.activities.filter(order__lt=self.order).count() + 1
+
     class Meta:
         verbose_name_plural = 'activities'
         ordering = ['order']
 
 class CompletedActivity(models.Model):
     activity = models.ForeignKey(Activity, related_name='completed')
-    whom = models.ForeignKey(settings.AUTH_USER_MODEL)
+    whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed')
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
 

@@ -15,9 +15,12 @@ class InlineSessionAdmin(admin.TabularInline):
 class CourseAdmin(SortableAdmin):
     inlines = [InlineSessionAdmin]
 
+class InlineAssignmentAdmin(SortableStackedInline):
+    model = Assignment
+
 @admin.register(Session)
 class SessionAdmin(SortableAdmin):
-    pass
+    inlines = [InlineAssignmentAdmin]
 
 class InlineActivityAdmin(SortableStackedInline):
     model = Activity

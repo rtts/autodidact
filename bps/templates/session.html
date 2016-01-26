@@ -19,8 +19,62 @@
 {% endblock %}
 
 {% block content %}
-<h1>Session {{session_nr}}: {{session.name}}</h1>
 
-{{session.description|markdown}}
+<section class="session description">
+  <h1>Session {{session_nr}}: {{session.name}}</h1>
+  {{session.description|markdown}}
+</section>
+
+<section class="session progress">
+  <h1>Your progress in session {{session_nr}}:</h1>
+  <table>
+	{% for percentage in percentages %}
+	<tr>
+      <td class="y-axis">
+		<a href="{% url 'assignment' course.slug session_nr forloop.counter %}">Assignment {{forloop.counter}}:</a>
+      </td>
+      <td>
+		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+      </td>
+	</tr>
+	{% endfor %}
+	<tr>
+	  <td class="origin">
+	  </td>
+	  <td class="x-axis">
+	  </td>
+	</tr>
+  </table>
+</section>
+
+<section class="session answers">
+  <h1>Your answers:</h1>
+  <table>
+	{% for answers_per_assignment in answers %}
+	<tr>
+	  <td colspan="2">
+		<h2>Assignment {{forloop.counter}}</h2>
+	  </td>
+	</tr>
+	{% for answer in answers_per_assignment %}
+	{% if answer %}
+	<tr>
+	  <td class="step">
+		<a href="{% url 'assignment' course.slug session_nr forloop.parentloop.counter %}?step={{forloop.counter}}&save_only=true">Step {{forloop.counter}}</a>)
+	  </td>
+	  <td>
+		{% if answer == "mispoes" %}
+		<pre class="missing">Required answer is missing</pre>
+		{% else %}
+		<pre>{{answer}}</pre>
+		{% endif %}
+	  </td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	{% endfor %}
+  </table>
+</section>
+
 
 {% endblock %}

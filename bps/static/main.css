@@ -8,6 +8,12 @@ body, html {
 a {
   color: #008ec6; }
 
+h1 {
+  font-size: 1.5em; }
+
+h2 {
+  font-size: 1.25em; }
+
 #logo {
   width: 960px;
   height: 100px;
@@ -132,11 +138,16 @@ nav {
 article {
   margin-left: 250px;
   padding: 20px;
-  padding-bottom: 35px;
+  padding-bottom: 1px;
+  padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px; }
   article h1:first-child {
     margin-top: 0; }
+
+section {
+  margin: 20px 0;
+  position: relative; }
 
 footer {
   clear: both;
@@ -153,39 +164,96 @@ a.editlink {
   font-weight: bold;
   color: #f45b3d !important; }
 
-#step_header {
-  border-bottom: 2px solid #036;
-  margin-top: -15px;
-  padding: 10px; }
-  #step_header img {
-    margin-left: -12px;
+section.session {
+  margin-bottom: 50px; }
+
+section.progress table {
+  width: 100%;
+  border-collapse: collapse;
+  background: url("/static/grid.png"); }
+  section.progress table .y-axis {
+    background: white;
+    border-right: 1px solid #036;
+    width: 8em;
+    text-align: right;
+    padding: 6px; }
+  section.progress table .x-axis {
+    background: white;
+    border-top: 1px solid #036; }
+    section.progress table .x-axis .right {
+      float: right; }
+    section.progress table .x-axis .left {
+      float: left; }
+  section.progress table .origin {
+    background: white; }
+  section.progress table .bar {
+    height: 20px;
+    background-color: #6c3;
+    text-align: right;
+    box-sizing: border-box;
+    padding-left: 10px;
+    font-size: 12px; }
+
+section.answers table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: -20px; }
+  section.answers table h2 {
+    margin: 0;
+    margin-top: 20px; }
+  section.answers table pre {
+    font-size: 12px;
+    margin: 0;
+    white-space: pre-wrap; }
+  section.answers table pre.missing {
+    color: red; }
+  section.answers table td {
     vertical-align: top; }
-  #step_header h1, #step_header h2 {
-    display: inline-block;
-    font-size: 18px;
-    font-weight: normal;
-    margin: 3px 0 0 4px; }
-  #step_header h2 {
-    float: right; }
+  section.answers table td.step {
+    width: 77px;
+    text-align: right;
+    padding-right: 10px; }
 
-#answer {
-  margin-bottom: 15px;
-  text-align: right;
-  font-weight: bold; }
-  #answer textarea {
-    vertical-align: top;
-    width: 400px;
-    height: 5em; }
-
-#step_footer {
-  border-top: 2px solid #036;
-  padding: 15px 0; }
-  #step_footer input[type=submit] {
-    width: 100px;
-    padding: 5px; }
-  #step_footer input.left {
-    float: left; }
-  #step_footer input.right {
-    float: right; }
+section.step table {
+  width: 100%;
+  min-height: 400px;
+  margin-top: -15px; }
+  section.step table td {
+    vertical-align: top; }
+  section.step table td.header {
+    border-bottom: 2px solid #036;
+    margin-top: -15px;
+    padding: 10px;
+    height: 10px; }
+    section.step table td.header img {
+      margin-left: -12px;
+      vertical-align: top; }
+    section.step table td.header h1, section.step table td.header h2 {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: normal;
+      margin: 3px 0 0 4px; }
+    section.step table td.header h2 {
+      float: right; }
+  section.step table td.answer {
+    padding-bottom: 15px;
+    text-align: right;
+    font-weight: bold;
+    height: 70px; }
+    section.step table td.answer textarea {
+      vertical-align: top;
+      width: 400px;
+      height: 70px; }
+  section.step table td.footer {
+    border-top: 2px solid #036;
+    padding-top: 15px;
+    height: 10px; }
+    section.step table td.footer input[type=submit] {
+      width: 100px;
+      padding: 5px; }
+    section.step table td.footer input.left {
+      float: left; }
+    section.step table td.footer input.right {
+      float: right; }
 
 /*# sourceMappingURL=main.css.map */
