@@ -1,3 +1,13 @@
+autodidact (0.3) stable; urgency=medium
+
+  * The lab session page shows a dashboard of the students' progress
+  * All pages have an "edit" link if the user is staff
+  * All description fields accept markdown syntax
+  * File uploading works, but /var/lib/bps/uploads should be writable
+    by the webserver user
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 26 Jan 2016 16:22:03 +0100
+
 autodidact (0.2) stable; urgency=low
 
   [ Wessel Dankers ]

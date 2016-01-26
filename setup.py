@@ -36,7 +36,7 @@ def module_name(dir):
 
 setup(
     name = 'autodidact',
-    version = '0.2',
+    version = '0.3',
     url = 'https://github.com/JaapJoris/autodidact',
     license = 'AGPL',
     packages = find_packages(exclude=['tests']),
