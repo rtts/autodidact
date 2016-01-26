@@ -219,11 +219,29 @@ a.editlink {
   color: #f45b3d !important;
 }
 
+section.downloads {
+  float: right;
+  width: 200px;
+  background: #e9e7e4;
+  padding: 10px;
+
+  a {
+	text-decoration: none;
+	font-family: monospace;
+	font-size: 12px;
+  }
+
+  h3 {
+	margin: 0;
+  }
+}
+
 section.session {
   margin-bottom: 50px;
 }
 
 section.progress {
+  clear: both;
   table {
 	width: 100%;
 	border-collapse: collapse;

@@ -1,3 +1,4 @@
+import os
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -94,11 +95,11 @@ class CompletedActivity(models.Model):
         verbose_name_plural = 'completed activities'
 
 class Download(models.Model):
-    name = models.CharField(max_length=255)
-    description = models.TextField()
-    file = models.FileField(blank=True)
+    file = models.FileField()
     session = models.ManyToManyField(Session, related_name='downloads')
 
     def __str__(self):
-        return self.name
+        return os.path.basename(str(self.file))
 
+    def url(self):
+        return self.file.url

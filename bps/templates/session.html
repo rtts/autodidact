@@ -20,6 +20,15 @@
 
 {% block content %}
 
+<section class="downloads">
+  <h3>Files you will need for this session:</h3>
+  <ul>
+	{% for file in session.downloads.all %}
+	<li><a href="{{file.url}}">{{file}}</a></li>
+	{% endfor %}
+  </ul>
+</section>
+
 <section class="session description">
   <h1>Session {{session_nr}}: {{session.name}}</h1>
   {{session.description|markdown}}

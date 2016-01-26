@@ -164,35 +164,49 @@ a.editlink {
   font-weight: bold;
   color: #f45b3d !important; }
 
+section.downloads {
+  float: right;
+  width: 200px;
+  background: #e9e7e4;
+  padding: 10px; }
+  section.downloads a {
+    text-decoration: none;
+    font-family: monospace;
+    font-size: 12px; }
+  section.downloads h3 {
+    margin: 0; }
+
 section.session {
   margin-bottom: 50px; }
 
-section.progress table {
-  width: 100%;
-  border-collapse: collapse;
-  background: url("/static/grid.png"); }
-  section.progress table .y-axis {
-    background: white;
-    border-right: 1px solid #036;
-    width: 8em;
-    text-align: right;
-    padding: 6px; }
-  section.progress table .x-axis {
-    background: white;
-    border-top: 1px solid #036; }
-    section.progress table .x-axis .right {
-      float: right; }
-    section.progress table .x-axis .left {
-      float: left; }
-  section.progress table .origin {
-    background: white; }
-  section.progress table .bar {
-    height: 20px;
-    background-color: #6c3;
-    text-align: right;
-    box-sizing: border-box;
-    padding-left: 10px;
-    font-size: 12px; }
+section.progress {
+  clear: both; }
+  section.progress table {
+    width: 100%;
+    border-collapse: collapse;
+    background: url("/static/grid.png"); }
+    section.progress table .y-axis {
+      background: white;
+      border-right: 1px solid #036;
+      width: 8em;
+      text-align: right;
+      padding: 6px; }
+    section.progress table .x-axis {
+      background: white;
+      border-top: 1px solid #036; }
+      section.progress table .x-axis .right {
+        float: right; }
+      section.progress table .x-axis .left {
+        float: left; }
+    section.progress table .origin {
+      background: white; }
+    section.progress table .bar {
+      height: 20px;
+      background-color: #6c3;
+      text-align: right;
+      box-sizing: border-box;
+      padding-left: 10px;
+      font-size: 12px; }
 
 section.answers table {
   border-collapse: collapse;
