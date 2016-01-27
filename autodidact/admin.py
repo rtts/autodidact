@@ -18,9 +18,12 @@ class CourseAdmin(SortableAdmin):
 class InlineAssignmentAdmin(SortableStackedInline):
     model = Assignment
 
+class InlineDownloadAdmin(admin.StackedInline):
+    model = Download.session.through
+
 @admin.register(Session)
 class SessionAdmin(SortableAdmin):
-    inlines = [InlineAssignmentAdmin]
+    inlines = [InlineDownloadAdmin, InlineAssignmentAdmin]
 
 class InlineActivityAdmin(SortableStackedInline):
     model = Activity

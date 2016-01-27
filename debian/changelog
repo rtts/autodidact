@@ -1,3 +1,11 @@
+autodidact (0.4) UNRELEASED; urgency=medium
+
+  * Added django_cleanup to remove unreferenced file uploads
+  * Fixed various cross-browser CSS bugs
+  * Manage downloads directly from session admin (albeit clunky)
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 27 Jan 2016 16:27:11 +0100
+
 autodidact (0.3) stable; urgency=medium
 
   * The lab session page shows a dashboard of the students' progress
