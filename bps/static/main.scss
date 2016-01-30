@@ -89,7 +89,7 @@ h2 {
 }
 
 nav {
-  width: 230px;
+  width: 240px;
   margin-right: 10px;
   float: left;
 
@@ -104,13 +104,13 @@ nav {
     padding: 0;
 
     li {
+        margin-bottom: 1px;
       list-style-type	: none;
-      border-bottom	: 1px solid #e1ddd8;
+      //border-bottom	: 1px solid #e1ddd8;
 
       a {
         transition: all 0.1s ease-out;
         text-decoration:none;
-        color: #003366;
         color: #003366;
         background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
         padding: 6px 0px 5px 35px;
@@ -119,11 +119,17 @@ nav {
       }
     }
 
+	li.locked {
+      background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
+      padding: 6px 0px 5px 35px;
+      background-color: #F0EEEC;
+	  color: #CD9999;
+	}
+
     li.visitedPage {
       a {
         background: #e9e7e4 url("/static/nav_arrow_visited.png") 15px 15px no-repeat;
         padding: 10px 5px 5px 35px;
-        margin-bottom: 1px;
         display: block;
         font-size: 16px;
       }
@@ -158,6 +164,12 @@ nav {
       padding: 6px 0px 5px 16px;
       background-color: #F0EEEC;
       display: block;
+      font-style: italic;
+    }
+
+    li.spacer {
+      height: 15px;
+      background-color: white;
     }
 
     li.empty {
@@ -183,7 +195,7 @@ nav {
 }
 
 article {
-  margin-left: 250px;
+  margin-left: 260px;
   padding: 20px;
   padding-bottom: 1px;
   padding-top: 1px;
@@ -219,21 +231,18 @@ a.editlink {
   color: #f45b3d !important;
 }
 
-section.downloads {
+section.attendance {
   float: right;
   z-index: 1000;
   width: 200px;
   background: #e9e7e4;
   padding: 10px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-left: 20px;
 
-  a {
-	text-decoration: none;
-	font-family: monospace;
-	font-size: 12px;
-  }
-
-  h3 {
-	margin: 0;
+  input[type=text] {
+	width: 100px;
   }
 }
 
@@ -242,7 +251,6 @@ section.session {
 }
 
 section.progress {
-  clear: both;
   table {
 	width: 100%;
 	border-collapse: collapse;

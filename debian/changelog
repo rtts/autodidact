@@ -1,8 +1,9 @@
 autodidact (0.4) UNRELEASED; urgency=medium
 
   * Added django_cleanup to remove unreferenced file uploads
-  * Fixed various cross-browser CSS bugs
   * Manage downloads directly from session admin (albeit clunky)
+  * Register attendance to unlock in-class assignments
+  * User-friendlier admin interface that redirects to site on save
 
  -- Jaap Joris Vens <jj@rtts.eu>  Wed, 27 Jan 2016 16:27:11 +0100
 

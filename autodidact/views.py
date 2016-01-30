@@ -1,3 +1,4 @@
+from django.http import Http404, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
@@ -21,17 +22,44 @@ def course(request, course):
 def session(request, course, session_nr):
     session_nr = int(session_nr)
     course = get_object_or_404(Course, slug=course)
-    session = course.sessions.all()[session_nr-1]
 
-    # TODO: Perform the following in a single, efficient database query
+    if session_nr < 1:
+        raise Http404()
+    try:
+        session = course.sessions.all()[session_nr-1]
+        session.nr = session_nr
+    except IndexError:
+        raise Http404()
+
+    # Check attendance
+    attending = False
+    if request.method == 'POST':
+        ticket = request.POST.get('ticket')
+        try:
+            group = Group.objects.get(ticket=ticket)
+            if group.session == session:
+                group.users.add(request.user)
+        except Group.DoesNotExist:
+            pass
+        return redirect(session)
+
+    # Calculate answers, progress, and assignment lists while hitting
+    # the database as little as possible
     assignments = session.assignments.select_related('activities')
     completed = request.user.completed.select_related('activity').order_by('activity')
     answers = []
     percentages = []
+    preliminary_assignments = []
+    inclass_assignments = []
     for i, ass in enumerate(assignments):
-        answers.append([])
         activities_count = 0
         completed_count = 0
+        ass.nr = i + 1
+        answers.append([])
+        if ass.type == 1:
+            preliminary_assignments.append(ass)
+        elif ass.type == 2:
+            inclass_assignments.append(ass)
         for step in ass.activities.all():
             activities_count += 1
             answers[i].append('')
@@ -49,12 +77,17 @@ def session(request, course, session_nr):
             percentage_completed = 0
         percentages.append(percentage_completed)
 
+    # Users are present if their groups intersect the session's groups
+    present = bool(request.user.attends.all() & session.groups.all())
+
     return render(request, 'session.html', {
         'course': course,
         'session': session,
-        'session_nr': session_nr,
+        'preliminary_assignments': preliminary_assignments,
+        'inclass_assignments': inclass_assignments,
         'answers': answers,
         'percentages': percentages,
+        'present': present,
     })
 
 @login_required
@@ -64,11 +97,23 @@ def assignment(request, course, session_nr, assignment_nr):
     activity_nr = int(request.GET.get('step', 1))
     save_only = request.GET.get('save_only', 'false')
     course = get_object_or_404(Course, slug=course)
-    session = course.sessions.all()[session_nr-1]
-    assignment = session.assignments.all()[assignment_nr-1]
-    count = assignment.activities.count()
 
-    # Carefully extract the current activity and whether it's completed
+    # Retrieve session and assignment objects
+    if session_nr < 1 or assignment_nr < 1:
+        raise Http404()
+    try:
+        session = course.sessions.all()[session_nr-1]
+        assignment = session.assignments.all()[assignment_nr-1]
+    except IndexError:
+        raise Http404()
+
+    # Locked assignments can only be made by in-class users
+    if assignment.locked_until_class_starts:
+        present = bool(request.user.attends.all() & session.groups.all())
+        if not present:
+            return HttpResponseForbidden()
+
+    # Retrieve current activity and whether it's completed
     if activity_nr < 1:
         return redirect(assignment)
     try:
@@ -109,6 +154,7 @@ def assignment(request, course, session_nr, assignment_nr):
 
     first = activity == assignment.activities.first()
     last = activity == assignment.activities.last()
+    count = assignment.activities.count()
 
     return render(request, 'assignment.html', {
         'course': course,

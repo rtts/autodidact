@@ -35,6 +35,7 @@ class Session(SortableMixin):
     description = models.TextField()
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+    attendance_required = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -52,6 +53,11 @@ class Assignment(SortableMixin):
     name = models.CharField(max_length=255)
     session = SortableForeignKey(Session, related_name="assignments")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+    type = models.IntegerField(choices=(
+        (1, 'Homework assignment'),
+        (2, 'In-class assignment'),
+    ))
+    locked_until_class_starts = models.BooleanField(default=False)
 
     def __str__(self):
         return '%s: %s' % (self.session.name, self.name)
@@ -76,7 +82,14 @@ class Activity(SortableMixin):
         return self.name
 
     def get_number(self):
-        return self.assignments.activities.filter(order__lt=self.order).count() + 1
+        return self.assignment.activities.filter(order__lt=self.order).count() + 1
+
+    def get_absolute_url(self):
+        return reverse('assignment', args=[
+            self.assignment.session.course.slug,
+            self.assignment.session.get_number(),
+            self.assignment.get_number(),
+        ]) + '?step=' + str(self.get_number())
 
     class Meta:
         verbose_name_plural = 'activities'
@@ -93,6 +106,15 @@ class CompletedActivity(models.Model):
 
     class Meta:
         verbose_name_plural = 'completed activities'
+
+class Group(models.Model):
+    session = models.ForeignKey(Session, related_name='groups')
+    number = models.CharField(max_length=16)
+    ticket = models.CharField(unique=True, max_length=16)
+    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
+
+    def __str__(self):
+        return 'Group number %s of %s' % (self.number, str(self.session))
 
 class Download(models.Model):
     file = models.FileField()

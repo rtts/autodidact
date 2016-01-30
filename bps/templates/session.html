@@ -4,11 +4,33 @@
 {% block navigation %}
 <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
 <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
-<li class="currentPage"><a href="{% url 'session' course.slug session_nr %}">Session {{session_nr}}</a></li>
-{% for assignment in session.assignments.all %}
-<li class="futurePage"><a href="{% url 'assignment' course.slug session_nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+<li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
+
+{% if preliminary_assignments %}
+<li class="heading">Preliminary assignments:</li>
+{% for assignment in preliminary_assignments %}
+<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
+{% endfor %}
+<li class="spacer"/>
+{% endif %}
+
+{% if inclass_assignments %}
+<li class="heading">In-class assignments:</li>
+{% for assignment in inclass_assignments %}
+{% if assignment.locked_until_class_starts and not present %}
+<li class="locked">Assignment {{assignment.nr}}: Locked until class starts</li>
+{% else %}
+<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
+{% endif %}
+{% endfor %}
+<li class="spacer"/>
+{% endif %}
+
+<li class="heading">Downloads:</li>
+{% for file in session.downloads.all %}
+<li class="futurePage"><a href="{{file.url}}">{{file}}</a></li>
 {% empty %}
-<li class="empty">No assignments available</li>
+<li class="empty">No downloads available</li>
 {% endfor %}
 {% endblock %}
 
@@ -20,27 +42,32 @@
 
 {% block content %}
 
-<section class="downloads">
-  <h3>Files you will need for this session:</h3>
-  <ul>
-	{% for file in session.downloads.all %}
-	<li><a href="{{file.url}}">{{file}}</a></li>
-	{% endfor %}
-  </ul>
+{% if session.attendance_required %}
+<section class="attendance">
+  {% if present %}
+  <b>Your attendance to this session has been registered.</b>
+  {% else %}
+  <form method="POST" action="">
+	{% csrf_token %}
+	Please enter a valid registration code to register your attendance to this session (you will receive this code in class):<br>
+	<input type="text" name="ticket" />
+	<input type="submit" value="Submit" />
+  {% endif %}
 </section>
+{% endif %}
 
 <section class="session description">
-  <h1>Session {{session_nr}}: {{session.name}}</h1>
+  <h1>Session {{session.nr}}: {{session.name}}</h1>
   {{session.description|markdown}}
 </section>
 
 <section class="session progress">
-  <h1>Your progress in session {{session_nr}}:</h1>
+  <h1>Your progress in session {{session.nr}}:</h1>
   <table>
 	{% for percentage in percentages %}
 	<tr>
       <td class="y-axis">
-		<a href="{% url 'assignment' course.slug session_nr forloop.counter %}">Assignment {{forloop.counter}}:</a>
+		<a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}:</a>
       </td>
       <td>
 		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
@@ -69,7 +96,7 @@
 	{% if answer %}
 	<tr>
 	  <td class="step">
-		<a href="{% url 'assignment' course.slug session_nr forloop.parentloop.counter %}?step={{forloop.counter}}&save_only=true">Step {{forloop.counter}}</a>)
+		<a href="{% url 'assignment' course.slug session.nr forloop.parentloop.counter %}?step={{forloop.counter}}&save_only=true">Step {{forloop.counter}}</a>)
 	  </td>
 	  <td>
 		{% if answer == "mispoes" %}
