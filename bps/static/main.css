@@ -224,25 +224,27 @@ section.students {
       padding: 4px 7px 2px;
       vertical-align: top; }
 
-section.progress table {
-  width: 100%;
-  border-collapse: collapse;
-  background: url("/static/grid.png"); }
-  section.progress table .y-axis {
-    background: white;
-    border-right: 1px solid #036;
-    width: 8em;
-    text-align: right;
-    padding: 6px; }
-  section.progress table .x-axis {
-    background: white;
-    border-top: 1px solid #036; }
-    section.progress table .x-axis .right {
-      float: right; }
-    section.progress table .x-axis .left {
-      float: left; }
-  section.progress table .origin {
-    background: white; }
+section.progress {
+  clear: right; }
+  section.progress table {
+    width: 100%;
+    border-collapse: collapse;
+    background: url("/static/grid.png"); }
+    section.progress table .y-axis {
+      background: white;
+      border-right: 1px solid #036;
+      width: 8em;
+      text-align: right;
+      padding: 6px; }
+    section.progress table .x-axis {
+      background: white;
+      border-top: 1px solid #036; }
+      section.progress table .x-axis .right {
+        float: right; }
+      section.progress table .x-axis .left {
+        float: left; }
+    section.progress table .origin {
+      background: white; }
 
 .bar {
   height: 20px;

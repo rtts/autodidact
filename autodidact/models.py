@@ -123,7 +123,7 @@ class Class(models.Model):
 
 class Download(models.Model):
     file = models.FileField()
-    session = models.ManyToManyField(Session, related_name='downloads')
+    session = models.ManyToManyField(Session, related_name='downloads', blank=True)
 
     def __str__(self):
         return os.path.basename(str(self.file))
