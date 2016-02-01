@@ -26,6 +26,9 @@ def course(request, course):
 def session(request, course, session_nr):
     session_nr = int(session_nr)
     course = get_object_or_404(Course, slug=course)
+    students = None
+    present = False
+    current_class = None
 
     if session_nr < 1:
         raise Http404()
@@ -35,52 +38,52 @@ def session(request, course, session_nr):
     except IndexError:
         raise Http404()
 
-    # Check attendance
-    attending = False
-    if request.method == 'POST':
-        ticket = request.POST.get('ticket')
-        try:
-            newclass = Class.objects.get(ticket=ticket)
-            if newclass.session == session:
-                newclass.users.add(request.user)
-        except Class.DoesNotExist:
-            pass
-        return redirect(session)
-
-    try:
-        current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
-    except (Class.DoesNotExist, KeyError):
-        current_class = False
-
     assignments = session.assignments.select_related('steps')
     completed = request.user.completed.select_related('step').order_by('step')
 
-    # For teachers, calculate the progress of each student
-    students = None
-    if request.user.is_staff and current_class:
-        students = current_class.users.select_related('completed', 'completed__step')
-        for student in students:
-            completed_by_student = student.completed.order_by('step')
-            student.progress = []
-            for i, ass in enumerate(assignments):
-                step_count = 0
-                completed_count = 0
-                ass.nr = i + 1
-                for step in ass.steps.all():
-                    step_count += 1
-                    for com in completed_by_student:
-                        if step == com.step:
-                            completed_count += 1
-                            break
-                if step_count:
-                    percentage_completed = 100 * completed_count/step_count
-                else:
-                    percentage_completed = 0
-                student.progress.append(percentage_completed)
+    if session.registration_enabled:
+        if request.method == 'POST':
+            ticket = request.POST.get('ticket')
+            try:
+                newclass = Class.objects.get(ticket=ticket)
+                if newclass.session == session:
+                    newclass.users.add(request.user)
+            except Class.DoesNotExist:
+                pass
+            return redirect(session)
+
+        # Users are present if their classes intersect the session's classes
+        present = bool(request.user.attends.all() & session.classes.all())
+
+        try:
+            current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
+        except (Class.DoesNotExist, KeyError):
+            pass
+
+        # For teachers, calculate the progress of each student
+        if request.user.is_staff and current_class:
+            students = current_class.users.select_related('completed', 'completed__step')
+            for student in students:
+                completed_by_student = student.completed.order_by('step')
+                student.progress = []
+                for i, ass in enumerate(assignments):
+                    step_count = 0
+                    completed_count = 0
+                    ass.nr = i + 1
+                    for step in ass.steps.all():
+                        step_count += 1
+                        for com in completed_by_student:
+                            if step == com.step:
+                                completed_count += 1
+                                break
+                    if step_count:
+                        percentage_completed = 100 * completed_count/step_count
+                    else:
+                        percentage_completed = 0
+                    student.progress.append(percentage_completed)
 
     # Calculate answers, progress, and assignment lists
     answers = []
-    percentages = []
     preliminary_assignments = []
     inclass_assignments = []
     for i, ass in enumerate(assignments):
@@ -107,10 +110,7 @@ def session(request, course, session_nr):
             percentage_completed = 100 * completed_count/step_count
         else:
             percentage_completed = 0
-        percentages.append(percentage_completed)
-
-    # Users are present if their classes intersect the session's classes
-    present = bool(request.user.attends.all() & session.classes.all())
+        ass.percentage = percentage_completed
 
     return render(request, 'session.html', {
         'course': course,
@@ -119,7 +119,6 @@ def session(request, course, session_nr):
         'preliminary_assignments': preliminary_assignments,
         'inclass_assignments': inclass_assignments,
         'answers': answers,
-        'percentages': percentages,
         'present': present,
         'current_class': current_class,
         'students': students,

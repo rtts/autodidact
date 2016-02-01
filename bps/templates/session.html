@@ -21,7 +21,7 @@
 {% if inclass_assignments %}
 <li class="heading">In-class assignments:</li>
 {% for assignment in inclass_assignments %}
-{% if assignment.locked and not present and not current_class%}
+{% if assignment.locked and not present and not current_class %}
 <li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 {% else %}
 <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
@@ -133,13 +133,17 @@
 <section class="session progress">
   <h1>Your progress in session {{session.nr}}:</h1>
   <table>
-	{% for percentage in percentages %}
+	{% for assignment in assignments %}
 	<tr>
       <td class="y-axis">
-		<a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}:</a>
+		{% if assignment.locked and not present %}
+		Assignment {{assignment.nr}}:
+		{% else %}
+		<a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{assignment.nr}}:</a>
+		{% endif %}
       </td>
       <td>
-		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+		<div class="bar" style="width: {{assignment.percentage}}%">{{assignment.percentage}}%</div>
       </td>
 	</tr>
 	{% endfor %}
