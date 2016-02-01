@@ -60,7 +60,7 @@ def session(request, course, session_nr):
     if request.user.is_staff and current_class:
         students = current_class.users.select_related('completed', 'completed__step')
         for student in students:
-            completed = student.completed.order_by('step')
+            completed_by_student = student.completed.order_by('step')
             student.progress = []
             for i, ass in enumerate(assignments):
                 step_count = 0
@@ -68,7 +68,7 @@ def session(request, course, session_nr):
                 ass.nr = i + 1
                 for step in ass.steps.all():
                     step_count += 1
-                    for com in completed:
+                    for com in completed_by_student:
                         if step == com.step:
                             completed_count += 1
                             break
