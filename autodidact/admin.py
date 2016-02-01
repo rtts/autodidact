@@ -44,26 +44,26 @@ class InlineDownloadAdmin(admin.StackedInline):
 class SessionAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineDownloadAdmin, InlineAssignmentAdmin]
 
-class InlineActivityAdmin(SortableStackedInline):
-    model = Activity
+class InlineStepAdmin(SortableStackedInline):
+    model = Step
 
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
-    inlines = [InlineActivityAdmin]
+    inlines = [InlineStepAdmin]
     list_filter = ['session__course']
 
-@admin.register(Activity)
-class ActivityAdmin(FunkySaveAdmin, SortableAdmin):
+@admin.register(Step)
+class StepAdmin(FunkySaveAdmin, SortableAdmin):
     pass
 
-@admin.register(CompletedActivity)
-class CompletedActivityAdmin(admin.ModelAdmin):
+@admin.register(CompletedStep)
+class CompletedStepAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Download)
 class DownloadAdmin(admin.ModelAdmin):
     list_filter = ['session']
 
-@admin.register(Group)
-class GroupAdmin(admin.ModelAdmin):
+@admin.register(Class)
+class ClassAdmin(admin.ModelAdmin):
     list_filter = ['session']

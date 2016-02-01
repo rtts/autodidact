@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block editor %}
-{% if request.user.is_staff %}
+{% if perms.autodidact.change_course %}
 <a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">Edit this course</a>
 {% endif %}
 {% endblock %}

@@ -5,6 +5,9 @@ from django.core.urlresolvers import reverse
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey
 
+MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
+TICKET_LENGTH = 4
+
 class Programme(models.Model):
     name = models.CharField(max_length=255)
 
@@ -14,7 +17,7 @@ class Programme(models.Model):
 class Course(SortableMixin):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    description = models.TextField()
+    description = models.TextField(help_text=MDHELP)
     programmes = models.ManyToManyField(Programme, related_name='courses')
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
@@ -32,10 +35,10 @@ class Course(SortableMixin):
 
 class Session(SortableMixin):
     name = models.CharField(max_length=255)
-    description = models.TextField()
+    description = models.TextField(help_text=MDHELP)
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    attendance_required = models.BooleanField(default=False)
+    registration_enabled = models.BooleanField(default=True)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -54,10 +57,10 @@ class Assignment(SortableMixin):
     session = SortableForeignKey(Session, related_name="assignments")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     type = models.IntegerField(choices=(
-        (1, 'Homework assignment'),
+        (1, 'Preliminary assignment'),
         (2, 'In-class assignment'),
     ))
-    locked_until_class_starts = models.BooleanField(default=False)
+    locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class. If registration is disabled, it can only be unlocked by a staff member')
 
     def __str__(self):
         return '%s: %s' % (self.session.name, self.name)
@@ -71,10 +74,10 @@ class Assignment(SortableMixin):
     class Meta:
         ordering = ['order']
 
-class Activity(SortableMixin):
+class Step(SortableMixin):
     name = models.CharField(max_length=255)
-    assignment = SortableForeignKey(Assignment, related_name='activities')
-    description = models.TextField()
+    assignment = SortableForeignKey(Assignment, related_name='steps')
+    description = models.TextField(help_text=MDHELP)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     answer_required = models.BooleanField(default=False)
 
@@ -82,7 +85,7 @@ class Activity(SortableMixin):
         return self.name
 
     def get_number(self):
-        return self.assignment.activities.filter(order__lt=self.order).count() + 1
+        return self.assignment.steps.filter(order__lt=self.order).count() + 1
 
     def get_absolute_url(self):
         return reverse('assignment', args=[
@@ -92,29 +95,31 @@ class Activity(SortableMixin):
         ]) + '?step=' + str(self.get_number())
 
     class Meta:
-        verbose_name_plural = 'activities'
         ordering = ['order']
 
-class CompletedActivity(models.Model):
-    activity = models.ForeignKey(Activity, related_name='completed')
+class CompletedStep(models.Model):
+    step = models.ForeignKey(Step, related_name='completed')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed')
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s has completed %s' % (self.whom.username, self.activity.name)
+        return '%s has completed %s' % (self.whom.username, self.step.name)
 
     class Meta:
-        verbose_name_plural = 'completed activities'
+        verbose_name_plural = 'completed steps'
 
-class Group(models.Model):
-    session = models.ForeignKey(Session, related_name='groups')
+class Class(models.Model):
+    session = models.ForeignKey(Session, related_name='classes')
     number = models.CharField(max_length=16)
     ticket = models.CharField(unique=True, max_length=16)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
 
     def __str__(self):
-        return 'Group number %s of %s' % (self.number, str(self.session))
+        return 'Class %s of %s' % (self.number, str(self.session))
+
+    class Meta:
+        verbose_name_plural = 'classes'
 
 class Download(models.Model):
     file = models.FileField()

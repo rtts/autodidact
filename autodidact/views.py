@@ -1,8 +1,12 @@
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
+from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
-from autodidact.models import *
+from django.contrib.admin.views.decorators import staff_member_required
+
+from .utils import random_string
+from .models import *
 
 @login_required
 def homepage(request):
@@ -36,23 +40,51 @@ def session(request, course, session_nr):
     if request.method == 'POST':
         ticket = request.POST.get('ticket')
         try:
-            group = Group.objects.get(ticket=ticket)
-            if group.session == session:
-                group.users.add(request.user)
-        except Group.DoesNotExist:
+            newclass = Class.objects.get(ticket=ticket)
+            if newclass.session == session:
+                newclass.users.add(request.user)
+        except Class.DoesNotExist:
             pass
         return redirect(session)
 
-    # Calculate answers, progress, and assignment lists while hitting
-    # the database as little as possible
-    assignments = session.assignments.select_related('activities')
-    completed = request.user.completed.select_related('activity').order_by('activity')
+    try:
+        current_class = Class.objects.get(ticket=request.session['current_class'])
+    except (Class.DoesNotExist, KeyError):
+        current_class = False
+
+    assignments = session.assignments.select_related('steps')
+    completed = request.user.completed.select_related('step').order_by('step')
+
+    # For teachers, calculate the progress of each student
+    students = None
+    if request.user.is_staff and current_class:
+        students = current_class.users.select_related('completed', 'completed__step')
+        for student in students:
+            completed = student.completed.order_by('step')
+            student.progress = []
+            for i, ass in enumerate(assignments):
+                step_count = 0
+                completed_count = 0
+                ass.nr = i + 1
+                for step in ass.steps.all():
+                    step_count += 1
+                    for com in completed:
+                        if step == com.step:
+                            completed_count += 1
+                            break
+                if step_count:
+                    percentage_completed = 100 * completed_count/step_count
+                else:
+                    percentage_completed = 0
+                student.progress.append(percentage_completed)
+
+    # Calculate answers, progress, and assignment lists
     answers = []
     percentages = []
     preliminary_assignments = []
     inclass_assignments = []
     for i, ass in enumerate(assignments):
-        activities_count = 0
+        step_count = 0
         completed_count = 0
         ass.nr = i + 1
         answers.append([])
@@ -60,41 +92,44 @@ def session(request, course, session_nr):
             preliminary_assignments.append(ass)
         elif ass.type == 2:
             inclass_assignments.append(ass)
-        for step in ass.activities.all():
-            activities_count += 1
+        for step in ass.steps.all():
+            step_count += 1
             answers[i].append('')
             for com in completed:
-                if step == com.activity:
+                if step == com.step:
                     completed_count += 1
                     if step.answer_required and not com.answer:
                         answers[i][-1] = "mispoes"
                     else:
                         answers[i][-1] = com.answer
                     break
-        if activities_count:
-            percentage_completed = 100 * completed_count/activities_count
+        if step_count:
+            percentage_completed = 100 * completed_count/step_count
         else:
             percentage_completed = 0
         percentages.append(percentage_completed)
 
-    # Users are present if their groups intersect the session's groups
-    present = bool(request.user.attends.all() & session.groups.all())
+    # Users are present if their classes intersect the session's classes
+    present = bool(request.user.attends.all() & session.classes.all())
 
     return render(request, 'session.html', {
         'course': course,
         'session': session,
+        'assignments': assignments,
         'preliminary_assignments': preliminary_assignments,
         'inclass_assignments': inclass_assignments,
         'answers': answers,
         'percentages': percentages,
         'present': present,
+        'current_class': current_class,
+        'students': students,
     })
 
 @login_required
 def assignment(request, course, session_nr, assignment_nr):
     session_nr = int(session_nr)
     assignment_nr = int(assignment_nr)
-    activity_nr = int(request.GET.get('step', 1))
+    step_nr = int(request.GET.get('step', 1))
     save_only = request.GET.get('save_only', 'false')
     course = get_object_or_404(Course, slug=course)
 
@@ -107,28 +142,28 @@ def assignment(request, course, session_nr, assignment_nr):
     except IndexError:
         raise Http404()
 
-    # Locked assignments can only be made by in-class users
-    if assignment.locked_until_class_starts:
-        present = bool(request.user.attends.all() & session.groups.all())
-        if not present:
+    # Locked assignments can only be made by in-class users (and staff)
+    if assignment.locked:
+        present = bool(request.user.attends.all() & session.classes.all())
+        if not present and not request.user.is_staff:
             return HttpResponseForbidden()
 
-    # Retrieve current activity and whether it's completed
-    if activity_nr < 1:
+    # Retrieve current step and whether it's completed
+    if step_nr < 1:
         return redirect(assignment)
     try:
-        activity = assignment.activities.all()[activity_nr-1]
-        completed = CompletedActivity.objects.get(
+        step = assignment.steps.all()[step_nr-1]
+        completed = CompletedStep.objects.get(
             whom=request.user,
-            activity=activity,
+            step=step,
         )
     except IndexError:
-        activity = False
+        step = False
         completed = False
-    except CompletedActivity.DoesNotExist:
+    except CompletedStep.DoesNotExist:
         completed = False
 
-    if request.method == 'POST' and activity:
+    if request.method == 'POST' and step:
         direction = request.POST.get('direction', '')
         answer = request.POST.get('answer', '')
 
@@ -138,8 +173,8 @@ def assignment(request, course, session_nr, assignment_nr):
                 completed.answer = answer
                 completed.save()
             else:
-                CompletedActivity(
-                    activity=activity,
+                CompletedStep(
+                    step=step,
                     whom=request.user,
                     answer=answer,
                 ).save()
@@ -148,13 +183,13 @@ def assignment(request, course, session_nr, assignment_nr):
         if direction in ['Save', 'Finish!']:
             return redirect(session)
         elif direction == 'Previous':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(activity_nr - 1))
+            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr - 1))
         elif direction == 'Next':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(activity_nr + 1))
+            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr + 1))
 
-    first = activity == assignment.activities.first()
-    last = activity == assignment.activities.last()
-    count = assignment.activities.count()
+    first = step == assignment.steps.first()
+    last = step == assignment.steps.last()
+    count = assignment.steps.count()
 
     return render(request, 'assignment.html', {
         'course': course,
@@ -163,10 +198,58 @@ def assignment(request, course, session_nr, assignment_nr):
         'assignment': assignment,
         'assignment_nr': assignment_nr,
         'save_only': save_only == "true",
-        'activity': activity,
-        'activity_nr': activity_nr,
+        'step': step,
+        'step_nr': step_nr,
         'count': count,
         'completed': completed,
         'first': first,
         'last': last,
     })
+
+@staff_member_required
+@require_http_methods(['POST'])
+def startclass(request):
+    session_pk = request.POST.get('session')
+    class_nr = request.POST.get('class_nr')
+    session = get_object_or_404(Session, pk=session_pk)
+    unique = False
+
+    # Generate unique registration code
+    while not unique:
+        ticket = random_string(TICKET_LENGTH)
+        if not Class.objects.filter(ticket=ticket).exists():
+            unique = True
+
+    # Create a class and store it in the user's session
+    newclass = Class(session=session, number=class_nr, ticket=ticket)
+    newclass.save()
+    request.session['current_class'] = newclass.ticket
+
+    return redirect(session)
+
+@staff_member_required
+@require_http_methods(['POST'])
+def endclass(request):
+    session_pk = request.POST.get('session')
+    session = get_object_or_404(Session, pk=session_pk)
+    try:
+        del request.session['current_class']
+    except KeyError:
+        pass
+    return redirect(session)
+
+@staff_member_required
+@require_http_methods(['POST'])
+def joinclass(request):
+    session_pk = request.POST.get('session')
+    session = get_object_or_404(Session, pk=session_pk)
+    ticket = request.POST.get('ticket')
+
+    # Retrieve the class and store it in the user's session
+    try:
+        newclass = Class.objects.get(ticket=ticket)
+        request.session['current_class'] = newclass.ticket
+    except Class.DoesNotExist:
+        pass
+
+    return redirect(session)

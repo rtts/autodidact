@@ -31,6 +31,7 @@ h2 {
 #login {
   padding-top: 33px;
   float: right;
+  text-align: right;
 }
 
 #banner {
@@ -191,7 +192,6 @@ nav {
   position: absolute;
   top: -23px;
   right: 0;
-  font-size: 12px;
 }
 
 article {
@@ -201,6 +201,7 @@ article {
   padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px;
+  overflow: auto;
 
   h1:first-child {
     margin-top: 0;
@@ -226,7 +227,8 @@ footer {
   }
 }
 
-a.editlink {
+a.editlink, .staff {
+  font-size: 12px;
   font-weight: bold;
   color: #f45b3d !important;
 }
@@ -234,20 +236,69 @@ a.editlink {
 section.attendance {
   float: right;
   z-index: 1000;
-  width: 200px;
+  width: 180px;
   background: #e9e7e4;
   padding: 10px;
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.5;
   margin-left: 20px;
 
-  input[type=text] {
-	width: 100px;
+  form {
+	text-align: right;
+	margin-top: 15px;
+
+	input {
+	  margin: 2px;
+	  box-sizing: border-box;
+	}
+	input[type=text] {
+	  width: 60px;
+	}
+	input[type=submit] {
+	  min-width: 60px;
+	}
+  }
+
+  div.ticket {
+	font-size: 2em;
+	font-weight: bold;
+	text-align: center;
   }
 }
 
 section.session {
   margin-bottom: 50px;
+}
+
+section.students {
+  clear: right;
+
+  table {
+	border: 1px solid #DFDFDF;
+	background-color: #F9F9F9;
+	width: 100%;
+	border-radius: 3px;
+	color: #333;
+	margin-bottom: 40px;
+
+	td, th {
+	  border-top-color: white;
+	  border-bottom: 1px solid #DFDFDF;
+	  color: #555;
+	}
+	th {
+	  text-shadow: rgba(255, 255, 255, 0.8) 0px 1px 0px;
+	  font-weight: normal;
+	  padding: 7px 7px 8px;
+	  text-align: left;
+	  line-height: 1.3em;
+	  font-size: 12px;
+	}
+	td {
+	  padding: 4px 7px 2px;
+	  vertical-align: top;
+	}
+  }
 }
 
 section.progress {
@@ -279,16 +330,16 @@ section.progress {
 	.origin {
 	  background: white;
 	}
-
-	.bar {
-	  height: 20px;
-	  background-color: #6c3;
-	  text-align: right;
-      box-sizing: border-box;
-	  padding-left: 10px;
-	  font-size: 12px;
-	}
   }
+}
+
+.bar {
+  height: 20px;
+  background-color: #6c3;
+  text-align: right;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: 12px;
 }
 
 section.answers {

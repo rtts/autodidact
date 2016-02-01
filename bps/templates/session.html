@@ -9,7 +9,11 @@
 {% if preliminary_assignments %}
 <li class="heading">Preliminary assignments:</li>
 {% for assignment in preliminary_assignments %}
+{% if assignment.locked and not present and not current_class %}
+<li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
+{% else %}
 <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
+{% endif %}
 {% endfor %}
 <li class="spacer"/>
 {% endif %}
@@ -17,8 +21,8 @@
 {% if inclass_assignments %}
 <li class="heading">In-class assignments:</li>
 {% for assignment in inclass_assignments %}
-{% if assignment.locked_until_class_starts and not present %}
-<li class="locked">Assignment {{assignment.nr}}: Locked until class starts</li>
+{% if assignment.locked and not present and not current_class%}
+<li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 {% else %}
 <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
 {% endif %}
@@ -35,21 +39,57 @@
 {% endblock %}
 
 {% block editor %}
-{% if request.user.is_staff %}
+{% if perms.autodidact.change_session %}
 <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
 {% endif %}
 {% endblock %}
 
 {% block content %}
 
-{% if session.attendance_required %}
+{% if session.registration_enabled %}
 <section class="attendance">
-  {% if present %}
+
+  {% if request.user.is_staff %}
+  {% if current_class %}
+  You are currently teaching group <b>{{current_class.number}}</b>.
+  The registration code for this class is:
+  <div class="ticket">
+	{{current_class.ticket}}
+  </div>
+  Please distribute this code to everyone in class. It will register their attendance and unlock the in-class assignments.
+  <form method="POST" action="{% url 'endclass' %}">
+	{% csrf_token %}
+	<input type="hidden" name="session" value="{{session.pk}}">
+	<input type="submit" value="End this class" />
+  </form>
+
+  {% else %}
+  You are currently not teaching any classes. Please enter the registration code of a class:
+  <form method="POST" action="{% url 'joinclass' %}">
+	{% csrf_token %}
+	Registration code:
+	<input type="text" name="ticket" />
+	<input type="hidden" name="session" value="{{session.pk}}">
+	<input type="submit" value="Submit" />
+  </form>
+  {% endif %}
+
+  <br>Or start a new class by entering a class number (e.g., PSY-01).
+  <form method="POST" action="{% url 'startclass' %}">
+	{% csrf_token %}
+	<input type="hidden" name="session" value="{{session.pk}}" />
+	Class number:
+	<input type="text" name="class_nr" />
+	<input type="submit" value="Start a new class" />
+  </form>
+
+  {% elif present %}
   <b>Your attendance to this session has been registered.</b>
   {% else %}
+  Please enter a valid registration code to register your attendance. You will receive this code in class.
   <form method="POST" action="">
 	{% csrf_token %}
-	Please enter a valid registration code to register your attendance to this session (you will receive this code in class):<br>
+	Registration Code:
 	<input type="text" name="ticket" />
 	<input type="submit" value="Submit" />
   {% endif %}
@@ -60,6 +100,35 @@
   <h1>Session {{session.nr}}: {{session.name}}</h1>
   {{session.description|markdown}}
 </section>
+
+{% if request.user.is_staff and current_class %}
+<section class="students">
+  <h1>Students in this class (<a href="">refresh</a>)</h1>
+
+  <table>
+	<tr>
+	  <th>Student</th>
+	  {% for assignment in assignments %}
+	  <th>Assignment {{assignment.nr}}</th>
+	  {% endfor %}
+	</tr>
+	{% for student in students %}
+	<tr>
+	  <td>{{student}}</td>
+	  {% for percentage in student.progress %}
+	  <td>
+				<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+	  </td>
+	  {% endfor %}
+	</tr>
+	{% empty %}
+	<tr>
+	  <td colspan="2">No students have registered yet</td>
+	</tr>
+	{% endfor %}
+  </table>
+</section>
+{% endif %}
 
 <section class="session progress">
   <h1>Your progress in session {{session.nr}}:</h1>

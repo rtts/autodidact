@@ -10,33 +10,33 @@
 {% endblock %}
 
 {% block editor %}
-{% if request.user.is_staff %}
+{% if perms.autodidact.change_assignment %}
 <a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">Edit this assignment</a>
-{% if activity %}
-- <a class="editlink" href="{% url 'admin:autodidact_activity_change' activity.pk %}">Edit this step</a>
+{% if step and perms.autodidact.change_step %}
+- <a class="editlink" href="{% url 'admin:autodidact_step_change' step.pk %}">Edit this step</a>
 {% endif %}
 {% endif %}
 {% endblock %}
 
 {% block content %}
-{% if activity %}
+{% if step %}
 
 <section class="step">
-  <form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{activity_nr}}">
+  <form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{step_nr}}">
 	{% csrf_token %}
 	<table>
 	  <tr>
 		<td class="header">
 		  <img id="checkbox" src="{% if completed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
-		  <h1>Step {{activity_nr}} of {{count}}: {{activity.name}}</h1>
+		  <h1>Step {{step_nr}} of {{count}}: {{step.name}}</h1>
 		</td>
 	  </tr>
 	  <tr>
 		<td class="content">
-		  {{activity.description|markdown}}
+		  {{step.description|markdown}}
 		</td>
 	  </tr>
-	  {% if activity.answer_required %}
+	  {% if step.answer_required %}
 	  <tr>
 		<td class="answer">
 		  Your answer:

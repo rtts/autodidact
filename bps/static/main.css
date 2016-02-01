@@ -24,7 +24,8 @@ h2 {
 
 #login {
   padding-top: 33px;
-  float: right; }
+  float: right;
+  text-align: right; }
 
 #banner {
   width: 100%;
@@ -139,8 +140,7 @@ nav {
 #editor {
   position: absolute;
   top: -23px;
-  right: 0;
-  font-size: 12px; }
+  right: 0; }
 
 article {
   margin-left: 260px;
@@ -148,7 +148,8 @@ article {
   padding-bottom: 1px;
   padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
-  line-height: 24px; }
+  line-height: 24px;
+  overflow: auto; }
   article h1:first-child {
     margin-top: 0; }
 
@@ -167,24 +168,61 @@ footer {
   footer a {
     color: #A8D7E1; }
 
-a.editlink {
+a.editlink, .staff {
+  font-size: 12px;
   font-weight: bold;
   color: #f45b3d !important; }
 
 section.attendance {
   float: right;
   z-index: 1000;
-  width: 200px;
+  width: 180px;
   background: #e9e7e4;
   padding: 10px;
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.5;
   margin-left: 20px; }
-  section.attendance input[type=text] {
-    width: 100px; }
+  section.attendance form {
+    text-align: right;
+    margin-top: 15px; }
+    section.attendance form input {
+      margin: 2px;
+      box-sizing: border-box; }
+    section.attendance form input[type=text] {
+      width: 60px; }
+    section.attendance form input[type=submit] {
+      min-width: 60px; }
+  section.attendance div.ticket {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center; }
 
 section.session {
   margin-bottom: 50px; }
+
+section.students {
+  clear: right; }
+  section.students table {
+    border: 1px solid #DFDFDF;
+    background-color: #F9F9F9;
+    width: 100%;
+    border-radius: 3px;
+    color: #333;
+    margin-bottom: 40px; }
+    section.students table td, section.students table th {
+      border-top-color: white;
+      border-bottom: 1px solid #DFDFDF;
+      color: #555; }
+    section.students table th {
+      text-shadow: rgba(255, 255, 255, 0.8) 0px 1px 0px;
+      font-weight: normal;
+      padding: 7px 7px 8px;
+      text-align: left;
+      line-height: 1.3em;
+      font-size: 12px; }
+    section.students table td {
+      padding: 4px 7px 2px;
+      vertical-align: top; }
 
 section.progress table {
   width: 100%;
@@ -205,13 +243,14 @@ section.progress table {
       float: left; }
   section.progress table .origin {
     background: white; }
-  section.progress table .bar {
-    height: 20px;
-    background-color: #6c3;
-    text-align: right;
-    box-sizing: border-box;
-    padding-left: 10px;
-    font-size: 12px; }
+
+.bar {
+  height: 20px;
+  background-color: #6c3;
+  text-align: right;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: 12px; }
 
 section.answers table {
   border-collapse: collapse;
