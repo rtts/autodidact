@@ -48,7 +48,7 @@ def session(request, course, session_nr):
         return redirect(session)
 
     try:
-        current_class = Class.objects.get(ticket=request.session['current_class'])
+        current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
     except (Class.DoesNotExist, KeyError):
         current_class = False
 
