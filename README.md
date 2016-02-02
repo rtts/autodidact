@@ -18,16 +18,16 @@ Tilburg University maintains a Debian repository at
 https://non-gnu.uvt.nl/ from which both Autodidact and BPS can be
 installed.
 
-1. First, add the following lines to `/etc/apt/sources.list`:
+First, add the following lines to `/etc/apt/sources.list`:
 
     deb http://non-gnu.uvt.nl/debian jessie uvt
     deb-src http://non-gnu.uvt.nl/debian jessie uvt
 
-2. Second, add the Tilburg University signing key to your apt key store:
+Second, add the Tilburg University signing key to your apt key store:
 
     curl http://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
 
-3. Now you can install the `autodidact` package with `apt-get`:
+Now you can install the `autodidact` package with `apt-get`:
 
     apt-get install autodidact
 
