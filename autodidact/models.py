@@ -30,6 +30,10 @@ class Course(SortableMixin):
     def get_absolute_url(self):
         return reverse('course', args=[self.slug])
 
+    def url(self):
+        return '<a href="%(url)s">%(url)s</a>' % {'url': self.get_absolute_url()}
+    url.allow_tags = True
+
     class Meta:
         ordering = ['order']
 
@@ -38,7 +42,7 @@ class Session(SortableMixin):
     description = models.TextField(help_text=MDHELP)
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    registration_enabled = models.BooleanField(default=True)
+    registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered and the teacher will be able to track the progress of individual students')
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -63,13 +67,16 @@ class Assignment(SortableMixin):
     locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class. If registration is disabled, it can only be unlocked by a staff member')
 
     def __str__(self):
-        return '%s: %s' % (self.session.name, self.name)
+        return 'Assignment %i' % self.get_number()
 
     def get_number(self):
         return self.session.assignments.filter(order__lt=self.order).count() + 1
 
     def get_absolute_url(self):
         return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
+
+    def nr_of_steps(self):
+        return self.steps.count()
 
     class Meta:
         ordering = ['order']
@@ -79,10 +86,10 @@ class Step(SortableMixin):
     assignment = SortableForeignKey(Assignment, related_name='steps')
     description = models.TextField(help_text=MDHELP)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    answer_required = models.BooleanField(default=False)
+    answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
     def __str__(self):
-        return self.name
+        return 'Step %i' % self.get_number()
 
     def get_number(self):
         return self.assignment.steps.filter(order__lt=self.order).count() + 1
@@ -118,15 +125,46 @@ class Class(models.Model):
     def __str__(self):
         return 'Class %s of %s' % (self.number, str(self.session))
 
+    def nr_of_students(self):
+        return self.users.count()
+
     class Meta:
         verbose_name_plural = 'classes'
 
+def session_path(obj, filename):
+    return os.path.join(obj.session.get_absolute_url()[1:], filename)
+
 class Download(models.Model):
-    file = models.FileField()
-    session = models.ManyToManyField(Session, related_name='downloads', blank=True)
+    file = models.FileField(upload_to=session_path)
+    session = models.ForeignKey(Session, related_name='downloads')
 
     def __str__(self):
         return os.path.basename(str(self.file))
 
     def url(self):
         return self.file.url
+
+    def filename(self):
+        return os.basename(self.file)
+
+    class Meta:
+        ordering = ['file']
+
+class Presentation(SortableMixin):
+    file = models.FileField(upload_to=session_path)
+    session = SortableForeignKey(Session, related_name='presentations')
+    visibility = models.IntegerField(choices=(
+        (1, 'Only visible to teacher'),
+        (2, 'Visible to students in class'),
+        (3, 'Visible to everyone'),
+    ))
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+
+    def __str__(self):
+        return os.path.basename(str(self.file))
+
+    def url(self):
+        return self.file.url
+
+    class Meta:
+        ordering = ['order']

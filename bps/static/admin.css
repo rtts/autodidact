@@ -1,47 +1,18 @@
-img.graph {
-  width: 100%;
-}
-
 .dashboard #content {
-  width: 800px;
+  //width: 800px;
 }
 
 #header {
-    background: #003366;
-    color: #fff;
+  background: #003366;
+  color: #fff;
 }
 
 #branding h1 {
-    color: white;
-}
-
-#branding h1 a {
-  color: white !important;
-}
-
-#branding h1 a:hover {
-  text-decoration: underline;
-}
-
-#content {
-    margin: 15px 15px;
-}
-
-#content h1 {
-    margin-bottom: 10px;
+  color: white;
 }
 
 .module h2, .module caption, .inline-group h2 {
-    background: #003366;
-}
-
-.module {
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
-
-input[type=text] {
-    width: 50%;
+  background: #003366;
 }
 
 select[multiple] {
