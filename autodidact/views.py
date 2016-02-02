@@ -53,7 +53,7 @@ def session(request, course, session_nr):
             return redirect(session)
 
         # Users are present if their classes intersect the session's classes
-        present = bool(request.user.attends.all() & session.classes.all())
+        present = request.user.attends.all() & session.classes.all()
 
         try:
             current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
@@ -143,7 +143,7 @@ def assignment(request, course, session_nr, assignment_nr):
 
     # Locked assignments can only be made by in-class users (and staff)
     if assignment.locked:
-        present = bool(request.user.attends.all() & session.classes.all())
+        present = request.user.attends.all() & session.classes.all()
         if not present and not request.user.is_staff:
             return HttpResponseForbidden()
 

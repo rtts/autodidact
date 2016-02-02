@@ -84,7 +84,7 @@
   </form>
 
   {% elif present %}
-  <b>Your attendance to this session has been registered.</b>
+  <b>Your attendance to the class “{% for class in present%}{{class.number}}{% if not forloop.last %}, {% endif %}{% endfor %}” has been registered.</b>
   {% else %}
   Please enter a valid registration code to register your attendance. You will receive this code in class.
   <form method="POST" action="">
