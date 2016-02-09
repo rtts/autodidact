@@ -1,3 +1,11 @@
+autodidact (0.5) stable; urgency=medium
+
+  * Implemented a number of security best-practices
+  * Courses, sessions, and assignments can be made inactive without
+    deleting them
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 09 Feb 2016 14:51:20 +0100
+
 autodidact (0.4) stable; urgency=medium
 
   * Added django_cleanup to remove unreferenced file uploads
