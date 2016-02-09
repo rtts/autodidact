@@ -1,4 +1,5 @@
 import os
+import string
 import unicodedata
 from django.db import models
 from django.conf import settings
