@@ -9,10 +9,14 @@
 {% if preliminary_assignments %}
 <li class="heading">Preliminary assignments:</li>
 {% for assignment in preliminary_assignments %}
+{% if assignment.active %}
 {% if assignment.locked and not present and not current_class %}
 <li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 {% else %}
 <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
+{% endif %}
+{% elif request.user.is_staff %}
+<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
 {% endif %}
 {% endfor %}
 <li class="spacer"/>
@@ -21,10 +25,14 @@
 {% if inclass_assignments %}
 <li class="heading">In-class assignments:</li>
 {% for assignment in inclass_assignments %}
+{% if assignment.active %}
 {% if assignment.locked and not present and not current_class %}
 <li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 {% else %}
 <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
+{% endif %}
+{% elif request.user.is_staff %}
+<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
 {% endif %}
 {% endfor %}
 <li class="spacer"/>

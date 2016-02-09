@@ -4,6 +4,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.middleware.csrf import rotate_token
 
 from .utils import random_string
 from .models import *
@@ -17,7 +18,10 @@ def homepage(request):
 
 @login_required
 def course(request, course):
-    course = get_object_or_404(Course, slug=course)
+    if request.user.is_staff:
+        course = get_object_or_404(Course, slug=course)
+    else:
+        course = get_object_or_404(Course, slug=course, active=True)
     return render(request, 'course.html', {
         'course': course,
     })
@@ -25,7 +29,10 @@ def course(request, course):
 @login_required
 def session(request, course, session_nr):
     session_nr = int(session_nr)
-    course = get_object_or_404(Course, slug=course)
+    if request.user.is_staff:
+        course = get_object_or_404(Course, slug=course)
+    else:
+        course = get_object_or_404(Course, slug=course, active=True)
     students = None
     present = False
     current_class = None
@@ -37,12 +44,15 @@ def session(request, course, session_nr):
         session.nr = session_nr
     except IndexError:
         raise Http404()
+    if not session.active and not request.user.is_staff:
+        raise Http404()
 
     assignments = session.assignments.select_related('steps')
     completed = request.user.completed.select_related('step').order_by('step')
 
     if session.registration_enabled:
         if request.method == 'POST':
+            rotate_token(request)
             ticket = request.POST.get('ticket')
             try:
                 newclass = Class.objects.get(ticket=ticket)
@@ -130,7 +140,10 @@ def assignment(request, course, session_nr, assignment_nr):
     assignment_nr = int(assignment_nr)
     step_nr = int(request.GET.get('step', 1))
     save_only = request.GET.get('save_only', 'false')
-    course = get_object_or_404(Course, slug=course)
+    if request.user.is_staff:
+        course = get_object_or_404(Course, slug=course)
+    else:
+        course = get_object_or_404(Course, slug=course, active=True)
 
     # Retrieve session and assignment objects
     if session_nr < 1 or assignment_nr < 1:
@@ -139,6 +152,10 @@ def assignment(request, course, session_nr, assignment_nr):
         session = course.sessions.all()[session_nr-1]
         assignment = session.assignments.all()[assignment_nr-1]
     except IndexError:
+        raise Http404()
+    if not session.active and not request.user.is_staff:
+        raise Http404()
+    if not assignment.active and not request.user.is_staff:
         raise Http404()
 
     # Locked assignments can only be made by in-class users (and staff)
@@ -163,6 +180,7 @@ def assignment(request, course, session_nr, assignment_nr):
         completed = False
 
     if request.method == 'POST' and step:
+        rotate_token(request)
         direction = request.POST.get('direction', '')
         answer = request.POST.get('answer', '')
 
@@ -208,8 +226,11 @@ def assignment(request, course, session_nr, assignment_nr):
 @staff_member_required
 @require_http_methods(['POST'])
 def startclass(request):
+    rotate_token(request)
     session_pk = request.POST.get('session')
     class_nr = request.POST.get('class_nr')
+    if len(class_nr) > 16:
+        return HttpResponseBadRequest()
     session = get_object_or_404(Session, pk=session_pk)
     unique = False
 
@@ -229,6 +250,7 @@ def startclass(request):
 @staff_member_required
 @require_http_methods(['POST'])
 def endclass(request):
+    rotate_token(request)
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     try:
@@ -240,6 +262,7 @@ def endclass(request):
 @staff_member_required
 @require_http_methods(['POST'])
 def joinclass(request):
+    rotate_token(request)
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     ticket = request.POST.get('ticket')

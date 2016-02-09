@@ -127,6 +127,16 @@ nav {
 	  color: #CD9999;
 	}
 
+	li.inactive {
+	  a {
+		color: #B5B5B5 !important;
+	  }
+	  a:after {
+		content: " - not visible to students";
+		font-style: italic;
+	  }
+	}
+
     li.visitedPage {
       a {
         background: #e9e7e4 url("/static/nav_arrow_visited.png") 15px 15px no-repeat;

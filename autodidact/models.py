@@ -1,4 +1,5 @@
 import os
+import unicodedata
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -20,6 +21,7 @@ class Course(SortableMixin):
     description = models.TextField(help_text=MDHELP)
     programmes = models.ManyToManyField(Programme, related_name='courses')
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+    active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
 
     def colloquial_name(self):
         return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
@@ -43,6 +45,7 @@ class Session(SortableMixin):
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered and the teacher will be able to track the progress of individual students')
+    active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -65,6 +68,7 @@ class Assignment(SortableMixin):
         (2, 'In-class assignment'),
     ))
     locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class. If registration is disabled, it can only be unlocked by a staff member')
+    active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
 
     def __str__(self):
         return 'Assignment %i' % self.get_number()
@@ -131,11 +135,19 @@ class Class(models.Model):
     class Meta:
         verbose_name_plural = 'classes'
 
-def session_path(obj, filename):
-    return os.path.join(obj.session.get_absolute_url()[1:], filename)
+def upload_path(obj, filename):
+    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+
+    # Replace accented characters with unaccented ones
+    normalized_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore')
+
+    # Strip out all characters that are not in @valid_chars
+    cleaned_filename = ''.join([c for c in normalized_filename if c in valid_chars])
+
+    return os.path.join(obj.session.get_absolute_url()[1:], cleaned_filename)
 
 class Download(models.Model):
-    file = models.FileField(upload_to=session_path)
+    file = models.FileField(upload_to=upload_path)
     session = models.ForeignKey(Session, related_name='downloads')
 
     def __str__(self):
@@ -151,7 +163,7 @@ class Download(models.Model):
         ordering = ['file']
 
 class Presentation(SortableMixin):
-    file = models.FileField(upload_to=session_path)
+    file = models.FileField(upload_to=upload_path)
     session = SortableForeignKey(Session, related_name='presentations')
     visibility = models.IntegerField(choices=(
         (1, 'Only visible to teacher'),

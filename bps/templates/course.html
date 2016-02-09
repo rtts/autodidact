@@ -5,7 +5,11 @@
 <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
 <li class="currentPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
 {% for session in course.sessions.all %}
+{% if session.active %}
 <li class="futurePage"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+{% elif request.user.is_staff %}
+<li class="futurePage inactive"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+{% endif %}
 {% empty %}
 <li class="empty">No sessions available</li>
 {% endfor %}

@@ -98,6 +98,11 @@ nav {
       padding: 6px 0px 5px 35px;
       background-color: #F0EEEC;
       color: #CD9999; }
+    nav ul li.inactive a {
+      color: #B5B5B5 !important; }
+    nav ul li.inactive a:after {
+      content: " - not visible to students";
+      font-style: italic; }
     nav ul li.visitedPage a {
       background: #e9e7e4 url("/static/nav_arrow_visited.png") 15px 15px no-repeat;
       padding: 10px 5px 5px 35px;
