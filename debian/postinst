@@ -18,5 +18,6 @@ case $1 in configure)
 		sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
 		cd $project_dir
 		python manage.py collectstatic
+                python manage.py migrate
 	)
 esac
