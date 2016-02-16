@@ -1,3 +1,13 @@
+autodidact (0.6) stable; urgency=medium
+
+  * Included ViewerJS for inline viewing of presentations. This code will
+    remain in this repository until ViewerJS has been packaged for Debian.
+    RFP here: https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=814337
+  * Layout improvements of various pages
+  * Install README.md to /usr/share/doc/autodidact
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 16 Feb 2016 09:40:41 +0100
+
 autodidact (0.5) stable; urgency=medium
 
   * Implemented a number of security best-practices
