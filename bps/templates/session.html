@@ -142,7 +142,7 @@
 	</tr>
 	{% empty %}
 	<tr>
-	  <td colspan="2">No students have registered yet</td>
+	  <td colspan="{{assignments|length|add:1}}">No students have registered yet</td>
 	</tr>
 	{% endfor %}
   </table>

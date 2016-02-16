@@ -24,7 +24,7 @@
 <section class="step">
   <form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{step_nr}}">
 	{% csrf_token %}
-	<table>
+	<table class="wizard">
 	  <tr>
 		<td class="header">
 		  <img id="checkbox" src="{% if completed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />

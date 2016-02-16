@@ -20,4 +20,6 @@ select[multiple] {
     width: 51%;
 }
 
-
+textarea {
+  font-family: monospace;
+}

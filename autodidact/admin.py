@@ -53,7 +53,8 @@ class InlinePresentationAdmin(SortableStackedInline):
 class SessionAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineDownloadAdmin, InlinePresentationAdmin, InlineAssignmentAdmin]
     list_filter = ['course']
-    list_display = ['__str__', 'name', 'course', 'registration_enabled']
+    list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
+    list_editable = ['name', 'registration_enabled', 'active']
 
 class InlineStepAdmin(SortableTabularInline):
     model = Step
@@ -61,16 +62,16 @@ class InlineStepAdmin(SortableTabularInline):
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineStepAdmin]
-    list_display = ['__str__', 'session', 'name', 'nr_of_steps', 'locked']
+    list_display = ['__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
     list_filter = ['session__course', 'session']
-    list_editable = ['name', 'locked']
+    list_editable = ['name', 'locked', 'active']
     radio_fields = {'type': admin.HORIZONTAL}
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, SortableAdmin):
-    list_display = ['__str__', 'name', 'description', 'answer_required', 'assignment']
+    list_display = ['__str__', 'description', 'answer_required', 'assignment']
     list_editable = ['answer_required']
-    list_filter = ['assignment__session']
+    list_filter = ['assignment__session', 'assignment']
 
 @admin.register(CompletedStep)
 class CompletedStepAdmin(admin.ModelAdmin):

@@ -13,4 +13,4 @@ register = template.Library()
 
 @register.filter(name='markdown', is_safe=True)
 def convert_to_markdown(value):
-    return mark_safe(markdown.markdown(force_unicode(value), extensions=[EscapeHtml(), 'smarty']))
+    return mark_safe(markdown.markdown(force_unicode(value), extensions=[EscapeHtml(), 'smarty', 'tables']))

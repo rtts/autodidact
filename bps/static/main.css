@@ -1,6 +1,6 @@
 body, html {
   font-family: "Arial", sans-serif;
-  color: #003366;
+  color: #036;
   margin: 0;
   padding: 0;
   font-size: 14px; }
@@ -13,6 +13,36 @@ h1 {
 
 h2 {
   font-size: 1.25em; }
+
+blockquote {
+  margin: 0;
+  padding: 0 1em;
+  border: 1px solid #008ec6;
+  border-radius: 10px;
+  font-size: 1.15em;
+  width: 70%; }
+
+code {
+  font-size: 1em;
+  background: #f9f9f9;
+  padding: 2px 4px 1px 4px;
+  border-radius: 5px;
+  border: 1px solid #ccc; }
+
+pre {
+  display: block;
+  border: 1px solid red;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  width: 80%;
+  white-space: pre-wrap;
+  overflow-x: hidden; }
+  pre code {
+    border: none;
+    background: none;
+    padding: 0; }
 
 #logo {
   width: 960px;
@@ -76,7 +106,10 @@ nav {
   margin-right: 10px;
   float: left; }
   nav code {
-    font-size: 0.8em; }
+    font-size: 0.8em;
+    background: none;
+    padding: 0;
+    border: none; }
   nav ul {
     font-size: 13px;
     padding-bottom: 20px;
@@ -88,15 +121,15 @@ nav {
       nav ul li a {
         transition: all 0.1s ease-out;
         text-decoration: none;
-        color: #003366;
+        color: #036;
         background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
         padding: 6px 0px 5px 35px;
-        background-color: #F0EEEC;
+        background-color: #e9e7e4;
         display: block; }
     nav ul li.locked {
       background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
       padding: 6px 0px 5px 35px;
-      background-color: #F0EEEC;
+      background-color: #e9e7e4;
       color: #CD9999; }
     nav ul li.inactive a {
       color: #B5B5B5 !important; }
@@ -111,9 +144,9 @@ nav {
     nav ul li.visitedPage a:hover {
       background-color: #e1ddd8; }
     nav ul li.currentPage a {
-      background: #FFFFFF;
+      background: #fff;
       font-weight: bold !important;
-      color: #000000;
+      color: #000;
       padding: 10px 5px 5px 15px;
       margin-bottom: 1px;
       font-size: 14px;
@@ -125,16 +158,16 @@ nav {
     nav ul li.heading {
       color: #666;
       padding: 6px 0px 5px 16px;
-      background-color: #F0EEEC;
+      background-color: #e9e7e4;
       display: block;
       font-style: italic; }
     nav ul li.spacer {
       height: 15px;
-      background-color: white; }
+      background-color: #fff; }
     nav ul li.empty {
       color: #666;
       padding: 6px 0px 5px 16px;
-      background-color: #F0EEEC;
+      background-color: #e9e7e4;
       display: block; }
 
 #content_wrapper {
@@ -182,7 +215,8 @@ section.attendance {
   float: right;
   z-index: 1000;
   width: 180px;
-  background: #e9e7e4;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
   padding: 10px;
   font-size: 11px;
   line-height: 1.5;
@@ -208,8 +242,8 @@ section.session {
 section.students {
   clear: right; }
   section.students table {
-    border: 1px solid #DFDFDF;
-    background-color: #F9F9F9;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
     width: 100%;
     border-radius: 3px;
     color: #333;
@@ -265,10 +299,12 @@ section.answers table {
   margin-top: -20px; }
   section.answers table h2 {
     margin: 0;
-    margin-top: 20px; }
+    margin-top: 20px;
+    margin-bottom: 10px; }
   section.answers table pre {
     font-size: 12px;
     margin: 0;
+    margin-bottom: 10px;
     white-space: pre-wrap; }
   section.answers table pre.missing {
     color: red; }
@@ -277,48 +313,55 @@ section.answers table {
   section.answers table td.step {
     width: 77px;
     text-align: right;
-    padding-right: 10px; }
+    padding-right: 10px;
+    padding-top: 5px; }
 
-section.step table {
+section.step .content table {
+  border-collapse: collapse; }
+  section.step .content table td, section.step .content table th {
+    padding: 0 5px; }
+  section.step .content table th {
+    border-bottom: 1px solid black; }
+section.step table.wizard {
   width: 100%;
   height: 400px;
   margin-top: -15px; }
-  section.step table td {
+  section.step table.wizard td {
     vertical-align: top; }
-  section.step table td.header {
+  section.step table.wizard td.header {
     border-bottom: 2px solid #036;
     margin-top: -15px;
     padding: 10px;
     height: 10px; }
-    section.step table td.header img {
+    section.step table.wizard td.header img {
       margin-left: -12px;
       vertical-align: top; }
-    section.step table td.header h1, section.step table td.header h2 {
+    section.step table.wizard td.header h1, section.step table.wizard td.header h2 {
       display: inline-block;
       font-size: 18px;
       font-weight: normal;
       margin: 3px 0 0 4px; }
-    section.step table td.header h2 {
+    section.step table.wizard td.header h2 {
       float: right; }
-  section.step table td.answer {
+  section.step table.wizard td.answer {
     padding-bottom: 15px;
     text-align: right;
     font-weight: bold;
     height: 70px; }
-    section.step table td.answer textarea {
+    section.step table.wizard td.answer textarea {
       vertical-align: top;
       width: 400px;
       height: 70px; }
-  section.step table td.footer {
+  section.step table.wizard td.footer {
     border-top: 2px solid #036;
     padding-top: 15px;
     height: 10px; }
-    section.step table td.footer input[type=submit] {
+    section.step table.wizard td.footer input[type=submit] {
       width: 100px;
       padding: 5px; }
-    section.step table td.footer input.left {
+    section.step table.wizard td.footer input.left {
       float: left; }
-    section.step table td.footer input.right {
+    section.step table.wizard td.footer input.right {
       float: right; }
 
 /*# sourceMappingURL=main.css.map */

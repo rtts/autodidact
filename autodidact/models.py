@@ -72,7 +72,7 @@ class Assignment(SortableMixin):
     active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
 
     def __str__(self):
-        return 'Assignment %i' % self.get_number()
+        return 'Assignment %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
         return self.session.assignments.filter(order__lt=self.order).count() + 1
@@ -94,7 +94,7 @@ class Step(SortableMixin):
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
     def __str__(self):
-        return 'Step %i' % self.get_number()
+        return 'Step %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
         return self.assignment.steps.filter(order__lt=self.order).count() + 1
