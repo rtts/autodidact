@@ -13,7 +13,7 @@ TICKET_LENGTH = 4
 class Programme(models.Model):
     name = models.CharField(max_length=255)
 
-    def __str__(self):
+    def __unicode__(self):
         return self.name
 
 class Course(SortableMixin):
@@ -27,7 +27,7 @@ class Course(SortableMixin):
     def colloquial_name(self):
         return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
 
     def get_absolute_url(self):
@@ -48,7 +48,7 @@ class Session(SortableMixin):
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered and the teacher will be able to track the progress of individual students')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
 
     def get_number(self):
@@ -71,7 +71,7 @@ class Assignment(SortableMixin):
     locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class. If registration is disabled, it can only be unlocked by a staff member')
     active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Assignment %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
@@ -93,7 +93,7 @@ class Step(SortableMixin):
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Step %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
@@ -115,7 +115,7 @@ class CompletedStep(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return '%s has completed %s' % (self.whom.username, self.step.name)
 
     class Meta:
@@ -127,7 +127,7 @@ class Class(models.Model):
     ticket = models.CharField(unique=True, max_length=16)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return 'Class %s of %s' % (self.number, str(self.session))
 
     def nr_of_students(self):
@@ -151,7 +151,7 @@ class Download(models.Model):
     file = models.FileField(upload_to=upload_path)
     session = models.ForeignKey(Session, related_name='downloads')
 
-    def __str__(self):
+    def __unicode__(self):
         return os.path.basename(str(self.file))
 
     def url(self):
@@ -173,7 +173,7 @@ class Presentation(SortableMixin):
     ))
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
-    def __str__(self):
+    def __unicode__(self):
         return os.path.basename(str(self.file))
 
     def url(self):

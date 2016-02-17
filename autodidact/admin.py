@@ -33,7 +33,7 @@ class InlineSessionAdmin(admin.StackedInline):
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineSessionAdmin]
-    list_display = ['__str__', 'name', 'slug', 'url']
+    list_display = ['__unicode__', 'name', 'slug', 'url']
     list_filter = ['programmes']
     list_editable = ['name', 'slug']
 
@@ -53,7 +53,7 @@ class InlinePresentationAdmin(SortableStackedInline):
 class SessionAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineDownloadAdmin, InlinePresentationAdmin, InlineAssignmentAdmin]
     list_filter = ['course']
-    list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
+    list_display = ['__unicode__', 'name', 'course', 'registration_enabled', 'active']
     list_editable = ['name', 'registration_enabled', 'active']
 
 class InlineStepAdmin(SortableTabularInline):
@@ -62,14 +62,14 @@ class InlineStepAdmin(SortableTabularInline):
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineStepAdmin]
-    list_display = ['__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
+    list_display = ['__unicode__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
     list_filter = ['session__course', 'session']
     list_editable = ['name', 'locked', 'active']
     radio_fields = {'type': admin.HORIZONTAL}
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, SortableAdmin):
-    list_display = ['__str__', 'description', 'answer_required', 'assignment']
+    list_display = ['__unicode__', 'description', 'answer_required', 'assignment']
     list_editable = ['answer_required']
     list_filter = ['assignment__session', 'assignment']
 
@@ -81,12 +81,12 @@ class CompletedStepAdmin(admin.ModelAdmin):
 @admin.register(Download)
 class DownloadAdmin(admin.ModelAdmin):
     list_filter = ['session']
-    list_display = ['__str__', 'session']
+    list_display = ['__unicode__', 'session']
 
 @admin.register(Presentation)
 class PresentationAdmin(admin.ModelAdmin):
     list_filter = ['session']
-    list_display = ['__str__', 'session', 'visibility']
+    list_display = ['__unicode__', 'session', 'visibility']
     radio_fields = {'visibility': admin.HORIZONTAL}
 
 @admin.register(Class)
