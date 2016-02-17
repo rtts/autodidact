@@ -4,7 +4,6 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from django.middleware.csrf import rotate_token
 
 from .utils import random_string
 from .models import *
@@ -52,7 +51,6 @@ def session(request, course, session_nr):
 
     if session.registration_enabled:
         if request.method == 'POST':
-            rotate_token(request)
             ticket = request.POST.get('ticket')
             try:
                 newclass = Class.objects.get(ticket=ticket)
@@ -180,7 +178,6 @@ def assignment(request, course, session_nr, assignment_nr):
         completed = False
 
     if request.method == 'POST' and step:
-        rotate_token(request)
         direction = request.POST.get('direction', '')
         answer = request.POST.get('answer', '')
 
@@ -226,7 +223,6 @@ def assignment(request, course, session_nr, assignment_nr):
 @staff_member_required
 @require_http_methods(['POST'])
 def startclass(request):
-    rotate_token(request)
     session_pk = request.POST.get('session')
     class_nr = request.POST.get('class_nr')
     if len(class_nr) > 16:
@@ -250,7 +246,6 @@ def startclass(request):
 @staff_member_required
 @require_http_methods(['POST'])
 def endclass(request):
-    rotate_token(request)
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     try:
@@ -262,7 +257,6 @@ def endclass(request):
 @staff_member_required
 @require_http_methods(['POST'])
 def joinclass(request):
-    rotate_token(request)
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     ticket = request.POST.get('ticket')
