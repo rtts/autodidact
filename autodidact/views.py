@@ -181,17 +181,16 @@ def assignment(request, course, session_nr, assignment_nr):
         direction = request.POST.get('direction', '')
         answer = request.POST.get('answer', '')
 
-        # Save state when the user advances
-        if direction in ['Next', 'Save', 'Finish!']:
-            if completed:
-                completed.answer = answer
-                completed.save()
-            else:
-                CompletedStep(
-                    step=step,
-                    whom=request.user,
-                    answer=answer,
-                ).save()
+        # Save state after each step
+        if completed:
+            completed.answer = answer
+            completed.save()
+        else:
+            CompletedStep(
+                step=step,
+                whom=request.user,
+                answer=answer,
+            ).save()
 
         # Redirect after POST request
         if direction in ['Save', 'Finish!']:
