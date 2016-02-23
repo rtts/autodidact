@@ -17,7 +17,7 @@ class Migration(migrations.Migration):
             name='Presentation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('file', models.FileField(upload_to=autodidact.models.upload_path)),
+                ('file', models.FileField(upload_to=autodidact.models.session_path)),
                 ('order', models.PositiveIntegerField(default=0, editable=False, db_index=True)),
                 ('session', adminsortable.fields.SortableForeignKey(related_name='presentations', to='autodidact.Session')),
             ],
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='download',
             name='file',
-            field=models.FileField(upload_to=autodidact.models.upload_path),
+            field=models.FileField(upload_to=autodidact.models.session_path),
             preserve_default=True,
         ),
     ]

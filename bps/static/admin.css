@@ -23,3 +23,8 @@ select[multiple] {
 textarea {
   font-family: monospace;
 }
+
+td.original p {
+  margin-top: -10px;
+  padding-left: 15px !important;
+}

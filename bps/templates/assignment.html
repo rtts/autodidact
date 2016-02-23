@@ -23,45 +23,61 @@
 
 <section class="step">
   <form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{step_nr}}">
-	{% csrf_token %}
-	<table class="wizard">
-	  <tr>
-		<td class="header">
-		  <img id="checkbox" src="{% if completed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
-		  <h1>Step {{step_nr}} of {{count}}: {{step.name}}</h1>
-		</td>
-	  </tr>
-	  <tr>
-		<td class="content">
-		  {{step.description|markdown}}
-		</td>
-	  </tr>
-	  {% if step.answer_required %}
-	  <tr>
-		<td class="answer">
-		  Your answer:
-		  <textarea id="answerbox" name="answer">{{completed.answer}}</textarea>
-		</td>
-	  </tr>
+    {% csrf_token %}
+    <table class="wizard">
+      <tr>
+	<td class="header">
+	  <img id="checkbox" src="{% if completed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
+	  <h1>Step {{step_nr}} of {{count}}: {{step.name}}</h1>
+	</td>
+      </tr>
+      <tr>
+	<td class="content">
+	  {{step.description|markdown}}
+	</td>
+      </tr>
+      {% if step.answer_required %}
+      <tr>
+	<td class="answer">
+	  Your answer:
+	  <textarea id="answerbox" name="answer">{{completed.answer}}</textarea>
+	</td>
+      </tr>
+      {% endif %}
+      <tr>
+	<td class="footer">
+	  {% if save_only %}
+	  <input class="right button" type="submit" name="direction" value="Save" />
+	  {% else %}
+	  {% if not first %}
+	  <input class="left button" type="submit" name="direction" value="Previous" />
 	  {% endif %}
-	  <tr>
-		<td class="footer">
-		  {% if save_only %}
-		  <input class="right button" type="submit" name="direction" value="Save" />
-		  {% else %}
-		  {% if not first %}
-		  <input class="left button" type="submit" name="direction" value="Previous" />
-		  {% endif %}
-		  {% if not last %}
-		  <input class="right button" type="submit" name="direction" value="Next" />
-		  {% else %}
-		  <input class="right button finish" type="submit" name="direction" value="Finish!" />
-		  {% endif %}
-		  {% endif %}
-		</td>
-	  </tr>
-	</table>
+	  {% if not last %}
+	  <input class="right button" type="submit" name="direction" value="Next" />
+	  {% else %}
+	  <input class="right button finish" type="submit" name="direction" value="Finish!" />
+	  {% endif %}
+	  {% endif %}
+	</td>
+      </tr>
+    </table>
   </form>
+
+  <table class="progress">
+    <tr>
+      {% for step in step_overview %}
+      <td>
+        {% if forloop.counter == step_nr %}
+        <span class="current step">{{forloop.counter}}</span>
+        {% elif step %}
+        <a class="finished step" href="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+        {% else %}
+        <span class="unfinished step">{{forloop.counter}}</span>
+        {% endif %}
+        {% endfor %}
+      </td>
+    </tr>
+  </table>
 </section>
 
 {% else %}

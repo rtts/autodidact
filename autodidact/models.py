@@ -1,11 +1,10 @@
 import os
-import string
-import unicodedata
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey
+from .utils import clean
 
 MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
 TICKET_LENGTH = 4
@@ -45,7 +44,7 @@ class Session(SortableMixin):
     description = models.TextField(help_text=MDHELP)
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered and the teacher will be able to track the progress of individual students')
+    registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
 
     def __unicode__(self):
@@ -68,7 +67,7 @@ class Assignment(SortableMixin):
         (1, 'Preliminary assignment'),
         (2, 'In-class assignment'),
     ))
-    locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class. If registration is disabled, it can only be unlocked by a staff member')
+    locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class')
     active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
 
     def __unicode__(self):
@@ -126,6 +125,8 @@ class Class(models.Model):
     number = models.CharField(max_length=16)
     ticket = models.CharField(unique=True, max_length=16)
     users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
+    dismissed = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
         return 'Class %s of %s' % (self.number, str(self.session))
@@ -136,19 +137,11 @@ class Class(models.Model):
     class Meta:
         verbose_name_plural = 'classes'
 
-def upload_path(obj, filename):
-    valid_chars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-
-    # Replace accented characters with unaccented ones
-    normalized_filename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore')
-
-    # Strip out all characters that are not in @valid_chars
-    cleaned_filename = ''.join([c for c in normalized_filename if c in valid_chars])
-
-    return os.path.join(obj.session.get_absolute_url()[1:], cleaned_filename)
+def session_path(obj, filename):
+    return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))
 
 class Download(models.Model):
-    file = models.FileField(upload_to=upload_path)
+    file = models.FileField(upload_to=session_path)
     session = models.ForeignKey(Session, related_name='downloads')
 
     def __unicode__(self):
@@ -164,7 +157,7 @@ class Download(models.Model):
         ordering = ['file']
 
 class Presentation(SortableMixin):
-    file = models.FileField(upload_to=upload_path)
+    file = models.FileField(upload_to=session_path)
     session = SortableForeignKey(Session, related_name='presentations')
     visibility = models.IntegerField(choices=(
         (1, 'Only visible to teacher'),
@@ -181,3 +174,19 @@ class Presentation(SortableMixin):
 
     class Meta:
         ordering = ['order']
+
+def image_path(obj, filename):
+    return os.path.join(obj.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
+
+class Clarification(SortableMixin):
+    step = models.ForeignKey(Step, related_name='clarifications')
+    description = models.TextField(help_text=MDHELP)
+    image = models.ImageField(upload_to=image_path)
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+
+    def __unicode__(self):
+        return 'Clarification for %s' % unicode(self.step)
+
+    class Meta:
+        ordering = ['order']
+

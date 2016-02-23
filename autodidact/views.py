@@ -32,10 +32,6 @@ def session(request, course, session_nr):
         course = get_object_or_404(Course, slug=course)
     else:
         course = get_object_or_404(Course, slug=course, active=True)
-    students = None
-    present = False
-    current_class = None
-
     if session_nr < 1:
         raise Http404()
     try:
@@ -46,9 +42,14 @@ def session(request, course, session_nr):
     if not session.active and not request.user.is_staff:
         raise Http404()
 
-    assignments = session.assignments.select_related('steps')
+    # Retrieve all assignments, steps, and completed steps
+    assignments = session.assignments.prefetch_related('steps')
     completed = request.user.completed.select_related('step').order_by('step')
 
+    # Get the current class and see who's present
+    students = None
+    present = False
+    current_class = None
     if session.registration_enabled:
         if request.method == 'POST':
             ticket = request.POST.get('ticket')
@@ -156,35 +157,40 @@ def assignment(request, course, session_nr, assignment_nr):
     if not assignment.active and not request.user.is_staff:
         raise Http404()
 
+    # Force evaluation of steps
+    # (we'll need them all anyway)
+    steps = list(assignment.steps.all())
+
     # Locked assignments can only be made by in-class users (and staff)
     if assignment.locked:
         present = request.user.attends.all() & session.classes.all()
         if not present and not request.user.is_staff:
             return HttpResponseForbidden()
 
-    # Retrieve current step and whether it's completed
+    # Retrieve current step
     if step_nr < 1:
         return redirect(assignment)
     try:
-        step = assignment.steps.all()[step_nr-1]
-        completed = CompletedStep.objects.get(
-            whom=request.user,
-            step=step,
-        )
+        step = steps[step_nr-1]
     except IndexError:
-        step = False
-        completed = False
-    except CompletedStep.DoesNotExist:
-        completed = False
+        step = None
+
+    # Retrieve answer of current step
+    current_answer = None
+    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
+    for ans in all_answers:
+        if step == ans.step:
+            current_answer = ans
+            break
 
     if request.method == 'POST' and step:
         direction = request.POST.get('direction', '')
         answer = request.POST.get('answer', '')
 
         # Save state after each step
-        if completed:
-            completed.answer = answer
-            completed.save()
+        if current_answer:
+            current_answer.answer = answer
+            current_answer.save()
         else:
             CompletedStep(
                 step=step,
@@ -193,16 +199,25 @@ def assignment(request, course, session_nr, assignment_nr):
             ).save()
 
         # Redirect after POST request
-        if direction in ['Save', 'Finish!']:
-            return redirect(session)
-        elif direction == 'Previous':
+        if direction == 'Previous':
             return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr - 1))
         elif direction == 'Next':
             return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr + 1))
+        else:
+            return redirect(session)
 
-    first = step == assignment.steps.first()
-    last = step == assignment.steps.last()
-    count = assignment.steps.count()
+    # Calculate for all steps whether they have answers
+    step_overview = []
+    answered_steps = [ans.step for ans in all_answers]
+    for s in steps:
+        if s in answered_steps:
+            step_overview.append(True)
+        else:
+            step_overview.append(False)
+
+    first = step == steps[0]
+    last = step == steps[-1]
+    count = len(steps)
 
     return render(request, 'assignment.html', {
         'course': course,
@@ -214,7 +229,8 @@ def assignment(request, course, session_nr, assignment_nr):
         'step': step,
         'step_nr': step_nr,
         'count': count,
-        'completed': completed,
+        'completed': current_answer,
+        'step_overview': step_overview,
         'first': first,
         'last': last,
     })

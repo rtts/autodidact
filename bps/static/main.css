@@ -316,12 +316,6 @@ section.answers table {
     padding-right: 10px;
     padding-top: 5px; }
 
-section.step .content table {
-  border-collapse: collapse; }
-  section.step .content table td, section.step .content table th {
-    padding: 0 5px; }
-  section.step .content table th {
-    border-bottom: 1px solid black; }
 section.step table.wizard {
   width: 100%;
   height: 400px;
@@ -363,5 +357,44 @@ section.step table.wizard {
       float: left; }
     section.step table.wizard td.footer input.right {
       float: right; }
+section.step table.progress {
+  margin-top: 25px;
+  width: 96%;
+  border-collapse: collapse;
+  table-layout: fixed; }
+  section.step table.progress .step {
+    padding-left: 25px;
+    display: block;
+    color: #036;
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    position: relative;
+    overflow: hide;
+    height: 25px; }
+  section.step table.progress .step:after {
+    content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 12.5px solid transparent;
+    border-bottom: 12.5px solid transparent;
+    position: absolute;
+    top: 50%;
+    margin-top: -12.5px;
+    left: 100%;
+    z-index: 2; }
+  section.step table.progress .finished {
+    background: green; }
+  section.step table.progress .finished:after {
+    border-left: 30px solid #090; }
+  section.step table.progress .current {
+    background: yellow; }
+  section.step table.progress .current:after {
+    border-left: 30px solid #990; }
+  section.step table.progress .unfinished {
+    background: red; }
+  section.step table.progress .unfinished:after {
+    border-left: 30px solid #900; }
 
 /*# sourceMappingURL=main.css.map */

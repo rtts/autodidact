@@ -89,6 +89,7 @@ if auth_cas_server:
     MIDDLEWARE_CLASSES += ('cas.middleware.CASMiddleware',)
 
 if DEBUG:
+    INSTALLED_APPS += ('debug_toolbar',)
     try:
         import livereload.middleware
         MIDDLEWARE_CLASSES += ('livereload.middleware.LiveReloadScript',)
