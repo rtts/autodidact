@@ -7,37 +7,26 @@
 <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
 <li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
 
-{% if preliminary_assignments %}
-<li class="heading">Preliminary assignments:</li>
-{% for assignment in preliminary_assignments %}
-{% if assignment.active %}
-{% if assignment.locked and not present and not current_class %}
-<li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
+<li class="heading">Assignments:</li>
+{% for assignment in assignments %}
+
+{% if request.user.is_staff and not assignment.active %}
+<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+
+{% elif request.user.is_staff and assignment.locked and not current_class %}
+<li class="futurePage"><a class="locked" href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
+
+{% elif not assignment.active %}
+
+{% elif not present and assignment.locked and not current_class %}
+<li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
+
 {% else %}
-<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
-{% endif %}
-{% elif request.user.is_staff %}
-<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
-{% endif %}
-{% endfor %}
-<li class="spacer"/>
+<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
 {% endif %}
 
-{% if inclass_assignments %}
-<li class="heading">In-class assignments:</li>
-{% for assignment in inclass_assignments %}
-{% if assignment.active %}
-{% if assignment.locked and not present and not current_class %}
-<li class="locked">Assignment {{assignment.nr}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
-{% else %}
-<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
-{% endif %}
-{% elif request.user.is_staff %}
-<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}: {{assignment.name}}</a></li>
-{% endif %}
 {% endfor %}
 <li class="spacer"/>
-{% endif %}
 
 <li class="heading">Downloads:</li>
 {% for file in session.downloads.all %}
@@ -48,7 +37,7 @@
 {% endblock %}
 
 {% block editor %}
-{% if perms.autodidact.change_session %}
+{% if request.user.is_staff and perms.autodidact.change_session %}
 <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
 {% endif %}
 {% endblock %}
@@ -98,8 +87,16 @@
   Please enter a valid registration code to register your attendance. You will receive this code in class.
   <form method="POST" action="">
 	{% csrf_token %}
+	{% if ticket_error %}
+	<div class="ticket_error_text">
+	  Invalid code
+	</div>
 	Registration Code:
-	<input type="text" name="ticket" />
+	<input type="text" name="ticket" class="ticket_error" value="{{ticket_error}}">
+	{% else %}
+	Registration Code:
+	<input type="text" name="ticket">
+	{% endif %}
 	<input type="submit" value="Submit" />
   {% endif %}
 </section>
@@ -122,13 +119,14 @@
 
 {% if request.user.is_staff and current_class %}
 <section class="students">
-  <h1>Students in this class (<a href="">refresh</a>)</h1>
+  <a name="students" />
+  <h1>Students in this class (<a href="#students">refresh</a>)</h1>
 
   <table>
 	<tr>
 	  <th>Student</th>
 	  {% for assignment in assignments %}
-	  <th>Assignment {{assignment.nr}}</th>
+	  <th>Assignment {{forloop.counter}}</th>
 	  {% endfor %}
 	</tr>
 	{% for student in students %}
@@ -136,7 +134,9 @@
 	  <td>{{student}}</td>
 	  {% for percentage in student.progress %}
 	  <td>
-				<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+		{% if percentage >= 0 %}
+		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+		{% endif %}
 	  </td>
 	  {% endfor %}
 	</tr>
@@ -147,24 +147,22 @@
 	{% endfor %}
   </table>
 </section>
-{% endif %}
 
+{% else %}
 <section class="session progress">
-  <h1>Your {% if current_class %}own{% endif %} progress in session {{session.nr}}:</h1>
+  <h1>Your progress in session {{session.nr}}:</h1>
   <table>
-	{% for assignment in assignments %}
+	{% for percentage in progress %}
+	{% if percentage >= 0 %}
 	<tr>
       <td class="y-axis">
-		{% if assignment.locked and not present and not current_class %}
-		Assignment {{assignment.nr}}:
-		{% else %}
-		<a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{assignment.nr}}:</a>
-		{% endif %}
+		Assignment {{forloop.counter}}:
       </td>
       <td>
-		<div class="bar" style="width: {{assignment.percentage}}%">{{assignment.percentage}}%</div>
+		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
       </td>
 	</tr>
+	{% endif %}
 	{% endfor %}
 	<tr>
 	  <td class="origin">
@@ -179,11 +177,13 @@
   <h1>Your answers:</h1>
   <table>
 	{% for answers_per_assignment in answers %}
+	{% if answers_per_assignment %}
 	<tr>
 	  <td colspan="2">
 		<h2>Assignment {{forloop.counter}}</h2>
 	  </td>
 	</tr>
+	{% endif %}
 	{% for answer in answers_per_assignment %}
 	{% if answer %}
 	<tr>
@@ -203,6 +203,5 @@
 	{% endfor %}
   </table>
 </section>
-
-
+{% endif %}
 {% endblock %}

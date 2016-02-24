@@ -39,7 +39,6 @@ class CourseAdmin(FunkySaveAdmin, SortableAdmin):
 
 class InlineAssignmentAdmin(SortableStackedInline):
     model = Assignment
-    radio_fields = {'type': admin.HORIZONTAL}
 
 class InlineDownloadAdmin(admin.StackedInline):
     model = Download
@@ -74,7 +73,6 @@ class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
     list_display = ['__unicode__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
     list_filter = ['session__course', 'session']
     list_editable = ['name', 'locked', 'active']
-    radio_fields = {'type': admin.HORIZONTAL}
     exclude = ['session']
 
 @admin.register(Step)
@@ -117,7 +115,7 @@ class ClassAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['session__course', 'session']
-    list_display = ['number', 'session', 'ticket', 'nr_of_students']
+    list_display = ['number', 'date', 'session', 'ticket', 'nr_of_students']
     exclude = ['session']
 
 @admin.register(Clarification)

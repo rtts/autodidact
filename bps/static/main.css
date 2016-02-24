@@ -131,6 +131,8 @@ nav {
       padding: 6px 0px 5px 35px;
       background-color: #e9e7e4;
       color: #CD9999; }
+    nav ul a.locked {
+      color: #CD9999; }
     nav ul li.inactive a {
       color: #B5B5B5 !important; }
     nav ul li.inactive a:after {
@@ -224,6 +226,10 @@ section.attendance {
   section.attendance form {
     text-align: right;
     margin-top: 15px; }
+    section.attendance form .ticket_error {
+      border: 1px solid red; }
+    section.attendance form .ticket_error_text {
+      color: red; }
     section.attendance form input {
       margin: 2px;
       box-sizing: border-box; }
@@ -319,7 +325,8 @@ section.answers table {
 section.step table.wizard {
   width: 100%;
   height: 400px;
-  margin-top: -15px; }
+  margin-top: -15px;
+  margin-bottom: 50px; }
   section.step table.wizard td {
     vertical-align: top; }
   section.step table.wizard td.header {
@@ -357,44 +364,75 @@ section.step table.wizard {
       float: left; }
     section.step table.wizard td.footer input.right {
       float: right; }
-section.step table.progress {
-  margin-top: 25px;
-  width: 96%;
-  border-collapse: collapse;
-  table-layout: fixed; }
-  section.step table.progress .step {
-    padding-left: 25px;
+section.step ul.progress {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 98%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap; }
+  section.step ul.progress li {
+    margin: 0;
+    padding: 0;
+    display: block;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1 1 0;
+    -webkit-flex: 1 1 0;
+    flex: 1 1 0;
+    margin-bottom: 5px; }
+  section.step ul.progress .step {
+    padding-left: 20px;
     display: block;
     color: #036;
     text-decoration: none;
-    font-size: 1.5em;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: normal;
     position: relative;
     overflow: hide;
-    height: 25px; }
-  section.step table.progress .step:after {
+    height: 20px;
+    line-height: 1.8; }
+  section.step ul.progress .step:after {
     content: "";
+    display: block;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    position: absolute;
+    top: 50%;
+    margin-top: -10px;
+    left: 100%;
+    z-index: 2; }
+  section.step ul.progress .step:before {
+    content: " ";
     display: block;
     width: 0;
     height: 0;
     border-top: 12.5px solid transparent;
     border-bottom: 12.5px solid transparent;
+    border-left: 12.5px solid white;
     position: absolute;
-    top: 50%;
-    margin-top: -12.5px;
+    top: 8.3px;
+    margin-top: -10px;
+    margin-left: 0px;
     left: 100%;
-    z-index: 2; }
-  section.step table.progress .finished {
-    background: green; }
-  section.step table.progress .finished:after {
-    border-left: 30px solid #090; }
-  section.step table.progress .current {
-    background: yellow; }
-  section.step table.progress .current:after {
-    border-left: 30px solid #990; }
-  section.step table.progress .unfinished {
-    background: red; }
-  section.step table.progress .unfinished:after {
-    border-left: 30px solid #900; }
+    z-index: 1; }
+  section.step ul.progress .finished {
+    background: #A7E3A7; }
+  section.step ul.progress .finished:after {
+    border-left: 10px solid #A7E3A7; }
+  section.step ul.progress .current {
+    background: #F0BD7D; }
+  section.step ul.progress .current:after {
+    border-left: 10px solid #F0BD7D; }
+  section.step ul.progress .unfinished {
+    background: #e9e7e4; }
+  section.step ul.progress .unfinished:after {
+    border-left: 10px solid #e9e7e4; }
 
 /*# sourceMappingURL=main.css.map */

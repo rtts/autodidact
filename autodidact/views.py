@@ -42,14 +42,13 @@ def session(request, course, session_nr):
     if not session.active and not request.user.is_staff:
         raise Http404()
 
-    # Retrieve all assignments, steps, and completed steps
-    assignments = session.assignments.prefetch_related('steps')
-    completed = request.user.completed.select_related('step').order_by('step')
-
-    # Get the current class and see who's present
-    students = None
-    present = False
+    assignments   = session.assignments.prefetch_related('steps')
+    (answers, progress) = calculate_progress(request.user, assignments)
+    students      = None
     current_class = None
+    present       = False
+    ticket_error  = False
+
     if session.registration_enabled:
         if request.method == 'POST':
             ticket = request.POST.get('ticket')
@@ -57,9 +56,10 @@ def session(request, course, session_nr):
                 newclass = Class.objects.get(ticket=ticket)
                 if newclass.session == session:
                     newclass.users.add(request.user)
+                    return redirect(session)
             except Class.DoesNotExist:
+                ticket_error = ticket
                 pass
-            return redirect(session)
 
         # Users are present if their classes intersect the session's classes
         present = request.user.attends.all() & session.classes.all()
@@ -68,83 +68,70 @@ def session(request, course, session_nr):
             current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
         except (Class.DoesNotExist, KeyError):
             pass
-
-        # For teachers, calculate the progress of each student
         if request.user.is_staff and current_class:
-            students = current_class.users.select_related('completed', 'completed__step')
-            for student in students:
-                completed_by_student = student.completed.order_by('step')
-                student.progress = []
-                for i, ass in enumerate(assignments):
-                    step_count = 0
-                    completed_count = 0
-                    ass.nr = i + 1
-                    for step in ass.steps.all():
-                        step_count += 1
-                        for com in completed_by_student:
-                            if step == com.step:
-                                completed_count += 1
-                                break
-                    if step_count:
-                        percentage_completed = 100 * completed_count/step_count
-                    else:
-                        percentage_completed = 0
-                    student.progress.append(percentage_completed)
 
-    # Calculate answers, progress, and assignment lists
-    answers = []
-    preliminary_assignments = []
-    inclass_assignments = []
-    for i, ass in enumerate(assignments):
-        step_count = 0
-        completed_count = 0
-        ass.nr = i + 1
-        answers.append([])
-        if ass.type == 1:
-            preliminary_assignments.append(ass)
-        elif ass.type == 2:
-            inclass_assignments.append(ass)
-        for step in ass.steps.all():
-            step_count += 1
-            answers[i].append('')
-            for com in completed:
-                if step == com.step:
-                    completed_count += 1
-                    if step.answer_required and not com.answer:
-                        answers[i][-1] = "mispoes"
-                    else:
-                        answers[i][-1] = com.answer
-                    break
-        if step_count:
-            percentage_completed = 100 * completed_count/step_count
-        else:
-            percentage_completed = 0
-        ass.percentage = percentage_completed
+            # FIXME: The following prefetch does not reduce the number of queries
+            students = current_class.users.prefetch_related('completed', 'completed__step')
+
+            for student in students:
+                (answers, progress) = calculate_progress(student, assignments)
+                student.progress = progress
+                student.answers = answers
 
     return render(request, 'session.html', {
         'course': course,
         'session': session,
         'assignments': assignments,
-        'preliminary_assignments': preliminary_assignments,
-        'inclass_assignments': inclass_assignments,
         'answers': answers,
+        'progress': progress,
+        'ticket_error': ticket_error,
         'present': present,
         'current_class': current_class,
         'students': students,
     })
 
+
+def calculate_progress(student, assignments):
+    answers   = []
+    progress  = []
+    completed = student.completed.select_related('step').order_by('step')
+
+    for ass in assignments:
+        step_count = 0
+        completed_count = 0
+        answers.append([])
+        progress.append(None)
+        if not ass.active:
+            continue
+        for step in ass.steps.all():
+            step_count += 1
+            answers[-1].append('')
+            for com in completed:
+                if step == com.step:
+                    completed_count += 1
+                    if step.answer_required and not com.answer:
+                        answers[-1][-1] = "mispoes"
+                    else:
+                        answers[-1][-1] = com.answer
+                    break
+        if step_count:
+            progress[-1] = 100 * completed_count/step_count
+        else:
+            progress[-1] = 0
+
+    return (answers, progress)
+
 @login_required
 def assignment(request, course, session_nr, assignment_nr):
-    session_nr = int(session_nr)
+    session_nr    = int(session_nr)
     assignment_nr = int(assignment_nr)
-    step_nr = int(request.GET.get('step', 1))
-    save_only = request.GET.get('save_only', 'false')
+    step_nr       = int(request.GET.get('step', 1))
+    save_only     = request.GET.get('save_only', 'false')
+
     if request.user.is_staff:
         course = get_object_or_404(Course, slug=course)
     else:
         course = get_object_or_404(Course, slug=course, active=True)
-
-    # Retrieve session and assignment objects
     if session_nr < 1 or assignment_nr < 1:
         raise Http404()
     try:
@@ -156,18 +143,13 @@ def assignment(request, course, session_nr, assignment_nr):
         raise Http404()
     if not assignment.active and not request.user.is_staff:
         raise Http404()
-
-    # Force evaluation of steps
-    # (we'll need them all anyway)
-    steps = list(assignment.steps.all())
-
-    # Locked assignments can only be made by in-class users (and staff)
-    if assignment.locked:
+    if assignment.locked and not request.user.is_staff:
         present = request.user.attends.all() & session.classes.all()
-        if not present and not request.user.is_staff:
+        if not present:
             return HttpResponseForbidden()
 
     # Retrieve current step
+    steps = list(assignment.steps.all())
     if step_nr < 1:
         return redirect(assignment)
     try:

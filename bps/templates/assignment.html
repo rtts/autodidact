@@ -63,21 +63,20 @@
     </table>
   </form>
 
-  <table class="progress">
-    <tr>
-      {% for step in step_overview %}
-      <td>
-        {% if forloop.counter == step_nr %}
-        <span class="current step">{{forloop.counter}}</span>
-        {% elif step %}
-        <a class="finished step" href="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
-        {% else %}
-        <span class="unfinished step">{{forloop.counter}}</span>
-        {% endif %}
-        {% endfor %}
-      </td>
-    </tr>
-  </table>
+  <h2>Your progress in this assignment:</h2>
+  <ul class="progress">
+    {% for step in step_overview %}
+    <li>
+      {% if forloop.counter == step_nr %}
+      <span class="current step">{{forloop.counter}}</span>
+      {% elif step %}
+      <a class="finished step" href="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+      {% else %}
+      <span class="unfinished step">{{forloop.counter}}</span>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
 </section>
 
 {% else %}

@@ -63,12 +63,8 @@ class Assignment(SortableMixin):
     name = models.CharField(max_length=255)
     session = SortableForeignKey(Session, related_name="assignments")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    type = models.IntegerField(choices=(
-        (1, 'Preliminary assignment'),
-        (2, 'In-class assignment'),
-    ))
-    locked = models.BooleanField(default=False, help_text='Locked assignments will automatically unlock when students register their attendance to class')
     active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
+    locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
 
     def __unicode__(self):
         return 'Assignment %i: %s' % (self.get_number(), self.name)

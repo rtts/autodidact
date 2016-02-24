@@ -172,6 +172,9 @@ nav {
       background-color: $lightgrey;
       color: #CD9999;
     }
+	a.locked {
+      color: #CD9999;
+	}
 
     li.inactive {
       a {
@@ -303,6 +306,14 @@ section.attendance {
   form {
     text-align: right;
     margin-top: 15px;
+
+	.ticket_error {
+	  border: 1px solid red;
+	}
+
+	.ticket_error_text {
+	  color: red;
+	}
 
     input {
       margin: 2px;
@@ -441,6 +452,7 @@ section.step {
     width: 100%;
     height: 400px;
     margin-top: -15px;
+    margin-bottom: 50px;
 
     td {
       vertical-align: top;
@@ -501,57 +513,98 @@ section.step {
     }
   }
 
-  table.progress {
-    margin-top: 25px;
-    width:96%;
-    border-collapse: collapse;
-    table-layout: fixed;
+  $step_height: 20px;
+  $finished_color: #A7E3A7;
+  $current_color: #F0BD7D;
+  $unfinished_color: $lightgrey;
 
-    $step_height: 25px;
+  ul.progress {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width:98%;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    flex-wrap: wrap;
+
+    li {
+      margin: 0;
+      padding: 0;
+      display: block;
+      -webkit-box-flex: 1;
+      -moz-box-flex: 1;
+      -ms-flex: 1 1 0;
+      -webkit-flex: 1 1 0;
+      flex: 1 1 0;
+      margin-bottom: 5px;
+    }
 
     .step {
       padding-left: $step_height;
       display: block;
       color: $darkblue;
       text-decoration: none;
-      font-size: 1.5em;
-      font-weight: bold;
+      font-size: 12px;
+      font-weight: normal;
       position: relative;
       overflow: hide;
       height: $step_height;
+      line-height: 1.8;
     }
+
     .step:after {
-	content: "";
-	display: block;
-	width: 0;
-	height: 0;
-	border-top: $step_height / 2 solid transparent;
-	border-bottom: $step_height / 2 solid transparent;
-	position: absolute;
-	top: 50%;
-	margin-top: -$step_height / 2;
-	left: 100%;
-	z-index: 2;
+      content: "";
+      display: block;
+      width: 0;
+      height: 0;
+      border-top: $step_height/2 solid transparent;
+      border-bottom: $step_height/2 solid transparent;
+      position: absolute;
+      top: 50%;
+      margin-top: -$step_height/2;
+      left: 100%;
+      z-index: 2;
+    }
+
+    .step:before {
+      content: " ";
+      display: block;
+      width: 0;
+      height: 0;
+      $shadow_width: 5px;
+      $shadow_height: $step_height + $shadow_width;
+      border-top: $shadow_height/2 solid transparent;
+      border-bottom: $shadow_height/2 solid transparent;
+      border-left: $shadow_height/2 solid white;
+      position: absolute;
+      top: 1.66*$shadow_width;
+      margin-top: -$shadow_width*2;
+      margin-left: 0px;
+      left: 100%;
+      z-index: 1;
     }
     .finished {
-      background: green;
+      background: $finished_color;
     }
     .finished:after {
-      border-left: 30px solid #090;
+      border-left: $step_height/2 solid $finished_color;
     }
 
     .current {
-      background: yellow;
+      background: $current_color;
     }
     .current:after {
-      border-left: 30px solid #990;
+      border-left: $step_height/2 solid $current_color;
     }
 
     .unfinished {
-      background: red;
+      background: $unfinished_color;
     }
     .unfinished:after {
-      border-left: 30px solid #900;
+      border-left: $step_height/2 solid $unfinished_color;
     }
   }
 }
