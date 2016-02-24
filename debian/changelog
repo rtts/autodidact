@@ -1,3 +1,15 @@
+autodidact (0.7~rc1) stable; urgency=medium
+
+  * A new breadcrumbs-style progress bar for students during their
+    assignment
+  * After consulting with UvT-CERT, removal of the rotate_csrf_token()
+    calls, because they broke various parts of Django
+  * Database- and code optimizations
+  * Bugfixes after user-testing sessions
+  * An extra dependency on python-pil
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 24 Feb 2016 16:56:06 +0100
+
 autodidact (0.6) stable; urgency=medium
 
   * Included ViewerJS for inline viewing of presentations. This code will
