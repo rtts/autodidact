@@ -1,3 +1,10 @@
+autodidact (0.8~rc1) UNRELEASED; urgency=medium
+
+  * Follow Python package guidelines, unfortunately this has broken
+    Debian packaging somewhat
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Mon, 29 Feb 2016 00:26:58 +0100
+
 autodidact (0.7~rc1) stable; urgency=medium
 
   * A new breadcrumbs-style progress bar for students during their

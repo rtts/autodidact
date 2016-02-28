@@ -1,2 +1,2 @@
-config.ini etc/bps
+bps/config.ini etc/bps
 README.md usr/share/doc/autodidact
