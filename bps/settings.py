@@ -35,7 +35,6 @@ if not DEBUG:
     SESSION_COOKIE_SECURE   = True
     SESSION_COOKIE_HTTPONLY = True
     CSRF_COOKIE_SECURE      = True
-    CSRF_COOKIE_HTTPONLY    = True
 
 PACKAGE_DIR      = os.path.dirname(__file__)
 TEMPLATE_DEBUG   = DEBUG
