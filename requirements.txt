@@ -1,0 +1,5 @@
+Django==1.9.2
+Markdown==2.6.5
+argparse==1.2.1
+django-admin-sortable==2.0.12
+wsgiref==0.1.2
