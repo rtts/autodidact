@@ -16,9 +16,7 @@ Installation
 
 Tilburg University maintains a Debian repository at
 https://non-gnu.uvt.nl/ from which both Autodidact and BPS can be
-installed.
-
-First, add the following lines to `/etc/apt/sources.list`:
+installed. First, add the following lines to `/etc/apt/sources.list`:
 
     deb http://non-gnu.uvt.nl/debian jessie uvt
     deb-src http://non-gnu.uvt.nl/debian jessie uvt
@@ -26,6 +24,11 @@ First, add the following lines to `/etc/apt/sources.list`:
 Second, add the Tilburg University signing key to your apt key store:
 
     curl http://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
+
+Since not all Python dependencies have yet been packaged
+for Debian, you have to install the following dependencies manually:
+
+    pip install django-admin-sortable django-cas django-cleanup
 
 Now you can install the `autodidact` package with `apt-get`:
 

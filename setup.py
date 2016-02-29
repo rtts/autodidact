@@ -18,5 +18,6 @@ setup(
         'django-admin-sortable',
         'django-cleanup',
         'django-cas',
+        'markdown',
     ],
 )

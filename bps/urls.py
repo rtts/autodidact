@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.conf import settings
-import cas
+import django_cas as cas
 import autodidact.urls
 
 if settings.CAS_SERVER_URL:
