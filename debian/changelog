@@ -1,5 +1,6 @@
-autodidact (0.7~rc1) stable; urgency=medium
+autodidact (0.7) stable; urgency=medium
 
+  * Stylesheet improvements for admin
   * A new breadcrumbs-style progress bar for students during their
     assignment
   * After consulting with UvT-CERT, removal of the rotate_csrf_token()
