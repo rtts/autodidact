@@ -17,7 +17,7 @@ case $1 in
 	    chgrp www-data "$KEYFILE"
 	fi
 
-        if [ ! -e "$UPLOADS"]
+        if [ ! -e "$UPLOADS" ]
         then
             mkdir "$UPLOADS"
             chown www-data:www-data "$UPLOADS"
