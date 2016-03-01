@@ -17,6 +17,7 @@ try:
     db_user       = cfg.get('database', 'username')
     db_pass       = cfg.get('database', 'password')
     cas_server    = cfg.get('misc', 'cas_server')
+    https_only    = cfg.get('misc', 'https_only')
     allowed_hosts = cfg.get('misc', 'allowed_hosts')
     debug         = cfg.get('misc', 'debug')
 except configparser.Error as e:
@@ -42,10 +43,10 @@ TIME_ZONE          = 'UTC'
 USE_I18N           = False
 USE_L10N           = False
 USE_TZ             = True
-if not DEBUG:
-    SESSION_COOKIE_SECURE   = True
-    SESSION_COOKIE_HTTPONLY = True
-    CSRF_COOKIE_SECURE      = True
+if https_only and not DEBUG:
+    SECURE_SSL_REDIRECT   = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE    = True
 
 INSTALLED_APPS = [
     'django.contrib.admin',
