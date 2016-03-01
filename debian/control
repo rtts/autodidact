@@ -2,8 +2,8 @@ Source: autodidact
 Section: web
 Priority: extra
 Maintainer: Wessel Dankers <wsl@fruit.je>
-Build-Depends: debhelper (>= 7), dh-apache2, apache2-dev, python-all, dh-python, python-setuptools, python-django
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 7), apache2-dev, python-all, dh-python, python-setuptools, python-django
+Standards-Version: 3.9.6
 
 Package: autodidact
 Architecture: any
