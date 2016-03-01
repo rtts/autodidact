@@ -135,7 +135,7 @@
 	  {% for percentage in student.progress %}
 	  <td>
 		{% if percentage >= 0 %}
-		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+		<div class="bar" style="width: {{percentage|floatformat:'0'}}%">{{percentage|floatformat:'0'}}%</div>
 		{% endif %}
 	  </td>
 	  {% endfor %}
@@ -159,7 +159,7 @@
 		Assignment {{forloop.counter}}:
       </td>
       <td>
-		<div class="bar" style="width: {{percentage}}%">{{percentage}}%</div>
+		<div class="bar" style="width: {{percentage|floatformat:'0'}}%">{{percentage|floatformat:'0'}}%</div>
       </td>
 	</tr>
 	{% endif %}

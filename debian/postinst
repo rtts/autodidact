@@ -4,20 +4,16 @@ set -e
 
 #DEBHELPER#
 
-case $1 in configure)
-	if [ ! -e /etc/bps/secret.py ]
+case $1 in
+    configure)
+        if [ ! -e /etc/bps/secret.key ]
 	then
-		(
-			umask 027
-			echo "SECRET_KEY = '$(makepasswd --chars=50)'" >/etc/bps/secret.py
-			chgrp www-data /etc/bps/secret.py
-		)
+	    umask 027
+	    makepasswd --chars=50 >/etc/bps/secret.key
+	    chgrp www-data /etc/bps/secret.py
 	fi
-	(
-		project_dir=`python -c 'import os,bps; print os.path.dirname(bps.__file__)'`
-		sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
-		cd $project_dir
-		yes yes | python manage.py collectstatic
-                python manage.py migrate
-	)
+	project_dir=`python -c 'import os,bps; print os.path.dirname(bps.__file__)'`
+	sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
+	manage.py collectstatic
+        manage.py migrate
 esac

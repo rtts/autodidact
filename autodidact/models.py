@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
+from django.utils.encoding import python_2_unicode_compatible
 from adminsortable.models import SortableMixin
 from adminsortable.fields import SortableForeignKey
 from .utils import clean
@@ -9,12 +10,14 @@ from .utils import clean
 MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
 TICKET_LENGTH = 4
 
+@python_2_unicode_compatible
 class Programme(models.Model):
     name = models.CharField(max_length=255)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
+@python_2_unicode_compatible
 class Course(SortableMixin):
     name = models.CharField(max_length=255)
     slug = models.SlugField()
@@ -26,7 +29,7 @@ class Course(SortableMixin):
     def colloquial_name(self):
         return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
 
     def get_absolute_url(self):
@@ -39,6 +42,7 @@ class Course(SortableMixin):
     class Meta:
         ordering = ['order']
 
+@python_2_unicode_compatible
 class Session(SortableMixin):
     name = models.CharField(max_length=255)
     description = models.TextField(help_text=MDHELP)
@@ -47,7 +51,7 @@ class Session(SortableMixin):
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
 
     def get_number(self):
@@ -59,6 +63,7 @@ class Session(SortableMixin):
     class Meta:
         ordering = ['order']
 
+@python_2_unicode_compatible
 class Assignment(SortableMixin):
     name = models.CharField(max_length=255)
     session = SortableForeignKey(Session, related_name="assignments")
@@ -66,7 +71,7 @@ class Assignment(SortableMixin):
     active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Assignment %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
@@ -81,6 +86,7 @@ class Assignment(SortableMixin):
     class Meta:
         ordering = ['order']
 
+@python_2_unicode_compatible
 class Step(SortableMixin):
     name = models.CharField(max_length=255)
     assignment = SortableForeignKey(Assignment, related_name='steps')
@@ -88,7 +94,7 @@ class Step(SortableMixin):
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Step %i: %s' % (self.get_number(), self.name)
 
     def get_number(self):
@@ -104,18 +110,20 @@ class Step(SortableMixin):
     class Meta:
         ordering = ['order']
 
+@python_2_unicode_compatible
 class CompletedStep(models.Model):
     step = models.ForeignKey(Step, related_name='completed')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed')
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s has completed %s' % (self.whom.username, self.step.name)
 
     class Meta:
         verbose_name_plural = 'completed steps'
 
+@python_2_unicode_compatible
 class Class(models.Model):
     session = models.ForeignKey(Session, related_name='classes')
     number = models.CharField(max_length=16)
@@ -124,7 +132,7 @@ class Class(models.Model):
     dismissed = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Class %s of %s' % (self.number, str(self.session))
 
     def nr_of_students(self):
@@ -136,11 +144,12 @@ class Class(models.Model):
 def session_path(obj, filename):
     return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))
 
+@python_2_unicode_compatible
 class Download(models.Model):
     file = models.FileField(upload_to=session_path)
     session = models.ForeignKey(Session, related_name='downloads')
 
-    def __unicode__(self):
+    def __str__(self):
         return os.path.basename(str(self.file))
 
     def url(self):
@@ -152,6 +161,7 @@ class Download(models.Model):
     class Meta:
         ordering = ['file']
 
+@python_2_unicode_compatible
 class Presentation(SortableMixin):
     file = models.FileField(upload_to=session_path)
     session = SortableForeignKey(Session, related_name='presentations')
@@ -162,7 +172,7 @@ class Presentation(SortableMixin):
     ))
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return os.path.basename(str(self.file))
 
     def url(self):
@@ -174,15 +184,15 @@ class Presentation(SortableMixin):
 def image_path(obj, filename):
     return os.path.join(obj.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
 
+@python_2_unicode_compatible
 class Clarification(SortableMixin):
     step = models.ForeignKey(Step, related_name='clarifications')
     description = models.TextField(help_text=MDHELP)
     image = models.ImageField(upload_to=image_path)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'Clarification for %s' % unicode(self.step)
 
     class Meta:
         ordering = ['order']
-

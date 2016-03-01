@@ -33,7 +33,7 @@ class InlineSessionAdmin(admin.StackedInline):
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, SortableAdmin):
     inlines = [InlineSessionAdmin]
-    list_display = ['__unicode__', 'name', 'slug', 'url']
+    list_display = ['__str__', 'name', 'slug', 'url']
     list_filter = ['programmes']
     list_editable = ['name', 'slug']
 
@@ -58,7 +58,7 @@ class SessionAdmin(FunkySaveAdmin, SortableAdmin):
         return False
     inlines = [InlineDownloadAdmin, InlinePresentationAdmin, InlineAssignmentAdmin]
     list_filter = ['course']
-    list_display = ['__unicode__', 'name', 'course', 'registration_enabled', 'active']
+    list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
     list_editable = ['name', 'registration_enabled', 'active']
     exclude = ['course']
 
@@ -70,7 +70,7 @@ class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
     def has_add_permission(self, request):
         return False
     inlines = [InlineStepAdmin]
-    list_display = ['__unicode__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
+    list_display = ['__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
     list_filter = ['session__course', 'session']
     list_editable = ['name', 'locked', 'active']
     exclude = ['session']
@@ -80,7 +80,7 @@ class StepAdmin(FunkySaveAdmin, SortableAdmin):
     def has_add_permission(self, request):
         return False
     inlines = [InlineClarificationAdmin]
-    list_display = ['__unicode__', 'description', 'answer_required', 'assignment']
+    list_display = ['__str__', 'description', 'answer_required', 'assignment']
     list_editable = ['answer_required']
     list_filter = ['assignment__session', 'assignment']
     exclude = ['assignment']
@@ -98,7 +98,7 @@ class DownloadAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['session']
-    list_display = ['__unicode__', 'session']
+    list_display = ['__str__', 'session']
     exclude = ['session']
 
 @admin.register(Presentation)
@@ -106,7 +106,7 @@ class PresentationAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['session']
-    list_display = ['__unicode__', 'session', 'visibility']
+    list_display = ['__str__', 'session', 'visibility']
     radio_fields = {'visibility': admin.HORIZONTAL}
     exclude = ['session']
 
@@ -123,5 +123,5 @@ class ClarificationAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['step__assignment__session']
-    list_display = ['__unicode__', 'step', 'description']
+    list_display = ['__str__', 'step', 'description']
     exclude = ['step']

@@ -11,6 +11,7 @@ setup(
     maintainer = 'Wessel Dankers',
     maintainer_email = 'wsl@fruit.je',
     license = 'AGPL',
+    scripts = 'manage.py',
     packages = find_packages(),
     include_package_data = True,
     install_requires = [
