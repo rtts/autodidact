@@ -1,8 +1,0 @@
-Django==1.9.2
-Markdown==2.6.5
-Pillow==3.1.1
-django-admin-sortable==2.0.12
-django-cas==2.0.3
-django-cleanup==0.4.2
-psycopg2==2.6.1
-six==1.10.0
