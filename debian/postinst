@@ -10,7 +10,7 @@ case $1 in
 	then
 	    umask 027
 	    makepasswd --chars=50 >/etc/bps/secret.key
-	    chgrp www-data /etc/bps/secret.py
+	    chgrp www-data /etc/bps/secret.key
 	fi
 	project_dir=`python -c 'import os,bps; print os.path.dirname(bps.__file__)'`
 	sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
