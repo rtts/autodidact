@@ -26,7 +26,7 @@ case $1 in
 	project_dir=`python -c 'import os,bps; print os.path.dirname(bps.__file__)'`
 	sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
 
-	yes yes | manage.py collectstatic
-        manage.py migrate
+	su www-data -c 'yes yes | manage.py collectstatic'
+        su www-data -c 'manage.py migrate'
 
 esac
