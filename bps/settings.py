@@ -17,9 +17,9 @@ try:
     db_user       = cfg.get('database', 'username')
     db_pass       = cfg.get('database', 'password')
     cas_server    = cfg.get('misc', 'cas_server')
-    https_only    = cfg.get('misc', 'https_only')
     allowed_hosts = cfg.get('misc', 'allowed_hosts')
-    debug         = cfg.get('misc', 'debug')
+    https_only    = cfg.get('misc', 'https_only') in ['true', 'True', 'on', 'yes']
+    debug         = cfg.get('misc', 'debug') in ['true', 'True', 'on', 'yes']
 except configparser.Error as e:
     raise ImproperlyConfigured("Error parsing %s: %s" % (CONFIG_FILE, e.message))
 
@@ -28,7 +28,7 @@ MEDIA_ROOT         = uploads_dir
 SECRET_KEY         = read(secret_key)
 CAS_SERVER_URL     = cas_server
 ALLOWED_HOSTS      = [e.strip() for e in allowed_hosts.split(',')]
-DEBUG              = debug in ['true', 'True', 'on', 'yes']
+DEBUG              = debug
 ROOT_URLCONF       = 'bps.urls'
 LOGIN_URL          = '/login/'
 LOGIN_REDIRECT_URL = '/'
