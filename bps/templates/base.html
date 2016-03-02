@@ -1,4 +1,5 @@
 {% load static %}
+{% load autodidact %}
 
 <!DOCTYPE html>
 <html>
@@ -43,10 +44,7 @@
 
     <div id="content_wrapper">
       <nav>
-        <ul>
-          {% block navigation %}
-          {% endblock %}
-        </ul>
+        {% autodidact_navigation %}
       </nav>
 
       <header id="editor">

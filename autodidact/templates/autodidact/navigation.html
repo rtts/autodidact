@@ -1,0 +1,80 @@
+{% if nav_type == 'homepage' %}
+<ul>
+  {% for programme in programmes %}
+  <li class="heading">{{programme.name}} courses:</li>
+  {% for course in programme.courses.all %}
+  {% if course.active %}
+  <li class="futurePage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  {% elif request.user.is_staff %}
+  <li class="futurePage inactive"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  {% endif %}
+  {% empty %}
+  <li class="empty">No {{programme.name}} courses available</li>
+  {% endfor %}
+  <li class="spacer"/>
+  {% empty %}
+  <li class="empty">No courses available</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if nav_type == 'course' %}
+<ul>
+  <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+  <li class="currentPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  {% for session in course.sessions.all %}
+  {% if session.active %}
+  <li class="futurePage"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+  {% elif request.user.is_staff %}
+  <li class="futurePage inactive"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+  {% endif %}
+  {% empty %}
+  <li class="empty">No sessions available</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if nav_type == 'session' %}
+<ul>
+  <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+  <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  <li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
+
+  <li class="heading">Assignments:</li>
+  {% for assignment in assignments %}
+
+  {% if request.user.is_staff and not assignment.active %}
+  <li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+
+  {% elif request.user.is_staff and assignment.locked and not current_class %}
+  <li class="futurePage"><a class="locked" href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
+
+  {% elif not assignment.active %}
+
+  {% elif not present and assignment.locked and not current_class %}
+  <li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
+
+  {% else %}
+  <li class="futurePage"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+  {% endif %}
+
+  {% endfor %}
+  <li class="spacer"/>
+
+  <li class="heading">Downloads:</li>
+  {% for file in session.downloads.all %}
+  <li class="futurePage"><a href="{{file.url}}" download>{{file}}</a></li>
+  {% empty %}
+  <li class="empty">No downloads available</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if nav_type == 'assignment' %}
+<ul>
+  <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+  <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  <li class="visitedPage"><a href="{% url 'session' course.slug session_nr %}">Session {{session_nr}}</a></li>
+  <li class="currentPage"><a href="{% url 'assignment' course.slug session_nr assignment_nr %}">Assignment {{assignment_nr}}</a></li>
+</ul>
+{% endif %}

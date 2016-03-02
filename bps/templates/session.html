@@ -2,40 +2,6 @@
 {% load static %}
 {% load markdown_tag %}
 
-{% block navigation %}
-<li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
-<li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
-<li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
-
-<li class="heading">Assignments:</li>
-{% for assignment in assignments %}
-
-{% if request.user.is_staff and not assignment.active %}
-<li class="futurePage inactive"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
-
-{% elif request.user.is_staff and assignment.locked and not current_class %}
-<li class="futurePage"><a class="locked" href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
-
-{% elif not assignment.active %}
-
-{% elif not present and assignment.locked and not current_class %}
-<li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
-
-{% else %}
-<li class="futurePage"><a href="{% url 'assignment' course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
-{% endif %}
-
-{% endfor %}
-<li class="spacer"/>
-
-<li class="heading">Downloads:</li>
-{% for file in session.downloads.all %}
-<li class="futurePage"><a href="{{file.url}}" download>{{file}}</a></li>
-{% empty %}
-<li class="empty">No downloads available</li>
-{% endfor %}
-{% endblock %}
-
 {% block editor %}
 {% if request.user.is_staff and perms.autodidact.change_session %}
 <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>

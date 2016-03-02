@@ -13,6 +13,7 @@ def homepage(request):
     programmes = Programme.objects.all()
     return render(request, 'homepage.html', {
         'programmes': programmes,
+        'nav_type': 'homepage',
     })
 
 @login_required
@@ -23,6 +24,7 @@ def course(request, course):
         course = get_object_or_404(Course, slug=course, active=True)
     return render(request, 'course.html', {
         'course': course,
+        'nav_type': 'course',
     })
 
 @login_required
@@ -88,6 +90,7 @@ def session(request, course, session_nr):
         'present': present,
         'current_class': current_class,
         'students': students,
+        'nav_type': 'session',
     })
 
 
@@ -215,6 +218,7 @@ def assignment(request, course, session_nr, assignment_nr):
         'step_overview': step_overview,
         'first': first,
         'last': last,
+        'nav_type': 'assignment',
     })
 
 @staff_member_required
