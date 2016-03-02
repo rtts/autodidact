@@ -1,0 +1,20 @@
+{% if edit_type == 'course' %}
+{% if perms.autodidact.change_course %}
+<a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">Edit this course</a>
+{% endif %}
+{% endif%}
+
+{% if edit_type == 'session' %}
+{% if request.user.is_staff and perms.autodidact.change_session %}
+<a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
+{% endif %}
+{% endif %}
+
+{% if edit_type == 'assignment' %}
+{% if perms.autodidact.change_assignment %}
+<a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">Edit this assignment</a>
+{% if step and perms.autodidact.change_step %}
+- <a class="editlink" href="{% url 'admin:autodidact_step_change' step.pk %}">Edit this step</a>
+{% endif %}
+{% endif %}
+{% endif %}

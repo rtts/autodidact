@@ -1,12 +1,6 @@
 {% extends 'base.html' %}
 {% load markdown_tag %}
 
-{% block editor %}
-{% if perms.autodidact.change_course %}
-<a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">Edit this course</a>
-{% endif %}
-{% endblock %}
-
 {% block content %}
 <section>
 <h1>{{course.name}}</h1>

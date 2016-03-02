@@ -2,15 +2,6 @@
 {% load static %}
 {% load markdown_tag %}
 
-{% block editor %}
-{% if perms.autodidact.change_assignment %}
-<a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">Edit this assignment</a>
-{% if step and perms.autodidact.change_step %}
-- <a class="editlink" href="{% url 'admin:autodidact_step_change' step.pk %}">Edit this step</a>
-{% endif %}
-{% endif %}
-{% endblock %}
-
 {% block content %}
 {% if step %}
 

@@ -25,6 +25,7 @@ def course(request, course):
     return render(request, 'course.html', {
         'course': course,
         'nav_type': 'course',
+        'edit_type': 'course',
     })
 
 @login_required
@@ -91,6 +92,7 @@ def session(request, course, session_nr):
         'current_class': current_class,
         'students': students,
         'nav_type': 'session',
+        'edit_type': 'session',
     })
 
 
@@ -219,6 +221,7 @@ def assignment(request, course, session_nr, assignment_nr):
         'first': first,
         'last': last,
         'nav_type': 'assignment',
+        'edit_type': 'assignment',
     })
 
 @staff_member_required

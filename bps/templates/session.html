@@ -2,12 +2,6 @@
 {% load static %}
 {% load markdown_tag %}
 
-{% block editor %}
-{% if request.user.is_staff and perms.autodidact.change_session %}
-<a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
-{% endif %}
-{% endblock %}
-
 {% block content %}
 
 {% if session.registration_enabled %}
