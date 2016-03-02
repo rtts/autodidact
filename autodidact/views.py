@@ -13,7 +13,6 @@ def homepage(request):
     programmes = Programme.objects.all()
     return render(request, 'homepage.html', {
         'programmes': programmes,
-        'nav_type': 'homepage',
     })
 
 @login_required
@@ -24,8 +23,6 @@ def course(request, course):
         course = get_object_or_404(Course, slug=course, active=True)
     return render(request, 'course.html', {
         'course': course,
-        'nav_type': 'course',
-        'edit_type': 'course',
     })
 
 @login_required
@@ -44,87 +41,26 @@ def session(request, course, session_nr):
         raise Http404()
     if not session.active and not request.user.is_staff:
         raise Http404()
-
-    assignments   = session.assignments.prefetch_related('steps')
-    (answers, progress) = calculate_progress(request.user, assignments)
-    students      = None
-    current_class = None
-    present       = False
     ticket_error  = False
 
-    if session.registration_enabled:
-        if request.method == 'POST':
-            ticket = request.POST.get('ticket')
-            try:
-                newclass = Class.objects.get(ticket=ticket)
-                if newclass.session == session:
-                    newclass.users.add(request.user)
-                    return redirect(session)
-            except Class.DoesNotExist:
-                ticket_error = ticket
-                pass
-
-        # Users are present if their classes intersect the session's classes
-        present = request.user.attends.all() & session.classes.all()
-
+    if session.registration_enabled and request.method == 'POST':
+        ticket = request.POST.get('ticket')
         try:
-            current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
-        except (Class.DoesNotExist, KeyError):
-            pass
-        if request.user.is_staff and current_class:
-
-            # FIXME: The following prefetch does not reduce the number of queries
-            students = current_class.users.prefetch_related('completed', 'completed__step')
-
-            for student in students:
-                (answers, progress) = calculate_progress(student, assignments)
-                student.progress = progress
-                student.answers = answers
+            newclass = Class.objects.get(ticket=ticket)
+            if newclass.session == session and not newclass.dismissed:
+                newclass.users.add(request.user)
+                return redirect(session)
+            else:
+                ticket_error = ticket
+        except Class.DoesNotExist:
+            ticket_error = ticket
 
     return render(request, 'session.html', {
         'course': course,
         'session': session,
-        'assignments': assignments,
-        'answers': answers,
-        'progress': progress,
         'ticket_error': ticket_error,
-        'present': present,
-        'current_class': current_class,
-        'students': students,
-        'nav_type': 'session',
-        'edit_type': 'session',
     })
 
-
-def calculate_progress(student, assignments):
-    answers   = []
-    progress  = []
-    completed = student.completed.select_related('step').order_by('step')
-
-    for ass in assignments:
-        step_count = 0
-        completed_count = 0
-        answers.append([])
-        progress.append(None)
-        if not ass.active:
-            continue
-        for step in ass.steps.all():
-            step_count += 1
-            answers[-1].append('')
-            for com in completed:
-                if step == com.step:
-                    completed_count += 1
-                    if step.answer_required and not com.answer:
-                        answers[-1][-1] = "mispoes"
-                    else:
-                        answers[-1][-1] = com.answer
-                    break
-        if step_count:
-            progress[-1] = 100 * completed_count/step_count
-        else:
-            progress[-1] = 0
-
-    return (answers, progress)
 
 @login_required
 def assignment(request, course, session_nr, assignment_nr):
@@ -220,8 +156,6 @@ def assignment(request, course, session_nr, assignment_nr):
         'step_overview': step_overview,
         'first': first,
         'last': last,
-        'nav_type': 'assignment',
-        'edit_type': 'assignment',
     })
 
 @staff_member_required
@@ -253,11 +187,16 @@ def endclass(request):
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     try:
+        ticket = request.session['current_class']
+        current_class = Class.objects.get(ticket=ticket)
+        current_class.dismissed = True
+        current_class.save()
         del request.session['current_class']
-    except KeyError:
+    except (KeyError, Class.DoesNotExist):
         pass
     return redirect(session)
 
+# TODO: This method is currently unused
 @staff_member_required
 @require_http_methods(['POST'])
 def joinclass(request):

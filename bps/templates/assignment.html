@@ -1,6 +1,11 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load autodidact %}
 {% load markdown_tag %}
+
+{% block navigation %}
+{% autodidact_assignment_navigation assignment %}
+{% endblock %}
 
 {% block content %}
 {% if step %}

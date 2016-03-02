@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
+{% load autodidact %}
 {% load markdown_tag %}
+
+{% block navigation %}
+{% autodidact_course_navigation course %}
+{% endblock %}
 
 {% block content %}
 <section>

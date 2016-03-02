@@ -1,0 +1,105 @@
+{% load static %}
+{% load markdown_tag %}
+
+<section class="session description">
+  <h1>Session {{session.nr}}: {{session.name}}</h1>
+
+  {% for presentation in session.presentations.all %}
+  {% if presentation.visibility == 1 and request.user.is_staff %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% elif presentation.visibility == 2 and present or request.user.is_staff %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% elif presentation.visibility == 3 %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% endif %}
+  {% endfor %}
+  {{session.description|markdown}}
+</section>
+
+{% if user.is_staff and current_class %}
+<section class="students">
+  <a name="students"></a>
+  <h1>Students in this class (<a href="#students">refresh</a>)</h1>
+
+  <table>
+	<tr>
+	  <th>Student</th>
+	  {% for assignment in assignments %}
+	  <th>Assignment {{forloop.counter}}</th>
+	  {% endfor %}
+	</tr>
+	{% for student in students %}
+	<tr>
+	  <td>{{student}}</td>
+	  {% for percentage in student.progress %}
+	  <td>
+		{% if percentage >= 0 %}
+		<div class="bar" style="width: {{percentage|floatformat:'0'}}%">{{percentage|floatformat:'0'}}%</div>
+		{% endif %}
+	  </td>
+	  {% endfor %}
+	</tr>
+	{% empty %}
+	<tr>
+	  <td colspan="{{assignments|length|add:1}}">No students have registered yet</td>
+	</tr>
+	{% endfor %}
+  </table>
+</section>
+
+{% else %}
+<section class="session progress">
+  <h1>Your progress in session {{session.nr}}:</h1>
+  <table>
+	{% for percentage in progress %}
+	{% if percentage >= 0 %}
+	<tr>
+      <td class="y-axis">
+		Assignment {{forloop.counter}}:
+      </td>
+      <td>
+		<div class="bar" style="width: {{percentage|floatformat:'0'}}%">{{percentage|floatformat:'0'}}%</div>
+      </td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	<tr>
+	  <td class="origin">
+	  </td>
+	  <td class="x-axis">
+	  </td>
+	</tr>
+  </table>
+</section>
+
+<section class="session answers">
+  <h1>Your answers:</h1>
+  <table>
+	{% for answers_per_assignment in answers %}
+	{% if answers_per_assignment %}
+	<tr>
+	  <td colspan="2">
+		<h2>Assignment {{forloop.counter}}</h2>
+	  </td>
+	</tr>
+	{% endif %}
+	{% for answer in answers_per_assignment %}
+	{% if answer %}
+	<tr>
+	  <td class="step">
+		Step {{forloop.counter}})
+	  </td>
+	  <td>
+		{% if answer == "mispoes" %}
+		<pre class="missing">Required answer is missing</pre>
+		{% else %}
+		<pre>{{answer}}</pre>
+		{% endif %}
+	  </td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	{% endfor %}
+  </table>
+</section>
+{% endif %}

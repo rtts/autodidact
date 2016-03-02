@@ -1,0 +1,50 @@
+{% if session.registration_enabled %}
+<section class="attendance">
+
+  {% if user.is_staff and current_class %}
+  You are currently teaching group <b>{{current_class.number}}</b>.
+  The registration code for this class is:
+  <div class="ticket">
+	{{current_class.ticket}}
+  </div>
+  Please distribute this code to everyone in class. It will register their attendance and unlock the in-class assignments.
+  <form method="POST" action="{% url 'endclass' %}">
+	{% csrf_token %}
+	<input type="hidden" name="session" value="{{session.pk}}">
+	<input type="submit" value="End this class" />
+  </form>
+  {% endif %}
+
+  {% if user.is_staff and not current_class %}
+  You are currently not teaching any classes. Start a new class by entering a class number <nobr>(e.g., PSY-01)</nobr>.
+  <form method="POST" action="{% url 'startclass' %}">
+	{% csrf_token %}
+	<input type="hidden" name="session" value="{{session.pk}}" />
+	Class number:
+	<input type="text" name="class_nr" />
+	<input type="submit" value="Start a new class" />
+  </form>
+  {% endif %}
+
+  {% if not user.is_staff and current_class %}
+  Your attendance to the class <b>{{current_class.number}}</b> has been registered.
+  {% endif %}
+
+  {% if not user.is_staff and not current_class %}
+  Please enter a valid registration code to register your attendance. You will receive this code in class.
+  <form method="POST" action="">
+	{% csrf_token %}
+	{% if ticket_error %}
+	<div class="ticket_error_text">
+	  Invalid code
+	</div>
+	Registration Code:
+	<input type="text" name="ticket" class="ticket_error" value="{{ticket_error}}">
+	{% else %}
+	Registration Code:
+	<input type="text" name="ticket">
+	{% endif %}
+	<input type="submit" value="Submit" />
+  {% endif %}
+</section>
+{% endif %}
