@@ -4,14 +4,14 @@
 {% load markdown_tag %}
 
 {% block navigation %}
-{% autodidact_assignment_navigation assignment %}
+{% include 'autodidact/nav_assignment.html' %}
 {% endblock %}
 
 {% block content %}
 {% if step %}
 
 <section class="step">
-  <form method="POST" action="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{step_nr}}">
+  <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step_nr}}">
     {% csrf_token %}
     <table class="wizard">
       <tr>
@@ -59,7 +59,7 @@
       {% if forloop.counter == step_nr %}
       <span class="current step">{{forloop.counter}}</span>
       {% elif step %}
-      <a class="finished step" href="{% url 'assignment' course.slug session_nr assignment_nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+      <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
       {% else %}
       <span class="unfinished step">{{forloop.counter}}</span>
       {% endif %}
@@ -70,7 +70,7 @@
 
 {% else %}
 <section>
-  This step does not exist. <a href="{% url 'assignment' course.slug session_nr assignment_nr %}">Go back to step 1</a>.
+  This step does not exist. <a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Go back to step 1</a>.
 </section>
 {% endif %}
 {% endblock %}

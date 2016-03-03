@@ -11,6 +11,7 @@
   <form method="POST" action="{% url 'endclass' %}">
 	{% csrf_token %}
 	<input type="hidden" name="session" value="{{session.pk}}">
+	<input type="hidden" name="class" value="{{current_class.pk}}">
 	<input type="submit" value="End this class" />
   </form>
   {% endif %}
@@ -21,7 +22,7 @@
 	{% csrf_token %}
 	<input type="hidden" name="session" value="{{session.pk}}" />
 	Class number:
-	<input type="text" name="class_nr" />
+	<input type="text" name="class_nr" maxlength="16" />
 	<input type="submit" value="Start a new class" />
   </form>
   {% endif %}
@@ -39,10 +40,10 @@
 	  Invalid code
 	</div>
 	Registration Code:
-	<input type="text" name="ticket" class="ticket_error" value="{{ticket_error}}">
+	<input type="text" name="ticket" class="ticket_error" value="{{ticket_error}}" maxlength="16" />
 	{% else %}
 	Registration Code:
-	<input type="text" name="ticket">
+	<input type="text" name="ticket" maxlength="16" />
 	{% endif %}
 	<input type="submit" value="Submit" />
   {% endif %}

@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
-{% load autodidact %}
 
 {% block navigation %}
-{% autodidact_navigation programmes %}
+{% include 'autodidact/nav_homepage.html' %}
 {% endblock %}
 
 {% block content %}

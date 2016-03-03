@@ -5,7 +5,8 @@ from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
-from .utils import random_string
+from .decorators import *
+from .utils import *
 from .models import *
 
 @login_required
@@ -16,80 +17,105 @@ def homepage(request):
     })
 
 @login_required
+@needs_course
 def course(request, course):
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
     return render(request, 'course.html', {
         'course': course,
     })
 
 @login_required
-def session(request, course, session_nr):
-    session_nr = int(session_nr)
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
-    if session_nr < 1:
-        raise Http404()
-    try:
-        session = course.sessions.all()[session_nr-1]
-        session.nr = session_nr
-    except IndexError:
-        raise Http404()
-    if not session.active and not request.user.is_staff:
-        raise Http404()
-    ticket_error  = False
+@needs_course
+@needs_session
+def session(request, course, session):
+    current_class = None
+    ticket_error = False
+    assignments = session.assignments.prefetch_related('steps')
+    (answers, progress) = calculate_progress(request.user, assignments)
+    students = None
 
-    if session.registration_enabled and request.method == 'POST':
-        ticket = request.POST.get('ticket')
-        try:
-            newclass = Class.objects.get(ticket=ticket)
-            if newclass.session == session and not newclass.dismissed:
+    if session.registration_enabled:
+        if request.method == 'POST':
+            ticket = request.POST.get('ticket')
+            try:
+                newclass = Class.objects.get(ticket=ticket)
+            except Class.DoesNotExist:
+                newclass = None
+            if newclass\
+            and newclass.session == session\
+            and not newclass.dismissed:
                 newclass.users.add(request.user)
                 return redirect(session)
             else:
                 ticket_error = ticket
-        except Class.DoesNotExist:
-            ticket_error = ticket
+
+        current_class = get_current_class(session, request)
+        if request.user.is_staff and current_class:
+            students = current_class.users.all()
+            for student in students:
+                (answers, progress) = calculate_progress(student, assignments)
+                student.progress = progress
+                student.answers = answers
 
     return render(request, 'session.html', {
         'course': course,
         'session': session,
+        'answers': answers,
+        'progress': progress,
+        'students': students,
+        'current_class': current_class,
         'ticket_error': ticket_error,
     })
 
+def get_current_class(session, request):
+    user = request.user
+    classes = user.attends.all() & session.classes.all()
+    if user.is_staff:
+        try:
+            classes = Class.objects.filter(
+                pk__in = [c['class_pk'] for c in request.session['classes']],
+                session = session,
+            )
+        except KeyError:
+            pass
+
+    return classes[0] if classes else None
+
+def calculate_progress(student, assignments):
+    answers   = []
+    progress  = []
+    completed = student.completed.select_related('step').order_by('step')
+
+    for ass in assignments:
+        step_count = 0
+        completed_count = 0
+        answers.append([])
+        progress.append(None)
+        if not ass.active:
+            continue
+        for step in ass.steps.all():
+            step_count += 1
+            answers[-1].append('')
+            for com in completed:
+                if step == com.step:
+                    completed_count += 1
+                    if step.answer_required and not com.answer:
+                        answers[-1][-1] = "mispoes"
+                    else:
+                        answers[-1][-1] = com.answer
+                    break
+        if step_count:
+            progress[-1] = 100 * completed_count/step_count
+        else:
+            progress[-1] = 0
+
+    return (answers, progress)
 
 @login_required
-def assignment(request, course, session_nr, assignment_nr):
-    session_nr    = int(session_nr)
-    assignment_nr = int(assignment_nr)
-    step_nr       = int(request.GET.get('step', 1))
-    save_only     = request.GET.get('save_only', 'false')
-
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
-    if session_nr < 1 or assignment_nr < 1:
-        raise Http404()
-    try:
-        session = course.sessions.all()[session_nr-1]
-        assignment = session.assignments.all()[assignment_nr-1]
-    except IndexError:
-        raise Http404()
-    if not session.active and not request.user.is_staff:
-        raise Http404()
-    if not assignment.active and not request.user.is_staff:
-        raise Http404()
-    if assignment.locked and not request.user.is_staff:
-        present = request.user.attends.all() & session.classes.all()
-        if not present:
-            return HttpResponseForbidden()
-
-    # Retrieve current step
+@needs_course
+@needs_session
+@needs_assignment
+def assignment(request, course, session, assignment):
+    step_nr = int(request.GET.get('step', 1))
     steps = list(assignment.steps.all())
     if step_nr < 1:
         return redirect(assignment)
@@ -123,9 +149,9 @@ def assignment(request, course, session_nr, assignment_nr):
 
         # Redirect after POST request
         if direction == 'Previous':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr - 1))
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1))
         elif direction == 'Next':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr + 1))
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1))
         else:
             return redirect(session)
 
@@ -138,6 +164,7 @@ def assignment(request, course, session_nr, assignment_nr):
         else:
             step_overview.append(False)
 
+    # BUG: IndexError when step is None
     first = step == steps[0]
     last = step == steps[-1]
     count = len(steps)
@@ -145,10 +172,7 @@ def assignment(request, course, session_nr, assignment_nr):
     return render(request, 'assignment.html', {
         'course': course,
         'session': session,
-        'session_nr': session_nr,
         'assignment': assignment,
-        'assignment_nr': assignment_nr,
-        'save_only': save_only == "true",
         'step': step,
         'step_nr': step_nr,
         'count': count,
@@ -166,9 +190,9 @@ def startclass(request):
     if len(class_nr) > 16:
         return HttpResponseBadRequest()
     session = get_object_or_404(Session, pk=session_pk)
-    unique = False
 
     # Generate unique registration code
+    unique = False
     while not unique:
         ticket = random_string(TICKET_LENGTH)
         if not Class.objects.filter(ticket=ticket).exists():
@@ -177,21 +201,34 @@ def startclass(request):
     # Create a class and store it in the user's session
     newclass = Class(session=session, number=class_nr, ticket=ticket)
     newclass.save()
-    request.session['current_class'] = newclass.ticket
+    current_class = {
+        'session_pk': session.pk,
+        'class_pk': newclass.pk,
+    }
+    if 'classes' not in request.session:
+        request.session['classes'] = []
+    request.session['classes'].append(current_class)
+    request.session.modified = True
 
     return redirect(session)
 
 @staff_member_required
 @require_http_methods(['POST'])
 def endclass(request):
+    class_pk = request.POST.get('class')
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
+    classes = []
     try:
-        ticket = request.session['current_class']
-        current_class = Class.objects.get(ticket=ticket)
+        current_class = Class.objects.get(pk=class_pk)
         current_class.dismissed = True
         current_class.save()
-        del request.session['current_class']
+
+        # Remove the current class from the list of classes
+        oldclasses = request.session['classes']
+        newclasses = [c for c in oldclasses if c['class_pk'] != current_class.pk]
+        request.session['classes'] = newclasses
+
     except (KeyError, Class.DoesNotExist):
         pass
     return redirect(session)

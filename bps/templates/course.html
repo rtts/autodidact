@@ -1,9 +1,8 @@
 {% extends 'base.html' %}
-{% load autodidact %}
 {% load markdown_tag %}
 
 {% block navigation %}
-{% autodidact_course_navigation course %}
+{% include 'autodidact/nav_course.html' %}
 {% endblock %}
 
 {% block content %}

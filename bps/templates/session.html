@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
-{% load autodidact %}
 
 {% block navigation %}
-{% autodidact_session_navigation session %}
+{% include 'autodidact/nav_session.html' %}
 {% endblock %}
 
 {% block content %}
-{% autodidact_registration session %}
-{% autodidact_progress session %}
+{% include 'autodidact/registration.html' %}
+{% include 'autodidact/progress.html' %}
 {% endblock %}

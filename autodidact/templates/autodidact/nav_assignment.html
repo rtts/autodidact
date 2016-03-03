@@ -1,6 +1,6 @@
 <ul>
   <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
-  <li class="visitedPage"><a href="{{course.get_absolute_url}}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
-  <li class="visitedPage"><a href="{{session.get_absolute_url}}">Session {{session_nr}}</a></li>
-  <li class="currentPage"><a href="{{assignment.get_absolute_url}}">Assignment {{assignment_nr}}</a></li>
+  <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  <li class="visitedPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
+  <li class="currentPage"><a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Assignment {{assignment.nr}}</a></li>
 </ul>
