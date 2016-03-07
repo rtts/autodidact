@@ -40,17 +40,15 @@ def session(request, course, session):
                 newclass = Class.objects.get(ticket=ticket)
             except Class.DoesNotExist:
                 newclass = None
-            if newclass\
-            and newclass.session == session\
-            and not newclass.dismissed:
-                newclass.users.add(request.user)
+            if newclass and newclass.session == session and not newclass.dismissed:
+                newclass.students.add(request.user)
                 return redirect(session)
             else:
                 ticket_error = ticket
 
         current_class = get_current_class(session, request)
         if request.user.is_staff and current_class:
-            students = current_class.users.all()
+            students = current_class.students.all()
             for student in students:
                 (answers, progress) = calculate_progress(student, assignments)
                 student.progress = progress
@@ -68,16 +66,10 @@ def session(request, course, session):
 
 def get_current_class(session, request):
     user = request.user
-    classes = user.attends.all() & session.classes.all()
     if user.is_staff:
-        try:
-            classes = Class.objects.filter(
-                pk__in = [c['class_pk'] for c in request.session['classes']],
-                session = session,
-            )
-        except KeyError:
-            pass
-
+        classes = user.teaches.all() & session.classes.all()
+    else:
+        classes = user.attends.all() & session.classes.all()
     return classes[0] if classes else None
 
 def calculate_progress(student, assignments):
@@ -141,11 +133,7 @@ def assignment(request, course, session, assignment):
             current_answer.answer = answer
             current_answer.save()
         else:
-            CompletedStep(
-                step=step,
-                whom=request.user,
-                answer=answer,
-            ).save()
+            CompletedStep(step=step, whom=request.user, answer=answer).save()
 
         # Redirect after POST request
         if direction == 'Previous':
@@ -198,18 +186,7 @@ def startclass(request):
         if not Class.objects.filter(ticket=ticket).exists():
             unique = True
 
-    # Create a class and store it in the user's session
-    newclass = Class(session=session, number=class_nr, ticket=ticket)
-    newclass.save()
-    current_class = {
-        'session_pk': session.pk,
-        'class_pk': newclass.pk,
-    }
-    if 'classes' not in request.session:
-        request.session['classes'] = []
-    request.session['classes'].append(current_class)
-    request.session.modified = True
-
+    Class(session=session, number=class_nr, ticket=ticket, teacher=request.user).save()
     return redirect(session)
 
 @staff_member_required
@@ -218,34 +195,11 @@ def endclass(request):
     class_pk = request.POST.get('class')
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
-    classes = []
     try:
-        current_class = Class.objects.get(pk=class_pk)
-        current_class.dismissed = True
-        current_class.save()
-
-        # Remove the current class from the list of classes
-        oldclasses = request.session['classes']
-        newclasses = [c for c in oldclasses if c['class_pk'] != current_class.pk]
-        request.session['classes'] = newclasses
-
-    except (KeyError, Class.DoesNotExist):
-        pass
-    return redirect(session)
-
-# TODO: This method is currently unused
-@staff_member_required
-@require_http_methods(['POST'])
-def joinclass(request):
-    session_pk = request.POST.get('session')
-    session = get_object_or_404(Session, pk=session_pk)
-    ticket = request.POST.get('ticket')
-
-    # Retrieve the class and store it in the user's session
-    try:
-        newclass = Class.objects.get(ticket=ticket)
-        request.session['current_class'] = newclass.ticket
+        group = Class.objects.get(pk=class_pk)
+        group.teacher = None
+        group.dismissed = True
+        group.save()
     except Class.DoesNotExist:
         pass
-
     return redirect(session)

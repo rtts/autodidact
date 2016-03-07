@@ -128,7 +128,8 @@ class Class(models.Model):
     session = models.ForeignKey(Session, related_name='classes')
     number = models.CharField(max_length=16)
     ticket = models.CharField(unique=True, max_length=16)
-    users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
+    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='attends', blank=True)
+    teacher = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='teaches', blank=True, null=True)
     dismissed = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
 
