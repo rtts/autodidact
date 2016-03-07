@@ -1,6 +1,7 @@
 {% load static %}
 {% load markdown_tag %}
 
+{% if not student %}
 <section class="session description">
   <h1>Session {{session.nr}}: {{session.name}}</h1>
 
@@ -15,8 +16,9 @@
   {% endfor %}
   {{session.description|markdown}}
 </section>
+{% endif %}
 
-{% if user.is_staff and current_class %}
+{% if students %}
 <section class="students">
   <a name="students"></a>
   <h1>Students in this class (<a href="#students">refresh</a>)</h1>
@@ -30,7 +32,7 @@
 	</tr>
 	{% for student in students %}
 	<tr>
-	  <td>{{student}}</td>
+	  <td><a href="{% url 'progress' course.slug session.nr student.username %}">{{student}}</a></td>
 	  {% for percentage in student.progress %}
 	  <td>
 		{% if percentage >= 0 %}
@@ -49,7 +51,13 @@
 
 {% else %}
 <section class="session progress">
-  <h1>Your progress in session {{session.nr}}:</h1>
+  <h1>
+	{% if student %}
+	The progress of student “{{student.username}}”:
+	{% else %}
+	Your progress:
+	{%endif %}
+  </h1>
   <table>
 	{% for percentage in progress %}
 	{% if percentage >= 0 %}
@@ -73,7 +81,13 @@
 </section>
 
 <section class="session answers">
-  <h1>Your answers:</h1>
+  <h1>
+	{% if student %}
+	The answers of student “{{student.username}}”:
+	{% else %}
+	Your answers:
+	{% endif %}
+  </h1>
   <table>
 	{% for answers_per_assignment in answers %}
 	{% if answers_per_assignment %}

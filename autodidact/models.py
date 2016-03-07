@@ -137,7 +137,7 @@ class Class(models.Model):
         return 'Class %s of %s' % (self.number, str(self.session))
 
     def nr_of_students(self):
-        return self.users.count()
+        return self.students.count()
 
     class Meta:
         verbose_name_plural = 'classes'

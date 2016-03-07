@@ -4,7 +4,7 @@
   <li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
 
   <li class="heading">Assignments:</li>
-  {% for assignment in session.assignments.all %}
+  {% for assignment in assignments %}
 
   {% if user.is_staff and not assignment.active %}
   <li class="futurePage inactive"><a href="{% url 'assignment' session.course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>

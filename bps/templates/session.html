@@ -5,6 +5,8 @@
 {% endblock %}
 
 {% block content %}
+{% if not student %}
 {% include 'autodidact/registration.html' %}
+{% endif %}
 {% include 'autodidact/progress.html' %}
 {% endblock %}

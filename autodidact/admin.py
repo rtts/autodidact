@@ -115,7 +115,7 @@ class ClassAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['session__course', 'session']
-    list_display = ['number', 'date', 'session', 'ticket', 'nr_of_students', 'dismissed']
+    list_display = ['number', 'date', 'session', 'ticket', 'nr_of_students', 'teacher', 'dismissed']
     exclude = ['session']
 
 @admin.register(Clarification)

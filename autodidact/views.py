@@ -2,6 +2,7 @@ from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -26,11 +27,15 @@ def course(request, course):
 @login_required
 @needs_course
 @needs_session
-def session(request, course, session):
+def session(request, course, session, student=None):
+    if student:
+        user = student
+    else:
+        user = request.user
     current_class = None
     ticket_error = False
     assignments = session.assignments.prefetch_related('steps')
-    (answers, progress) = calculate_progress(request.user, assignments)
+    (answers, progress) = calculate_progress(user, assignments)
     students = None
 
     if session.registration_enabled:
@@ -41,66 +46,30 @@ def session(request, course, session):
             except Class.DoesNotExist:
                 newclass = None
             if newclass and newclass.session == session and not newclass.dismissed:
-                newclass.students.add(request.user)
+                newclass.students.add(user)
                 return redirect(session)
             else:
                 ticket_error = ticket
 
-        current_class = get_current_class(session, request)
-        if request.user.is_staff and current_class:
+        current_class = get_current_class(session, user)
+        if user.is_staff and current_class:
             students = current_class.students.all()
-            for student in students:
-                (answers, progress) = calculate_progress(student, assignments)
-                student.progress = progress
-                student.answers = answers
+            for s in students:
+                (answers, progress) = calculate_progress(s, assignments)
+                s.progress = progress
+                s.answers = answers
 
     return render(request, 'session.html', {
         'course': course,
         'session': session,
+        'assignments': assignments,
         'answers': answers,
         'progress': progress,
+        'student': student,
         'students': students,
         'current_class': current_class,
         'ticket_error': ticket_error,
     })
-
-def get_current_class(session, request):
-    user = request.user
-    if user.is_staff:
-        classes = user.teaches.all() & session.classes.all()
-    else:
-        classes = user.attends.all() & session.classes.all()
-    return classes[0] if classes else None
-
-def calculate_progress(student, assignments):
-    answers   = []
-    progress  = []
-    completed = student.completed.select_related('step').order_by('step')
-
-    for ass in assignments:
-        step_count = 0
-        completed_count = 0
-        answers.append([])
-        progress.append(None)
-        if not ass.active:
-            continue
-        for step in ass.steps.all():
-            step_count += 1
-            answers[-1].append('')
-            for com in completed:
-                if step == com.step:
-                    completed_count += 1
-                    if step.answer_required and not com.answer:
-                        answers[-1][-1] = "mispoes"
-                    else:
-                        answers[-1][-1] = com.answer
-                    break
-        if step_count:
-            progress[-1] = 100 * completed_count/step_count
-        else:
-            progress[-1] = 0
-
-    return (answers, progress)
 
 @login_required
 @needs_course
@@ -169,6 +138,14 @@ def assignment(request, course, session, assignment):
         'first': first,
         'last': last,
     })
+
+@staff_member_required
+def progress(request, course_slug, session_nr, username):
+    try:
+        student = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        raise Http404
+    return session(request, course_slug, session_nr, student=student)
 
 @staff_member_required
 @require_http_methods(['POST'])
