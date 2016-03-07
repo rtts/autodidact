@@ -1,0 +1,29 @@
+{% load static %}
+{% load markdown_tag %}
+
+{% if not student %}
+{% include 'autodidact/registration.html' %}
+<section class="session description">
+  <h1>Session {{session.nr}}: {{session.name}}</h1>
+
+  {% for presentation in session.presentations.all %}
+  {% if presentation.visibility == 1 and request.user.is_staff %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% elif presentation.visibility == 2 and present or request.user.is_staff %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% elif presentation.visibility == 3 %}
+  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% endif %}
+  {% endfor %}
+  {{session.description|markdown}}
+</section>
+{% endif %}
+
+{% if students %}
+{% include 'autodidact/progresses.html' %}
+
+{% else %}
+{% include 'autodidact/progress.html' %}
+
+{% include 'autodidact/answers.html' %}
+{% endif %}

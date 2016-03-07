@@ -1,13 +1,9 @@
 {% extends 'base.html' %}
-{% load markdown_tag %}
 
 {% block navigation %}
-{% include 'autodidact/nav_course.html' %}
+{% include 'autodidact/course_navigation.html' %}
 {% endblock %}
 
 {% block content %}
-<section>
-<h1>{{course.name}}</h1>
-{{course.description|markdown}}
-</section>
+{% include 'autodidact/course_content.html' %}
 {% endblock %}

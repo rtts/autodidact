@@ -1,0 +1,36 @@
+<section class="session answers">
+  <h1>
+	{% if student %}
+	The answers of student “{{student.username}}”:
+	{% else %}
+	Your answers:
+	{% endif %}
+  </h1>
+  <table>
+	{% for answers_per_assignment in answers %}
+	{% if answers_per_assignment %}
+	<tr>
+	  <td colspan="2">
+		<h2>Assignment {{forloop.counter}}</h2>
+	  </td>
+	</tr>
+	{% endif %}
+	{% for answer in answers_per_assignment %}
+	{% if answer %}
+	<tr>
+	  <td class="step">
+		Step {{forloop.counter}})
+	  </td>
+	  <td>
+		{% if answer == "mispoes" %}
+		<pre class="missing">Required answer is missing</pre>
+		{% else %}
+		<pre>{{answer}}</pre>
+		{% endif %}
+	  </td>
+	</tr>
+	{% endif %}
+	{% endfor %}
+	{% endfor %}
+  </table>
+</section>

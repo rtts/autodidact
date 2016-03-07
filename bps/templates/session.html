@@ -1,12 +1,9 @@
 {% extends 'base.html' %}
 
 {% block navigation %}
-{% include 'autodidact/nav_session.html' %}
+{% include 'autodidact/session_navigation.html' %}
 {% endblock %}
 
 {% block content %}
-{% if not student %}
-{% include 'autodidact/registration.html' %}
-{% endif %}
-{% include 'autodidact/progress.html' %}
+{% include 'autodidact/session_content.html' %}
 {% endblock %}
