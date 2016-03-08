@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
@@ -13,25 +14,22 @@ from .models import *
 @login_required
 def homepage(request):
     programmes = Programme.objects.all()
-    return render(request, 'homepage.html', {
+    return render(request, 'autodidact/homepage.html', {
         'programmes': programmes,
     })
 
 @login_required
 @needs_course
 def course(request, course):
-    return render(request, 'course.html', {
+    return render(request, 'autodidact/course.html', {
         'course': course,
     })
 
 @login_required
 @needs_course
 @needs_session
-def session(request, course, session, student=None):
-    if student:
-        user = student
-    else:
-        user = request.user
+def session(request, course, session):
+    user = request.user
     current_class = None
     ticket_error = False
     assignments = session.assignments.prefetch_related('steps')
@@ -59,16 +57,72 @@ def session(request, course, session, student=None):
                 s.progress = progress
                 s.answers = answers
 
-    return render(request, 'session.html', {
+    return render(request, 'autodidact/session_base.html', {
+        'course': course,
+        'session': session,
+        'assignments': assignments,
+        'answers': answers,
+        'progress': progress,
+        'students': students,
+        'current_class': current_class,
+        'ticket_error': ticket_error,
+    })
+
+@staff_member_required
+@needs_course
+@needs_session
+def progress(request, course, session, username):
+    try:
+        student = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        raise Http404
+    assignments = session.assignments.prefetch_related('steps')
+    (answers, progress) = calculate_progress(student, assignments)
+    current_class = get_current_class(session, request.user)
+    return render(request, 'autodidact/session_progress.html', {
         'course': course,
         'session': session,
         'assignments': assignments,
         'answers': answers,
         'progress': progress,
         'student': student,
+        'current_class': current_class,
+    })
+
+@staff_member_required
+@needs_course
+@needs_session
+def progresses(request, course, session):
+    try:
+        days = int(request.GET['days'])
+    except (ValueError, KeyError):
+        return HttpResponseBadRequest('Days not specified')
+    if days < 0 or days > 365000:
+        return HttpResponseBadRequest('Invalid number of days')
+    filetype = request.GET.get('filetype')
+    assignments = session.assignments.prefetch_related('steps')
+    current_class = get_current_class(session, request.user)
+    enddate = datetime.today() + timedelta(days=1)
+    startdate = enddate - timedelta(days=days+1)
+    classes = Class.objects.filter(session=session, date__range=[startdate, enddate]).prefetch_related('students')
+    students = get_user_model().objects.filter(attends__in=classes).distinct()
+    for s in students:
+        (answers, progress) = calculate_progress(s, assignments)
+        s.progress = progress
+        s.answers = answers
+
+    if filetype == 'csv':
+        response = render(request, 'autodidact/students.csv', {'students': students})
+        response['Content-Disposition'] = 'attachment; filename="{}_session{}.csv"'.format(course.slug, session.nr)
+        return response
+    else:
+        return render(request, 'autodidact/session_progresses.html', {
+        'days': days,
+        'course': course,
+        'session': session,
+        'assignments': assignments,
         'students': students,
         'current_class': current_class,
-        'ticket_error': ticket_error,
     })
 
 @login_required
@@ -126,7 +180,7 @@ def assignment(request, course, session, assignment):
     last = step == steps[-1]
     count = len(steps)
 
-    return render(request, 'assignment.html', {
+    return render(request, 'autodidact/assignment.html', {
         'course': course,
         'session': session,
         'assignment': assignment,
@@ -138,14 +192,6 @@ def assignment(request, course, session, assignment):
         'first': first,
         'last': last,
     })
-
-@staff_member_required
-def progress(request, course_slug, session_nr, username):
-    try:
-        student = get_user_model().objects.get(username=username)
-    except get_user_model().DoesNotExist:
-        raise Http404
-    return session(request, course_slug, session_nr, student=student)
 
 @staff_member_required
 @require_http_methods(['POST'])

@@ -1,6 +1,12 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load markdown_tag %}
 
+{% block navigation %}
+{% include 'autodidact/include/assignment_navigation.html' %}
+{% endblock %}
+
+{% block content %}
 {% if step %}
 <section class="step">
   <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step_nr}}">
@@ -65,3 +71,4 @@
   This step does not exist. <a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Go back to step 1</a>.
 </section>
 {% endif %}
+{% endblock %}

@@ -223,6 +223,8 @@ section.attendance {
   font-size: 11px;
   line-height: 1.5;
   margin-left: 20px; }
+  section.attendance hr {
+    margin-top: 20px; }
   section.attendance form {
     text-align: right;
     margin-top: 15px; }

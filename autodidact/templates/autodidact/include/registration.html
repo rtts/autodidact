@@ -1,4 +1,3 @@
-{% if session.registration_enabled %}
 <section class="attendance">
 
   {% if user.is_staff and current_class %}
@@ -46,6 +45,21 @@
 	<input type="text" name="ticket" maxlength="16" />
 	{% endif %}
 	<input type="submit" value="Submit" />
+  </form>
   {% endif %}
+
+  {% if user.is_staff and perms.autodidact.change_class %}
+  <hr><form method="GET" action="{% url 'progresses' course.slug session.nr %}">
+	Show students from the past
+	<select name="days">
+	  <option value="1">Day</option>
+	  <option value="7" selected>Week</option>
+	  <option value="30">Month</option>
+	  <option value="365">Year</option>
+	</select>
+	<input type="submit" value="Go" />
+  </form>
+  {% endif %}
+
 </section>
-{% endif %}
+

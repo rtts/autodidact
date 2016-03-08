@@ -1,0 +1,13 @@
+{% extends 'autodidact/session_base.html' %}
+
+{% block content %}
+<section class="students">
+  <h1>{{students|length}} students attended session {{session.nr}} in the past {{days}} day{{days|pluralize}}</h1>
+  {% include 'autodidact/include/progresses.html' %}
+  <form method="GET">
+	<input type="hidden" name="days" value="{{days}}" />
+	<input type="hidden" name="filetype" value="csv" />
+	<input type="submit" value="Download as CSV file" />
+  </form>
+</section>
+{% endblock %}

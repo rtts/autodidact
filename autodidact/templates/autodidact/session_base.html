@@ -1,11 +1,19 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load markdown_tag %}
 
-{% if not student %}
-{% include 'autodidact/registration.html' %}
+{% block navigation %}
+{% include 'autodidact/include/session_navigation.html' %}
+{% endblock %}
+
+{% block content %}
+
+{% if session.registration_enabled %}
+{% include 'autodidact/include/registration.html' %}
+{% endif %}
+
 <section class="session description">
   <h1>Session {{session.nr}}: {{session.name}}</h1>
-
   {% for presentation in session.presentations.all %}
   {% if presentation.visibility == 1 and request.user.is_staff %}
   <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
@@ -17,13 +25,22 @@
   {% endfor %}
   {{session.description|markdown}}
 </section>
-{% endif %}
 
-{% if students %}
-{% include 'autodidact/progresses.html' %}
+{% if user.is_staff and current_class %}
+<section class="session students">
+  <h1>Students in this class:</h1>
+  {% include 'autodidact/include/progresses.html' %}
+</section>
 
 {% else %}
-{% include 'autodidact/progress.html' %}
+<section class="session progress">
+  <h1>Your progress:</h1>
+  {% include 'autodidact/include/progress.html' %}
+</section>
+<section class="session answers">
+  <h1>Your answers:</h1>
+  {% include 'autodidact/include/answers.html' %}
+</section>
 
-{% include 'autodidact/answers.html' %}
 {% endif %}
+{% endblock %}
