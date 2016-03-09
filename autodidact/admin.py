@@ -24,9 +24,10 @@ class FunkySaveAdmin(object):
     save_on_top = True
 
 @admin.register(Page)
-class ProgrammeAdmin(FunkySaveAdmin, admin.ModelAdmin):
+class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display = ['content']
     exclude = ['slug']
+    save_on_top = False
 
 @admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
