@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime, timedelta
 from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 from django.shortcuts import render, get_object_or_404, redirect
@@ -12,9 +13,11 @@ from .utils import *
 from .models import *
 
 @login_required
-def homepage(request):
+def page(request, slug=''):
+    page = get_object_or_404(Page, slug=slug)
     programmes = Programme.objects.all()
-    return render(request, 'autodidact/homepage.html', {
+    return render(request, 'autodidact/page.html', {
+        'page': page,
         'programmes': programmes,
     })
 
@@ -130,44 +133,39 @@ def progresses(request, course, session):
 @needs_session
 @needs_assignment
 def assignment(request, course, session, assignment):
-    step_nr = int(request.GET.get('step', 1))
     steps = list(assignment.steps.all())
-    if step_nr < 1:
-        return redirect(assignment)
+    try:
+        step_nr = int(request.GET.get('step', 1))
+    except ValueError:
+        return HttpResponseBadRequest('Invalid step number')
+    if step_nr < 1 or step_nr > sys.maxsize:
+        return HttpResponseBadRequest('Invalid step number')
     try:
         step = steps[step_nr-1]
     except IndexError:
-        step = None
+        raise Http404
+    try:
+        completedstep = request.user.completed.get(step=step)
+    except CompletedStep.DoesNotExist:
+        completedstep = None
 
-    # Retrieve answer of current step
-    current_answer = None
-    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
-    for ans in all_answers:
-        if step == ans.step:
-            current_answer = ans
-            break
-
-    if request.method == 'POST' and step:
-        direction = request.POST.get('direction', '')
+    if request.method == 'POST':
         answer = request.POST.get('answer', '')
-
-        # Save state after each step
-        if current_answer:
-            current_answer.answer = answer
-            current_answer.save()
+        if completedstep:
+            completedstep.answer = answer
+            completedstep.save()
         else:
             CompletedStep(step=step, whom=request.user, answer=answer).save()
-
-        # Redirect after POST request
-        if direction == 'Previous':
+        if 'previous' in request.POST:
             return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1))
-        elif direction == 'Next':
+        elif 'next' in request.POST:
             return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1))
         else:
             return redirect(session)
 
     # Calculate for all steps whether they have answers
     step_overview = []
+    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
     answered_steps = [ans.step for ans in all_answers]
     for s in steps:
         if s in answered_steps:
@@ -175,9 +173,8 @@ def assignment(request, course, session, assignment):
         else:
             step_overview.append(False)
 
-    # BUG: IndexError when step is None
+    last = step == s
     first = step == steps[0]
-    last = step == steps[-1]
     count = len(steps)
 
     return render(request, 'autodidact/assignment.html', {
@@ -187,7 +184,7 @@ def assignment(request, course, session, assignment):
         'step': step,
         'step_nr': step_nr,
         'count': count,
-        'completed': current_answer,
+        'completed': completedstep,
         'step_overview': step_overview,
         'first': first,
         'last': last,

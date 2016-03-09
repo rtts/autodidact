@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from .views import *
 
 urlpatterns = [
-    url(r'^$', homepage, name='homepage'),
+    url(r'^$', page, name='homepage'),
     url(r'^startclass/$', startclass, name='startclass'),
     url(r'^endclass/$', endclass, name='endclass'),
     url(r'^([^/]+)/$', course, name='course'),

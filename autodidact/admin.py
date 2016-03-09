@@ -23,6 +23,11 @@ class FunkySaveAdmin(object):
 
     save_on_top = True
 
+@admin.register(Page)
+class ProgrammeAdmin(FunkySaveAdmin, admin.ModelAdmin):
+    list_display = ['content']
+    exclude = ['slug']
+
 @admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
     pass

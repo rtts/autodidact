@@ -33,17 +33,13 @@
       {% endif %}
       <tr>
 	<td class="footer">
-	  {% if save_only %}
-	  <input class="right button" type="submit" name="direction" value="Save" />
-	  {% else %}
 	  {% if not first %}
-	  <input class="left button" type="submit" name="direction" value="Previous" />
+	  <input class="left button" type="submit" name="previous" value="Previous" />
 	  {% endif %}
 	  {% if not last %}
-	  <input class="right button" type="submit" name="direction" value="Next" />
+	  <input class="right button" type="submit" name="next" value="Next" />
 	  {% else %}
-	  <input class="right button finish" type="submit" name="direction" value="Finish!" />
-	  {% endif %}
+	  <input class="right button finish" type="submit" value="Finish!" />
 	  {% endif %}
 	</td>
       </tr>

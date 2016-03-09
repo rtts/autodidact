@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load markdown_tag %}
+
+{% block navigation %}
+{% include 'autodidact/include/homepage_navigation.html' %}
+{% endblock %}
+
+{% block content %}
+<section>
+  {{page.content|markdown}}
+</section>
+{% endblock %}

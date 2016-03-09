@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 import os
 from django.db import models
 from django.conf import settings
@@ -9,6 +10,20 @@ from .utils import clean
 
 MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
 TICKET_LENGTH = 4
+
+@python_2_unicode_compatible
+class Page(models.Model):
+    slug = models.SlugField(blank=True, unique=True)
+    content = models.TextField(help_text=MDHELP)
+
+    def __str__(self):
+        return self.content
+
+    def get_absolute_url(self):
+        if self.slug:
+            return reverse('page', args=[self.slug])
+        else:
+            return reverse('homepage')
 
 @python_2_unicode_compatible
 class Programme(models.Model):
@@ -68,7 +83,7 @@ class Assignment(SortableMixin):
     name = models.CharField(max_length=255)
     session = SortableForeignKey(Session, related_name="assignments")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
-    active = models.BooleanField(default=True, help_text='Inactive assignments are not visible to students')
+    active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
 
     def __str__(self):
@@ -85,6 +100,12 @@ class Assignment(SortableMixin):
 
     class Meta:
         ordering = ['order']
+
+    # Override the save method to ensure at least one step
+    def save(self, *args, **kwargs):
+        super(Assignment, self).save(*args, **kwargs)
+        if not self.steps.all():
+            Step(assignment=self, name='First step', description='Description').save()
 
 @python_2_unicode_compatible
 class Step(SortableMixin):
