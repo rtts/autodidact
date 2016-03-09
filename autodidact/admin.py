@@ -3,7 +3,7 @@ from django.db import models
 from django.forms import RadioSelect
 from django.shortcuts import redirect
 from .models import *
-from adminsortable.admin import SortableAdmin, SortableStackedInline, SortableTabularInline
+from adminsortable.admin import SortableAdmin, SortableStackedInline #, SortableTabularInline
 
 class FunkySaveAdmin(object):
     '''
@@ -67,7 +67,7 @@ class SessionAdmin(FunkySaveAdmin, SortableAdmin):
     list_editable = ['name', 'registration_enabled', 'active']
     exclude = ['course']
 
-class InlineStepAdmin(SortableTabularInline):
+class InlineStepAdmin(SortableStackedInline):
     model = Step
 
 @admin.register(Assignment)

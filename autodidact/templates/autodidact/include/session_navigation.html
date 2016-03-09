@@ -22,6 +22,15 @@
   {% endif %}
 
   {% endfor %}
+
+  {% if perms.autodidact.add_assignment %}
+  <li>
+    <div class='add'>
+	  <a class="editlink" href="{% url 'add_assignment' course.slug session.nr %}">Add an assignment</a>
+	</div>
+  </li>
+  {% endif %}
+
   <li class="spacer"/>
 
   <li class="heading">Downloads:</li>
@@ -30,4 +39,12 @@
   {% empty %}
   <li class="empty">No downloads available</li>
   {% endfor %}
+
+  {% if perms.autodidact.add_assignment %}
+  <li>
+    <div class='add'>
+	  <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Add a download</a>
+	</div>
+  </li>
+  {% endif %}
 </ul>

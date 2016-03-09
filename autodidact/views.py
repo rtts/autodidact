@@ -1,11 +1,11 @@
 import sys
 from datetime import datetime, timedelta
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth import get_user_model
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from .decorators import *
@@ -223,3 +223,22 @@ def endclass(request):
     except Class.DoesNotExist:
         pass
     return redirect(session)
+
+@staff_member_required
+@permission_required('autodidact.change_assignment')
+@needs_course
+@needs_session
+def add_assignment(request, course, session):
+    assignment = Assignment(session=session, name='New assignment')
+    assignment.save()
+    return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
+
+@staff_member_required
+@permission_required('autodidact.change_step')
+@needs_course
+@needs_session
+@needs_assignment
+def add_step(request, course, session, assignment):
+    step = Step(assignment=assignment, name='New step', description='Description')
+    step.save()
+    return HttpResponseRedirect(reverse('admin:autodidact_step_change', args=[step.pk]))

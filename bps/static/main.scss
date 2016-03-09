@@ -155,7 +155,7 @@ nav {
       margin-bottom: 1px;
       list-style-type	: none;
 
-      a {
+      > a {
         transition: all 0.1s ease-out;
         text-decoration:none;
         color: $darkblue;
@@ -284,6 +284,10 @@ footer {
   a {
     color: #A8D7E1;
   }
+}
+
+div.add {
+  margin: 8px 35px;
 }
 
 a.editlink, .staff {
