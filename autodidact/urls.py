@@ -3,6 +3,7 @@ from .views import *
 
 urlpatterns = [
     url(r'^$', page, name='homepage'),
+    url(r'^page/([^/]+)/$', page, name='page'),
     url(r'^startclass/$', startclass, name='startclass'),
     url(r'^endclass/$', endclass, name='endclass'),
     url(r'^([^/]+)/$', course, name='course'),

@@ -229,7 +229,7 @@ def endclass(request):
 @needs_course
 @needs_session
 def add_assignment(request, course, session):
-    assignment = Assignment(session=session, name='New assignment')
+    assignment = Assignment(session=session)
     assignment.save()
     return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
 
@@ -239,6 +239,6 @@ def add_assignment(request, course, session):
 @needs_session
 @needs_assignment
 def add_step(request, course, session, assignment):
-    step = Step(assignment=assignment, name='New step', description='Description')
+    step = Step(assignment=assignment)
     step.save()
     return HttpResponseRedirect(reverse('admin:autodidact_step_change', args=[step.pk]))

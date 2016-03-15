@@ -41,26 +41,26 @@ class Course(SortableMixin):
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
 
-    def colloquial_name(self):
-        return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
-
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
 
-    def get_absolute_url(self):
-        return reverse('course', args=[self.slug])
+    def colloquial_name(self):
+        return self.slug.replace('-', ' ').replace('mto', 'mto-').upper()
 
     def url(self):
         return '<a href="%(url)s">%(url)s</a>' % {'url': self.get_absolute_url()}
     url.allow_tags = True
+
+    def get_absolute_url(self):
+        return reverse('course', args=[self.slug])
 
     class Meta:
         ordering = ['order']
 
 @python_2_unicode_compatible
 class Session(SortableMixin):
-    name = models.CharField(max_length=255)
-    description = models.TextField(help_text=MDHELP)
+    name = models.CharField(max_length=255, blank=True)
+    description = models.TextField(help_text=MDHELP, blank=True)
     course = SortableForeignKey(Course, related_name="sessions")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
@@ -92,11 +92,11 @@ class Assignment(SortableMixin):
     def get_number(self):
         return self.session.assignments.filter(order__lt=self.order).count() + 1
 
-    def get_absolute_url(self):
-        return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
-
     def nr_of_steps(self):
         return self.steps.count()
+
+    def get_absolute_url(self):
+        return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
 
     class Meta:
         ordering = ['order']
@@ -109,9 +109,9 @@ class Assignment(SortableMixin):
 
 @python_2_unicode_compatible
 class Step(SortableMixin):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
     assignment = SortableForeignKey(Assignment, related_name='steps')
-    description = models.TextField(help_text=MDHELP)
+    description = models.TextField(help_text=MDHELP, blank=True)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
