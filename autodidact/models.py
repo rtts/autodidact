@@ -80,14 +80,14 @@ class Session(SortableMixin):
 
 @python_2_unicode_compatible
 class Assignment(SortableMixin):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=True)
     session = SortableForeignKey(Session, related_name="assignments")
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
 
     def __str__(self):
-        return 'Assignment %i: %s' % (self.get_number(), self.name)
+        return 'Assignment {}'.format(self.get_number())
 
     def get_number(self):
         return self.session.assignments.filter(order__lt=self.order).count() + 1
@@ -104,8 +104,8 @@ class Assignment(SortableMixin):
     # Override the save method to ensure at least one step
     def save(self, *args, **kwargs):
         super(Assignment, self).save(*args, **kwargs)
-        if not self.steps.all():
-            Step(assignment=self, name='First step', description='Description').save()
+        if not self.steps.first():
+            Step(assignment=self).save()
 
 @python_2_unicode_compatible
 class Step(SortableMixin):
@@ -116,7 +116,7 @@ class Step(SortableMixin):
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
     def __str__(self):
-        return 'Step %i: %s' % (self.get_number(), self.name)
+        return 'Step {}'.format(self.get_number())
 
     def get_number(self):
         return self.assignment.steps.filter(order__lt=self.order).count() + 1
@@ -139,7 +139,7 @@ class CompletedStep(models.Model):
     answer = models.TextField(blank=True)
 
     def __str__(self):
-        return '%s has completed %s' % (self.whom.username, self.step.name)
+        return '%s has completed %s' % (self.whom.username, str(self.step))
 
     class Meta:
         verbose_name_plural = 'completed steps'

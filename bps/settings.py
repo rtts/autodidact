@@ -143,5 +143,5 @@ DATABASES = {
     }
 }
 
-if 'test' in sys.argv or 'test_coverage' in sys.argv:
+if DEBUG and 'test' in sys.argv:
     DATABASES['default']['ENGINE'] = 'django.db.backends.sqlite3'
