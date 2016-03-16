@@ -34,12 +34,12 @@ class Programme(models.Model):
 
 @python_2_unicode_compatible
 class Course(SortableMixin):
+    programmes = models.ManyToManyField(Programme, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField(help_text=MDHELP)
-    programmes = models.ManyToManyField(Programme, related_name='courses')
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -59,12 +59,12 @@ class Course(SortableMixin):
 
 @python_2_unicode_compatible
 class Session(SortableMixin):
+    course = SortableForeignKey(Course, related_name="sessions")
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(help_text=MDHELP, blank=True)
-    course = SortableForeignKey(Course, related_name="sessions")
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -80,11 +80,11 @@ class Session(SortableMixin):
 
 @python_2_unicode_compatible
 class Assignment(SortableMixin):
-    name = models.CharField(max_length=255, blank=True)
     session = SortableForeignKey(Session, related_name="assignments")
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
+    name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return 'Assignment {}'.format(self.get_number())
@@ -109,11 +109,11 @@ class Assignment(SortableMixin):
 
 @python_2_unicode_compatible
 class Step(SortableMixin):
-    name = models.CharField(max_length=255, blank=True)
     assignment = SortableForeignKey(Assignment, related_name='steps')
+    name = models.CharField(max_length=255, blank=True)
     description = models.TextField(help_text=MDHELP, blank=True)
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
+    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return 'Step {}'.format(self.get_number())
@@ -168,8 +168,8 @@ def session_path(obj, filename):
 
 @python_2_unicode_compatible
 class Download(models.Model):
-    file = models.FileField(upload_to=session_path)
     session = models.ForeignKey(Session, related_name='downloads')
+    file = models.FileField(upload_to=session_path)
 
     def __str__(self):
         return os.path.basename(str(self.file))
@@ -177,21 +177,18 @@ class Download(models.Model):
     def url(self):
         return self.file.url
 
-    def filename(self):
-        return os.basename(self.file)
-
     class Meta:
         ordering = ['file']
 
 @python_2_unicode_compatible
 class Presentation(SortableMixin):
-    file = models.FileField(upload_to=session_path)
     session = SortableForeignKey(Session, related_name='presentations')
+    file = models.FileField(upload_to=session_path)
     visibility = models.IntegerField(choices=(
         (1, 'Only visible to teacher'),
         (2, 'Visible to students in class'),
         (3, 'Visible to everyone'),
-    ))
+    ), default=1)
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
@@ -214,7 +211,7 @@ class Clarification(SortableMixin):
     order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
-        return 'Clarification for %s' % unicode(self.step)
+        return 'Clarification for %s' % str(self.step)
 
     class Meta:
         ordering = ['order']

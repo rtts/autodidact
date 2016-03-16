@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import os, sys
 import datetime
+import shutil
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
@@ -330,7 +331,7 @@ class PathFunctionsTest(TestCase):
 
 class DownloadTest(TestCase):
     def setUp(self):
-        filename = 'autodidact-unittest.txt'
+        filename = 'download.txt'
         contents = b'This file was automatically created during the unittesting of the Autodidact application. Feel free to remove it.'
         self.course = Course(name=course_name, slug=course_slug)
         self.course.save()
@@ -354,10 +355,74 @@ class DownloadTest(TestCase):
         self.assertEqual(str(self.download), os.path.basename(str(self.download.file)))
 
     def test_url(self):
-        '''The url function simply returns the file.url attribute'''
+        '''The url() function simply returns the file.url attribute'''
 
         self.assertEqual(self.download.url(), self.download.file.url)
 
     def tearDown(self):
-        import shutil
+        shutil.rmtree(self.mediaroot)
+
+class PresentationTest(TestCase):
+    def setUp(self):
+        filename = 'presentation.txt'
+        contents = b'This file was automatically created during the unittesting of the Autodidact application. Feel free to remove it.'
+        self.course = Course(name=course_name, slug=course_slug)
+        self.course.save()
+        self.session = Session(course=self.course)
+        self.session.save()
+        self.mediaroot = os.path.join(settings.MEDIA_ROOT, 'unittest' + datetime.datetime.now().isoformat())
+        with self.settings(MEDIA_ROOT=self.mediaroot):
+            self.presentation = Presentation(session=self.session)
+            self.presentation.file = SimpleUploadedFile(filename, contents)
+            self.presentation.save()
+
+    def test_write_permissions(self):
+        '''The stored file should actually exists on disk, otherwise the media directory probably doesn't have write permissions.'''
+
+        path = os.path.join(self.mediaroot, str(self.presentation.file))
+        self.assertTrue(os.path.isfile(path))
+
+    def test_string_representation(self):
+        '''The string representation should simply be the filename'''
+
+        self.assertEqual(str(self.presentation), os.path.basename(str(self.presentation.file)))
+
+    def test_url(self):
+        '''The url() function simply returns the file.url attribute'''
+
+        self.assertEqual(self.presentation.url(), self.presentation.file.url)
+
+    def tearDown(self):
+        shutil.rmtree(self.mediaroot)
+
+class ClarificationTest(TestCase):
+    def setUp(self):
+        filename = 'clarification.txt'
+        contents = b'This file was automatically created during the unittesting of the Autodidact application. Feel free to remove it.'
+        self.course = Course(name=course_name, slug=course_slug)
+        self.course.save()
+        self.session = Session(course=self.course)
+        self.session.save()
+        self.assignment = Assignment(session=self.session)
+        self.assignment.save()
+        self.step = self.assignment.steps.first()
+        self.mediaroot = os.path.join(settings.MEDIA_ROOT, 'unittest' + datetime.datetime.now().isoformat())
+        with self.settings(MEDIA_ROOT=self.mediaroot):
+            self.clarification = Clarification(step=self.step)
+            self.clarification.image = SimpleUploadedFile(filename, contents)
+            self.clarification.save()
+
+    def test_string_representation(self):
+        '''The string representation of a clarification is "Clarification for Step 1".'''
+
+        representation = "Clarification for Step {}".format(self.step.get_number())
+        self.assertEqual(str(self.clarification), representation)
+
+    def test_write_permissions(self):
+        '''The stored file should actually exists on disk, otherwise the media directory probably doesn't have write permissions.'''
+
+        path = os.path.join(self.mediaroot, str(self.clarification.image))
+        self.assertTrue(os.path.isfile(path))
+
+    def tearDown(self):
         shutil.rmtree(self.mediaroot)
