@@ -60,6 +60,7 @@ class ProgrammeTest(TestCase):
 class CourseTest(TestCase):
     def setUp(self):
         self.course = Course(name=course_name, slug=course_slug)
+        self.course.save()
 
     def test_string_representation(self):
         '''A simple test to verify that the string representation of a course
