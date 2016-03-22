@@ -1,9 +1,16 @@
 import os, sys
+import logging
 from six.moves import configparser
 from django.core.exceptions import ImproperlyConfigured
+from autodidact.utils import random_string
 from .utils import read
 
-CONFIG_FILE = '/etc/bps/config.ini'
+if os.path.isfile('/etc/bps/config.ini'):
+    CONFIG_FILE = '/etc/bps/config.ini'
+elif os.path.isfile('bps/config.ini'):
+    CONFIG_FILE = 'bps/config.ini'
+else:
+    raise ImproperlyConfigured('Could not locate the configuration file {/etc/,}bps/config.ini')
 
 try:
     cfg = configparser.RawConfigParser()
@@ -23,9 +30,14 @@ try:
 except configparser.Error as e:
     raise ImproperlyConfigured("Error parsing %s: %s" % (CONFIG_FILE, e.message))
 
+try:
+    SECRET_KEY = read(secret_key)
+except FileNotFoundError:
+    logging.warning('Secret key not found. Using randomly generated key.')
+    SECRET_KEY = random_string(50)
+
 STATIC_ROOT        = static_dir
 MEDIA_ROOT         = uploads_dir
-SECRET_KEY         = read(secret_key)
 CAS_SERVER_URL     = cas_server
 ALLOWED_HOSTS      = [e.strip() for e in allowed_hosts.split(',')]
 DEBUG              = debug

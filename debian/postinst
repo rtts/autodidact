@@ -24,8 +24,8 @@ case $1 in
         chown www-data:www-data "$UPLOADS"
 
         # Run management commands
-	yes yes | manage.py collectstatic
         su www-data -s /bin/sh -c 'manage.py migrate'
+	yes yes | manage.py collectstatic
 
         # Insert correct dir into example configuration
 	project_dir=`python3 -c 'import os,bps; print(os.path.dirname(bps.__file__))'`

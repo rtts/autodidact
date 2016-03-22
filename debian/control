@@ -8,7 +8,7 @@ Standards-Version: 3.9.7
 Package: autodidact
 Architecture: any
 Depends: ${python3:Depends}, ${misc:Depends}, python3-django, python3-markdown, python3-pil, libjs-jquery, makepasswd
-Recommends: apache2 (>= 2.4.10~), libapache2-mod-wsgi-py, python3-psycopg2
+Recommends: apache2 (>= 2.4.10~), libapache2-mod-wsgi-py3, python3-psycopg2
 Description: CMS for creating self-learning activities
  Autodidact is a simple content-management system (CMS) for creating
  self-learning activities. It is used at Tilburg University for the "Best

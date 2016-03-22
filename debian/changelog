@@ -1,11 +1,24 @@
-autodidact (0.8~rc1) UNRELEASED; urgency=medium
+autodidact (0.8~rc1) stable; urgency=medium
 
-  * Follow Python package guidelines, unfortunately this has broken
-    Debian packaging somewhat
+  * All code and all dependencies are now fully Python 2 and Python 3
+    compatible. The build system has switched to Python 3 only, per the
+    Debian Python Policy[1]
+  * Third-party code has been removed from the repository. The installation
+    instructions have been updated to instruct the use of `pip3` to install
+    the dependencies that are not yet packaged for Debian.
+  * All non-trivial templates have been moved from the "bps" module to the
+    "autodidact" module
+  * The authorization logic has been moved to decorators.py
+  * A new database model "Page" allows the homepage to be edited by staff
+  * The models and views are now 100% covered by unittests. The tests succeed on
+    both Python 2 and Python 3 and with Django versions 1.7.7 through 1.9.4
+  * Various bugfixes and UX improvements
 
- -- Jaap Joris Vens <jj@rtts.eu>  Mon, 29 Feb 2016 00:26:58 +0100
+  [1] https://www.debian.org/doc/packaging-manuals/python-policy/ch-python3.html
 
-autodidact (0.7~rc1) stable; urgency=medium
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 22 Mar 2016 14:27:01 +0100
+
+autodidact (0.7) stable; urgency=medium
 
   * A new breadcrumbs-style progress bar for students during their
     assignment
