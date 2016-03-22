@@ -1,0 +1,17 @@
+<ul>
+  {% for programme in programmes %}
+  <li class="heading">{{programme.name}} courses:</li>
+  {% for course in programme.courses.all %}
+  {% if course.active %}
+  <li class="futurePage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  {% elif user.is_staff %}
+  <li class="futurePage inactive"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  {% endif %}
+  {% empty %}
+  <li class="empty">No {{programme.name}} courses available</li>
+  {% endfor %}
+  <li class="spacer"/>
+  {% empty %}
+  <li class="empty">No courses available</li>
+  {% endfor %}
+</ul>

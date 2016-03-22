@@ -16,9 +16,7 @@ Installation
 
 Tilburg University maintains a Debian repository at
 https://non-gnu.uvt.nl/ from which both Autodidact and BPS can be
-installed.
-
-First, add the following lines to `/etc/apt/sources.list`:
+installed. First, add the following lines to `/etc/apt/sources.list`:
 
     deb http://non-gnu.uvt.nl/debian jessie uvt
     deb-src http://non-gnu.uvt.nl/debian jessie uvt
@@ -26,6 +24,11 @@ First, add the following lines to `/etc/apt/sources.list`:
 Second, add the Tilburg University signing key to your apt key store:
 
     curl http://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
+
+Since not all Python dependencies have yet been packaged
+for Debian, you have to install the following dependencies manually:
+
+    pip3 install django-admin-sortable django-cleanup
 
 Now you can install the `autodidact` package with `apt-get`:
 
@@ -45,20 +48,26 @@ server you probably want to use a "real" database and adjust the
 `allowed_hosts` setting). Now the database tables can be created with
 the following commands:
 
-    cd /usr/lib/python2.7/dist-packages/bps/
-    python manage.py migrate
+    manage.py migrate
 
 Second, you will have to create at least one superuser:
 
-    python manage.py createsuperuser
+    manage.py createsuperuser
 
 Finally, Apache needs to be configured to serve BPS. For this purpose,
 a basic configuration file has already been installed in
-`/etc/apache2/conf-enabled/bps.conf`. All you have to do is restart
+`/etc/apache2/conf-available/bps.conf`. If you want to use it, first
+install the mod_wsgi module:
+
+    apt-get install libapache2-mod-wsgi
+
+Then, all you need to do is enable the BPS configuration and restart
 Apache:
 
+    cd /etc/apache2/conf-enabled
+    ln -s ../conf-available/bps.conf
     systemctl restart apache2
 
 BPS should now be up and running! Visit the URL /admin/ and log in
 with your superuser credentials to start adding users and course
-content.
+content!

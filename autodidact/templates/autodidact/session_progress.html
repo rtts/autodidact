@@ -1,0 +1,12 @@
+{% extends 'autodidact/session_base.html' %}
+
+{% block content %}
+<section class="session progress">
+  <h1>The progress of student “{{student.username}}”:</h1>
+  {% include 'autodidact/include/progress.html' %}
+</section>
+<section class="session answers">
+  <h1>The answers of student “{{student.username}}”:</h1>
+  {% include 'autodidact/include/answers.html' %}
+</section>
+{% endblock %}

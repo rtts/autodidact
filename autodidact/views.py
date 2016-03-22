@@ -1,195 +1,172 @@
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
+import sys
+from datetime import datetime, timedelta
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 
-from .utils import random_string
+from .decorators import *
+from .utils import *
 from .models import *
 
 @login_required
-def homepage(request):
+def page(request, slug=''):
+    page = get_object_or_404(Page, slug=slug)
     programmes = Programme.objects.all()
-    return render(request, 'homepage.html', {
+    return render(request, 'autodidact/page.html', {
+        'page': page,
         'programmes': programmes,
     })
 
 @login_required
+@needs_course
 def course(request, course):
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
-    return render(request, 'course.html', {
+    return render(request, 'autodidact/course.html', {
         'course': course,
     })
 
 @login_required
-def session(request, course, session_nr):
-    session_nr = int(session_nr)
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
-    if session_nr < 1:
-        raise Http404()
-    try:
-        session = course.sessions.all()[session_nr-1]
-        session.nr = session_nr
-    except IndexError:
-        raise Http404()
-    if not session.active and not request.user.is_staff:
-        raise Http404()
-
-    assignments   = session.assignments.prefetch_related('steps')
-    (answers, progress) = calculate_progress(request.user, assignments)
-    students      = None
+@needs_course
+@needs_session
+def session(request, course, session):
+    user = request.user
     current_class = None
-    present       = False
-    ticket_error  = False
+    ticket_error = False
+    assignments = session.assignments.prefetch_related('steps')
+    (answers, progress) = calculate_progress(user, assignments)
+    students = None
 
     if session.registration_enabled:
         if request.method == 'POST':
             ticket = request.POST.get('ticket')
             try:
                 newclass = Class.objects.get(ticket=ticket)
-                if newclass.session == session:
-                    newclass.users.add(request.user)
-                    return redirect(session)
             except Class.DoesNotExist:
+                newclass = None
+            if newclass and newclass.session == session and not newclass.dismissed:
+                newclass.students.add(user)
+                return redirect(session)
+            else:
                 ticket_error = ticket
-                pass
 
-        # Users are present if their classes intersect the session's classes
-        present = request.user.attends.all() & session.classes.all()
+        current_class = get_current_class(session, user)
+        if user.is_staff and current_class:
+            students = current_class.students.all()
+            for s in students:
+                (answers, progress) = calculate_progress(s, assignments)
+                s.progress = progress
+                s.answers = answers
 
-        try:
-            current_class = Class.objects.get(ticket=request.session['current_class'], session=session)
-        except (Class.DoesNotExist, KeyError):
-            pass
-        if request.user.is_staff and current_class:
-
-            # FIXME: The following prefetch does not reduce the number of queries
-            students = current_class.users.prefetch_related('completed', 'completed__step')
-
-            for student in students:
-                (answers, progress) = calculate_progress(student, assignments)
-                student.progress = progress
-                student.answers = answers
-
-    return render(request, 'session.html', {
+    return render(request, 'autodidact/session_base.html', {
         'course': course,
         'session': session,
         'assignments': assignments,
         'answers': answers,
         'progress': progress,
-        'ticket_error': ticket_error,
-        'present': present,
-        'current_class': current_class,
         'students': students,
+        'current_class': current_class,
+        'ticket_error': ticket_error,
     })
 
+@staff_member_required
+@needs_course
+@needs_session
+def progress(request, course, session, username):
+    try:
+        student = get_user_model().objects.get(username=username)
+    except get_user_model().DoesNotExist:
+        raise Http404
+    assignments = session.assignments.prefetch_related('steps')
+    (answers, progress) = calculate_progress(student, assignments)
+    current_class = get_current_class(session, request.user)
+    return render(request, 'autodidact/session_progress.html', {
+        'course': course,
+        'session': session,
+        'assignments': assignments,
+        'answers': answers,
+        'progress': progress,
+        'student': student,
+        'current_class': current_class,
+    })
 
-def calculate_progress(student, assignments):
-    answers   = []
-    progress  = []
-    completed = student.completed.select_related('step').order_by('step')
+@staff_member_required
+@needs_course
+@needs_session
+def progresses(request, course, session):
+    try:
+        days = int(request.GET['days'])
+    except (ValueError, KeyError):
+        return HttpResponseBadRequest('Days not specified')
+    if days < 0 or days > 365000:
+        return HttpResponseBadRequest('Invalid number of days')
+    filetype = request.GET.get('filetype')
+    assignments = session.assignments.prefetch_related('steps')
+    current_class = get_current_class(session, request.user)
+    enddate = datetime.today() + timedelta(days=1)
+    startdate = enddate - timedelta(days=days+1)
+    classes = Class.objects.filter(session=session, date__range=[startdate, enddate]).prefetch_related('students')
+    students = get_user_model().objects.filter(attends__in=classes).distinct()
+    for s in students:
+        (answers, progress) = calculate_progress(s, assignments)
+        s.progress = progress
+        s.answers = answers
 
-    for ass in assignments:
-        step_count = 0
-        completed_count = 0
-        answers.append([])
-        progress.append(None)
-        if not ass.active:
-            continue
-        for step in ass.steps.all():
-            step_count += 1
-            answers[-1].append('')
-            for com in completed:
-                if step == com.step:
-                    completed_count += 1
-                    if step.answer_required and not com.answer:
-                        answers[-1][-1] = "mispoes"
-                    else:
-                        answers[-1][-1] = com.answer
-                    break
-        if step_count:
-            progress[-1] = 100 * completed_count/step_count
-        else:
-            progress[-1] = 0
-
-    return (answers, progress)
+    if filetype == 'csv':
+        response = render(request, 'autodidact/students.csv', {'students': students})
+        response['Content-Disposition'] = 'attachment; filename="{}_session{}.csv"'.format(course.slug, session.nr)
+        return response
+    else:
+        return render(request, 'autodidact/session_progresses.html', {
+        'days': days,
+        'course': course,
+        'session': session,
+        'assignments': assignments,
+        'students': students,
+        'current_class': current_class,
+    })
 
 @login_required
-def assignment(request, course, session_nr, assignment_nr):
-    session_nr    = int(session_nr)
-    assignment_nr = int(assignment_nr)
-    step_nr       = int(request.GET.get('step', 1))
-    save_only     = request.GET.get('save_only', 'false')
-
-    if request.user.is_staff:
-        course = get_object_or_404(Course, slug=course)
-    else:
-        course = get_object_or_404(Course, slug=course, active=True)
-    if session_nr < 1 or assignment_nr < 1:
-        raise Http404()
-    try:
-        session = course.sessions.all()[session_nr-1]
-        assignment = session.assignments.all()[assignment_nr-1]
-    except IndexError:
-        raise Http404()
-    if not session.active and not request.user.is_staff:
-        raise Http404()
-    if not assignment.active and not request.user.is_staff:
-        raise Http404()
-    if assignment.locked and not request.user.is_staff:
-        present = request.user.attends.all() & session.classes.all()
-        if not present:
-            return HttpResponseForbidden()
-
-    # Retrieve current step
+@needs_course
+@needs_session
+@needs_assignment
+def assignment(request, course, session, assignment):
     steps = list(assignment.steps.all())
-    if step_nr < 1:
-        return redirect(assignment)
+    try:
+        step_nr = int(request.GET.get('step', 1))
+    except ValueError:
+        return HttpResponseBadRequest('Invalid step number')
+    if step_nr < 1 or step_nr > sys.maxsize:
+        return HttpResponseBadRequest('Invalid step number')
     try:
         step = steps[step_nr-1]
+        step.nr = step_nr
     except IndexError:
-        step = None
+        raise Http404
+    try:
+        completedstep = request.user.completed.get(step=step)
+    except CompletedStep.DoesNotExist:
+        completedstep = None
 
-    # Retrieve answer of current step
-    current_answer = None
-    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
-    for ans in all_answers:
-        if step == ans.step:
-            current_answer = ans
-            break
-
-    if request.method == 'POST' and step:
-        direction = request.POST.get('direction', '')
+    if request.method == 'POST':
         answer = request.POST.get('answer', '')
-
-        # Save state after each step
-        if current_answer:
-            current_answer.answer = answer
-            current_answer.save()
+        if completedstep:
+            completedstep.answer = answer
+            completedstep.save()
         else:
-            CompletedStep(
-                step=step,
-                whom=request.user,
-                answer=answer,
-            ).save()
-
-        # Redirect after POST request
-        if direction == 'Previous':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr - 1))
-        elif direction == 'Next':
-            return redirect(reverse('assignment', args=[course.slug, session_nr, assignment_nr]) + "?step=" + str(step_nr + 1))
+            CompletedStep(step=step, whom=request.user, answer=answer).save()
+        if 'previous' in request.POST:
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1))
+        elif 'next' in request.POST:
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1))
         else:
             return redirect(session)
 
     # Calculate for all steps whether they have answers
     step_overview = []
+    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
     answered_steps = [ans.step for ans in all_answers]
     for s in steps:
         if s in answered_steps:
@@ -197,21 +174,17 @@ def assignment(request, course, session_nr, assignment_nr):
         else:
             step_overview.append(False)
 
+    last = step == s
     first = step == steps[0]
-    last = step == steps[-1]
     count = len(steps)
 
-    return render(request, 'assignment.html', {
+    return render(request, 'autodidact/assignment.html', {
         'course': course,
         'session': session,
-        'session_nr': session_nr,
         'assignment': assignment,
-        'assignment_nr': assignment_nr,
-        'save_only': save_only == "true",
         'step': step,
-        'step_nr': step_nr,
         'count': count,
-        'completed': current_answer,
+        'completedstep': completedstep,
         'step_overview': step_overview,
         'first': first,
         'last': last,
@@ -222,47 +195,50 @@ def assignment(request, course, session_nr, assignment_nr):
 def startclass(request):
     session_pk = request.POST.get('session')
     class_nr = request.POST.get('class_nr')
-    if len(class_nr) > 16:
+    if not class_nr or len(class_nr) > 16:
         return HttpResponseBadRequest()
     session = get_object_or_404(Session, pk=session_pk)
-    unique = False
 
     # Generate unique registration code
+    unique = False
     while not unique:
         ticket = random_string(TICKET_LENGTH)
         if not Class.objects.filter(ticket=ticket).exists():
             unique = True
 
-    # Create a class and store it in the user's session
-    newclass = Class(session=session, number=class_nr, ticket=ticket)
-    newclass.save()
-    request.session['current_class'] = newclass.ticket
-
+    Class(session=session, number=class_nr, ticket=ticket, teacher=request.user).save()
     return redirect(session)
 
 @staff_member_required
 @require_http_methods(['POST'])
 def endclass(request):
+    class_pk = request.POST.get('class')
     session_pk = request.POST.get('session')
     session = get_object_or_404(Session, pk=session_pk)
     try:
-        del request.session['current_class']
-    except KeyError:
+        group = Class.objects.get(pk=class_pk)
+        group.teacher = None
+        group.dismissed = True
+        group.save()
+    except Class.DoesNotExist:
         pass
     return redirect(session)
 
 @staff_member_required
-@require_http_methods(['POST'])
-def joinclass(request):
-    session_pk = request.POST.get('session')
-    session = get_object_or_404(Session, pk=session_pk)
-    ticket = request.POST.get('ticket')
+@permission_required('autodidact.change_assignment')
+@needs_course
+@needs_session
+def add_assignment(request, course, session):
+    assignment = Assignment(session=session)
+    assignment.save()
+    return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
 
-    # Retrieve the class and store it in the user's session
-    try:
-        newclass = Class.objects.get(ticket=ticket)
-        request.session['current_class'] = newclass.ticket
-    except Class.DoesNotExist:
-        pass
-
-    return redirect(session)
+@staff_member_required
+@permission_required('autodidact.change_step')
+@needs_course
+@needs_session
+@needs_assignment
+def add_step(request, course, session, assignment):
+    step = Step(assignment=assignment)
+    step.save()
+    return HttpResponseRedirect(reverse('admin:autodidact_step_change', args=[step.pk]))

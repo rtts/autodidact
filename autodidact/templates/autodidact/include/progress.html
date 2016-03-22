@@ -1,0 +1,20 @@
+<table>
+  {% for percentage in progress %}
+  {% if percentage >= 0 %}
+  <tr>
+    <td class="y-axis">
+	  Assignment {{forloop.counter}}:
+    </td>
+    <td>
+	  <div class="bar" style="width: {{percentage|floatformat:'0'}}%">{{percentage|floatformat:'0'}}%</div>
+    </td>
+  </tr>
+  {% endif %}
+  {% endfor %}
+  <tr>
+	<td class="origin">
+	</td>
+	<td class="x-axis">
+	</td>
+  </tr>
+</table>

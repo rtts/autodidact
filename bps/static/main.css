@@ -118,7 +118,7 @@ nav {
     nav ul li {
       margin-bottom: 1px;
       list-style-type: none; }
-      nav ul li a {
+      nav ul li > a {
         transition: all 0.1s ease-out;
         text-decoration: none;
         color: #036;
@@ -208,6 +208,9 @@ footer {
   footer a {
     color: #A8D7E1; }
 
+div.add {
+  margin: 8px 35px; }
+
 a.editlink, .staff {
   font-size: 12px;
   font-weight: bold;
@@ -223,6 +226,8 @@ section.attendance {
   font-size: 11px;
   line-height: 1.5;
   margin-left: 20px; }
+  section.attendance hr {
+    margin-top: 20px; }
   section.attendance form {
     text-align: right;
     margin-top: 15px; }

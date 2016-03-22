@@ -155,7 +155,7 @@ nav {
       margin-bottom: 1px;
       list-style-type	: none;
 
-      a {
+      > a {
         transition: all 0.1s ease-out;
         text-decoration:none;
         color: $darkblue;
@@ -286,6 +286,10 @@ footer {
   }
 }
 
+div.add {
+  margin: 8px 35px;
+}
+
 a.editlink, .staff {
   font-size: 12px;
   font-weight: bold;
@@ -302,6 +306,10 @@ section.attendance {
   font-size: 11px;
   line-height: 1.5;
   margin-left: 20px;
+
+  hr {
+	margin-top: 20px;
+  }
 
   form {
     text-align: right;

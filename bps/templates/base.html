@@ -1,4 +1,5 @@
 {% load static %}
+{% load autodidact %}
 
 <!DOCTYPE html>
 <html>
@@ -17,10 +18,10 @@
       <img src="{% static 'tiulogo.jpg' %}" />
       <img src="{% static 'tiuslogan.jpg' %}" />
       <div id="login">
-        {% if request.user.is_authenticated %}
-        Logged in as <b>{{request.user.username}}</b>
+        {% if user.is_authenticated %}
+        Logged in as <b>{{user.username}}</b>
         <a href="{% url 'logout' %}">Log out</a>
-        {% if request.user.is_staff %}
+        {% if user.is_staff %}
         <br>
         <span class="staff">You are a staff member</span>
         {% endif %}
@@ -43,15 +44,12 @@
 
     <div id="content_wrapper">
       <nav>
-        <ul>
-          {% block navigation %}
-          {% endblock %}
-        </ul>
+		{% block navigation %}
+		{% endblock %}
       </nav>
 
       <header id="editor">
-        {% block editor %}
-        {% endblock %}
+        {% autodidact_editor %}
       </header>
 
       <article>
