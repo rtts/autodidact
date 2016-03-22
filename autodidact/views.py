@@ -142,6 +142,7 @@ def assignment(request, course, session, assignment):
         return HttpResponseBadRequest('Invalid step number')
     try:
         step = steps[step_nr-1]
+        step.nr = step_nr
     except IndexError:
         raise Http404
     try:
@@ -182,9 +183,8 @@ def assignment(request, course, session, assignment):
         'session': session,
         'assignment': assignment,
         'step': step,
-        'step_nr': step_nr,
         'count': count,
-        'completed': completedstep,
+        'completedstep': completedstep,
         'step_overview': step_overview,
         'first': first,
         'last': last,
@@ -195,7 +195,7 @@ def assignment(request, course, session, assignment):
 def startclass(request):
     session_pk = request.POST.get('session')
     class_nr = request.POST.get('class_nr')
-    if len(class_nr) > 16:
+    if not class_nr or len(class_nr) > 16:
         return HttpResponseBadRequest()
     session = get_object_or_404(Session, pk=session_pk)
 

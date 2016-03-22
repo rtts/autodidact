@@ -55,5 +55,7 @@ def needs_assignment(view):
             if assignment.locked and not request.user.is_staff:
                 if not request.user.attends.all() & session.classes.all():
                     return HttpResponseForbidden('Permission Denied')
+            if not assignment.active and not request.user.is_staff:
+                raise Http404()
         return view(request, course, session, assignment, *args, **kwargs)
     return wrapper
