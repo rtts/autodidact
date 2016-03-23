@@ -1,4 +1,4 @@
-autodidact (0.8~rc1) stable; urgency=medium
+autodidact (0.8~rc2) stable; urgency=medium
 
   * All code and all dependencies are now fully Python 2 and Python 3
     compatible. The build system has switched to Python 3 only, per the
