@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'adminsortable',
     'django_cleanup',
+    'uvt_user',
     'autodidact',
 ]
 

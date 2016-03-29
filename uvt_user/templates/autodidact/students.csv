@@ -1,0 +1,2 @@
+"Name","ANR"{% for student in students %}
+"{{student.uvt_user.full_name}}","{{student.uvt_user.ANR}}"{% endfor %}
