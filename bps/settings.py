@@ -32,7 +32,7 @@ except configparser.Error as e:
 
 try:
     SECRET_KEY = read(secret_key)
-except FileNotFoundError:
+except IOError:
     logging.warning('Secret key not found. Using randomly generated key.')
     SECRET_KEY = random_string(50)
 
