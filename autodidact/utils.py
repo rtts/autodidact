@@ -37,7 +37,7 @@ def calculate_progress(student, assignments):
                         answers[-1][-1] = com.answer
                     break
         if step_count:
-            progress[-1] = 100 * completed_count/step_count
+            progress[-1] = int(100 * completed_count/step_count)
         else:
             progress[-1] = 0
     return (answers, progress)
