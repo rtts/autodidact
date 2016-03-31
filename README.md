@@ -25,11 +25,6 @@ Second, add the Tilburg University signing key to your apt key store:
 
     curl http://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
 
-Since not all Python dependencies have yet been packaged
-for Debian, you have to install the following dependencies manually:
-
-    pip3 install django-admin-sortable django-cleanup
-
 Now you can install the `autodidact` package with `apt-get`:
 
     apt-get install autodidact
