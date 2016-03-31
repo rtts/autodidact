@@ -48,11 +48,11 @@
 
   <h2>Your progress in this assignment:</h2>
   <ul class="progress">
-    {% for step in step_overview %}
+    {% for finished in step_overview %}
     <li>
       {% if forloop.counter == step.nr %}
       <span class="current step">{{forloop.counter}}</span>
-      {% elif step %}
+      {% elif finished %}
       <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
       {% else %}
       <span class="unfinished step">{{forloop.counter}}</span>
