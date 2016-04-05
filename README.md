@@ -23,12 +23,7 @@ installed. First, add the following lines to `/etc/apt/sources.list`:
 
 Second, add the Tilburg University signing key to your apt key store:
 
-    curl http://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
-
-Since not all Python dependencies have yet been packaged
-for Debian, you have to install the following dependencies manually:
-
-    pip3 install django-admin-sortable django-cleanup
+    curl https://non-gnu.uvt.nl/debian/uvt_key.asc | apt-key add -
 
 Now you can install the `autodidact` package with `apt-get`:
 
@@ -66,7 +61,7 @@ Apache:
 
     cd /etc/apache2/conf-enabled
     ln -s ../conf-available/bps.conf
-    systemctl restart apache2
+    service apache2 reload
 
 BPS should now be up and running! Visit the URL /admin/ and log in
 with your superuser credentials to start adding users and course
