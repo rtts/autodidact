@@ -1,3 +1,4 @@
 recursive-include bps/static *
 recursive-include bps/templates *
+recursive-include autodidact/templates *
 recursive-exclude bps .gitignore
