@@ -33,8 +33,11 @@ except configparser.Error as e:
 try:
     SECRET_KEY = read(secret_key)
 except IOError:
-    logging.warning('Secret key not found. Using randomly generated key.')
-    SECRET_KEY = random_string(50)
+    if debug:
+        logging.warning('Secret key not found. Using randomly generated key.')
+        SECRET_KEY = random_string(50)
+    else:
+        raise ImproperlyConfigured('Could not read secret key file specified in config file: "{}"'.format(secret_key))
 
 STATIC_ROOT        = static_dir
 MEDIA_ROOT         = uploads_dir
