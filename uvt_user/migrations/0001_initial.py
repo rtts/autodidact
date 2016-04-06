@@ -8,12 +8,13 @@ from django.db import migrations, models
 import django.db.models.deletion
 
 def update_existing_users(*args, **kwargs):
-    from django.contrib.auth import get_user_model
-    print("\nPerforming LDAP queries for existing users.", end='')
-    for user in get_user_model().objects.all():
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        user.save()
+    if not 'test' in sys.argv[1:]:
+        from django.contrib.auth import get_user_model
+        print("\nPerforming LDAP queries for existing users.", end='')
+        for user in get_user_model().objects.all():
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            user.save()
 
 class Migration(migrations.Migration):
 
