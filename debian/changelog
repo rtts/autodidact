@@ -1,3 +1,11 @@
+autodidact (0.9~rc1) stable; urgency=medium
+
+  * This release introduces the uvt_user application, which enhances the
+    vanilla autodidact with automatic lookup of Uvt user details from the
+    LDAP server at ldaps.uvt.nl
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 06 Apr 2016 12:10:34 +0200
+
 autodidact (0.8) stable; urgency=medium
 
   * All code and all dependencies are now fully Python 2 and Python 3
