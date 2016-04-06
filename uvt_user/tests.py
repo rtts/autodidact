@@ -1,4 +1,6 @@
+# coding: utf-8
 from __future__ import unicode_literals
+import sys
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from .models import UvtUser
@@ -10,7 +12,11 @@ class ModelTest(TestCase):
 
     def test_string_representation(self):
         '''The string representation of a Uvt User is the full name, unicode characters allowed.'''
-        self.assertEqual(str(self.uvt_user), '毛泽东')
+        if sys.version_info < (3,0,0):
+            representation = unicode(self.uvt_user)
+        else:
+            representation = str(self.uvt_user)
+        self.assertEqual(representation, '毛泽东')
 
 class LdapTest(TestCase):
     def test_search_ldap(self):
