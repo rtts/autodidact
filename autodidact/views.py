@@ -115,7 +115,7 @@ def progresses(request, course, session):
         s.answers = answers
 
     if filetype == 'csv':
-        response = render(request, 'autodidact/students.csv', {'students': students})
+        response = render(request, 'autodidact/students.csv', {'assignments': assignments, 'students': students})
         response['Content-Disposition'] = 'attachment; filename="{}_session{}.csv"'.format(course.slug, session.nr)
         return response
     else:
