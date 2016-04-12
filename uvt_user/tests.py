@@ -1,14 +1,20 @@
 # coding: utf-8
 from __future__ import unicode_literals
-import sys
+import os, sys, six
+if six.PY2:
+    import mock
+if six.PY3:
+    from unittest import mock
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-from .models import UvtUser
-from .utils import search_ldap
+from .models import *
+from .utils import *
+
+name = "毛泽东"
 
 class ModelTest(TestCase):
     def setUp(self):
-        self.uvt_user = UvtUser(full_name='毛泽东')
+        self.uvt_user = UvtUser(full_name=name)
 
     def test_string_representation(self):
         '''The string representation of a Uvt User is the full name, unicode characters allowed.'''
@@ -16,27 +22,20 @@ class ModelTest(TestCase):
             representation = unicode(self.uvt_user)
         else:
             representation = str(self.uvt_user)
-        self.assertEqual(representation, '毛泽东')
+        self.assertEqual(representation, name)
 
 class LdapTest(TestCase):
-    def test_search_ldap(self):
-        '''The search_ldap() returns a 4-tuple of first name, full name, ANR, and email'''
-        (first_name, full_name, ANR, email) = search_ldap('jvens')
+    @mock.patch('uvt_user.utils.Server')
+    @mock.patch('uvt_user.utils.Connection')
+    def test_search_ldap(self, Connection, Server):
+        '''The search_ldap() function instantiates Server() and Connection() objects, and calls the search() function with the username as a search filter. On error it throws an LDAPError.'''
+        conn = Connection.return_value = mock.MagicMock()
+        search_ldap(name)
+        self.assertTrue(Server.called)
+        self.assertTrue(Connection.called)
+        (args, kwargs) = conn.search.call_args
+        self.assertTrue(args[1] == '(uid={})'.format(name))
 
-        # This test fails unless the original author is employed at Tilburg University
-        self.assertEqual(first_name, 'Jaap Joris')
-        self.assertEqual(full_name, 'J.J. Vens')
-        self.assertEqual(ANR, '682051')
-        self.assertEqual(email, 'J.J.Vens@uvt.nl')
-
-class SignalsTest(TestCase):
-    def test_auto_populate_uvt_user(self):
-        '''Saving a Django user triggers the creation of an associated Uvt User'''
-        user = get_user_model()(username='jvens')
-        user.save()
-
-        # This test fails unless the original author is employed at Tilburg University
-        self.assertEqual(user.uvt_user.first_name, 'Jaap Joris')
-        self.assertEqual(user.uvt_user.full_name, 'J.J. Vens')
-        self.assertEqual(user.uvt_user.ANR, '682051')
-        self.assertEqual(user.uvt_user.email, 'J.J.Vens@uvt.nl')
+        Connection.side_effect = Exception
+        with self.assertRaises(LDAPError):
+            search_ldap(name)

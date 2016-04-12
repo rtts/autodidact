@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from ldap3 import Server, Connection
 
 class LDAPError(Exception):
