@@ -1,4 +1,4 @@
-autodidact (0.9~rc1) stable; urgency=medium
+autodidact (0.9~rc2) stable; urgency=medium
 
   * This release introduces the uvt_user application, which enhances the
     vanilla autodidact with automatic lookup of Uvt user details from the
