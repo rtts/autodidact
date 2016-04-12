@@ -1,4 +1,4 @@
-from ldap3 import Server, Connection, SUBTREE
+from ldap3 import Server, Connection
 
 class LDAPError(Exception):
     pass
