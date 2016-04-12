@@ -33,7 +33,7 @@ except configparser.Error as e:
 try:
     SECRET_KEY = read(secret_key)
 except IOError:
-    if debug:
+    if debug or 'test' in sys.argv:
         logging.warning('Secret key not found. Using randomly generated key.')
         SECRET_KEY = random_string(50)
     else:

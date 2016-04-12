@@ -20,8 +20,15 @@ case $1 in
 	fi
 
         # Create run-time directories
-        mkdir -p "$UPLOADS" "$STATIC"
-        chown www-data:www-data "$UPLOADS"
+        if [ ! -e "$UPLOADS" ]
+        then
+            mkdir -p "$UPLOADS"
+            chown www-data:www-data "$UPLOADS"
+        fi
+        if [ ! -e "$STATIC" ]
+        then
+            mkdir -p "$STATIC"
+        fi
 
         # Run management commands
         su www-data -s /bin/sh -c 'manage.py migrate'
