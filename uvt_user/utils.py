@@ -14,7 +14,7 @@ def search_ldap(username):
     try:
         server = Server('ldaps.uvt.nl', use_ssl=True)
         conn = Connection(server, auto_bind=True)
-        conn.search(baseDN, searchFilter, SUBTREE, attributes=attributes)
+        conn.search(baseDN, searchFilter, attributes=attributes)
         for a in attributes:
             result += (conn.response[0]['attributes'][a][0], )
     except Exception:
