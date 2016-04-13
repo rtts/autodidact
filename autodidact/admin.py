@@ -3,7 +3,6 @@ from django.db import models
 from django.forms import RadioSelect
 from django.shortcuts import redirect
 from .models import *
-from adminsortable.admin import SortableAdmin, SortableStackedInline #, SortableTabularInline
 
 class FunkySaveAdmin(object):
     '''
@@ -33,61 +32,66 @@ class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class ProgrammeAdmin(admin.ModelAdmin):
     pass
 
-class InlineSessionAdmin(admin.StackedInline):
+class InlineSessionAdmin(admin.TabularInline):
     model = Session
 
 @admin.register(Course)
-class CourseAdmin(FunkySaveAdmin, SortableAdmin):
+class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
     inlines = [InlineSessionAdmin]
-    list_display = ['__str__', 'name', 'slug', 'url']
+    list_display = ['order', '__str__', 'name', 'slug', 'url']
+    list_display_links = ['__str__']
     list_filter = ['programmes']
-    list_editable = ['name', 'slug']
+    list_editable = ['order', 'name', 'slug']
+    fields = ['name', 'slug', 'active', 'description', 'programmes']
 
-class InlineAssignmentAdmin(SortableStackedInline):
+class InlineAssignmentAdmin(admin.TabularInline):
     model = Assignment
 
 class InlineDownloadAdmin(admin.StackedInline):
     model = Download
     extra = 1
 
-class InlinePresentationAdmin(SortableStackedInline):
+class InlinePresentationAdmin(admin.StackedInline):
     model = Presentation
     extra = 1
 
-class InlineClarificationAdmin(SortableStackedInline):
+class InlineClarificationAdmin(admin.StackedInline):
     model = Clarification
     extra = 1
 
 @admin.register(Session)
-class SessionAdmin(FunkySaveAdmin, SortableAdmin):
+class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    inlines = [InlineDownloadAdmin, InlinePresentationAdmin, InlineAssignmentAdmin]
+    inlines = [InlineAssignmentAdmin, InlineDownloadAdmin, InlinePresentationAdmin]
     list_filter = ['course']
-    list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
-    list_editable = ['name', 'registration_enabled', 'active']
-    exclude = ['course']
+    list_display = ['number', '__str__', 'name', 'course', 'registration_enabled', 'active']
+    list_display_links = ['__str__']
+    list_editable = ['number', 'name', 'registration_enabled', 'active']
+    exclude = ['course', 'number']
 
-class InlineStepAdmin(SortableStackedInline):
+class InlineStepAdmin(admin.TabularInline):
     model = Step
 
 @admin.register(Assignment)
-class AssignmentAdmin(FunkySaveAdmin, SortableAdmin):
+class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     inlines = [InlineStepAdmin]
-    list_display = ['__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
+    list_display = ['number', '__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
+    list_display_links = ['__str__']
     list_filter = ['session__course', 'session']
-    list_editable = ['name', 'locked', 'active']
-    exclude = ['session']
+    list_editable = ['number', 'name', 'locked', 'active']
+    exclude = ['session', 'number']
 
 @admin.register(Step)
-class StepAdmin(FunkySaveAdmin, SortableAdmin):
+class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     inlines = [InlineClarificationAdmin]
-    list_display = ['__str__', 'description', 'answer_required', 'assignment']
-    list_editable = ['answer_required']
+    list_display = ['number', '__str__', 'description', 'answer_required', 'assignment']
+    list_display_links = ['__str__']
+    list_editable = ['number', 'answer_required']
     list_filter = ['assignment__session', 'assignment']
     exclude = ['assignment']
 

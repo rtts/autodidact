@@ -4,8 +4,6 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
-from adminsortable.models import SortableMixin
-from adminsortable.fields import SortableForeignKey
 from .utils import clean
 
 MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
@@ -33,13 +31,13 @@ class Programme(models.Model):
         return self.name
 
 @python_2_unicode_compatible
-class Course(SortableMixin):
+class Course(models.Model):
+    order = models.PositiveIntegerField(default=0)
     programmes = models.ManyToManyField(Programme, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField()
     description = models.TextField(help_text=MDHELP)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -54,43 +52,59 @@ class Course(SortableMixin):
     def get_absolute_url(self):
         return reverse('course', args=[self.slug])
 
+    def save(self, *args, **kwargs):
+        reorder(self, Course.objects.all(), self.pk is None)
+        super(Course, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        reorder(self, Course.objects.all(), True)
+        super(Course, self).delete(*args, **kwargs)
+
     class Meta:
         ordering = ['order']
 
 @python_2_unicode_compatible
-class Session(SortableMixin):
-    course = SortableForeignKey(Course, related_name="sessions")
+class Session(models.Model):
+    number = models.PositiveIntegerField(default=0)
+    course = models.ForeignKey(Course, related_name="sessions")
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(help_text=MDHELP, blank=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
 
     def get_number(self):
-        return self.course.sessions.filter(order__lt=self.order).count() + 1
+        return self.number
 
     def get_absolute_url(self):
         return reverse('session', args=[self.course.slug, self.get_number()])
 
+    def save(self, *args, **kwargs):
+        reorder(self, self.course.sessions.all(), self.pk is None)
+        super(Session, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        reorder(self, self.course.sessions.all(), True)
+        super(Session, self).delete(*args, **kwargs)
+
     class Meta:
-        ordering = ['order']
+        ordering = ['number']
 
 @python_2_unicode_compatible
-class Assignment(SortableMixin):
-    session = SortableForeignKey(Session, related_name="assignments")
+class Assignment(models.Model):
+    number = models.PositiveIntegerField(default=0)
+    session = models.ForeignKey(Session, related_name="assignments")
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return 'Assignment {}'.format(self.get_number())
 
     def get_number(self):
-        return self.session.assignments.filter(order__lt=self.order).count() + 1
+        return self.number
 
     def nr_of_steps(self):
         return self.steps.count()
@@ -98,28 +112,34 @@ class Assignment(SortableMixin):
     def get_absolute_url(self):
         return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
 
-    class Meta:
-        ordering = ['order']
-
-    # Override the save method to ensure at least one step
     def save(self, *args, **kwargs):
+        reorder(self, self.session.assignments.all(), self.pk is None)
         super(Assignment, self).save(*args, **kwargs)
+
+        # Ensure at least one step
         if not self.steps.first():
             Step(assignment=self).save()
 
+    def delete(self, *args, **kwargs):
+        reorder(self, self.session.assignments.all(), True)
+        super(Assignment, self).delete(*args, **kwargs)
+
+    class Meta:
+        ordering = ['number']
+
 @python_2_unicode_compatible
-class Step(SortableMixin):
-    assignment = SortableForeignKey(Assignment, related_name='steps')
+class Step(models.Model):
+    number = models.PositiveIntegerField(default=0)
+    assignment = models.ForeignKey(Assignment, related_name='steps')
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(help_text=MDHELP, blank=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return 'Step {}'.format(self.get_number())
 
     def get_number(self):
-        return self.assignment.steps.filter(order__lt=self.order).count() + 1
+        return self.number
 
     def get_absolute_url(self):
         return reverse('assignment', args=[
@@ -128,8 +148,16 @@ class Step(SortableMixin):
             self.assignment.get_number(),
         ]) + '?step=' + str(self.get_number())
 
+    def save(self, *args, **kwargs):
+        reorder(self, self.assignment.steps.all(), self.pk is None)
+        super(Step, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        reorder(self, self.assignment.steps.all(), True)
+        super(Step, self).delete(*args, **kwargs)
+
     class Meta:
-        ordering = ['order']
+        ordering = ['number']
 
 @python_2_unicode_compatible
 class CompletedStep(models.Model):
@@ -181,15 +209,14 @@ class Download(models.Model):
         ordering = ['file']
 
 @python_2_unicode_compatible
-class Presentation(SortableMixin):
-    session = SortableForeignKey(Session, related_name='presentations')
+class Presentation(models.Model):
+    session = models.ForeignKey(Session, related_name='presentations')
     file = models.FileField(upload_to=session_path)
     visibility = models.IntegerField(choices=(
         (1, 'Only visible to teacher'),
         (2, 'Visible to students in class'),
         (3, 'Visible to everyone'),
     ), default=1)
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return os.path.basename(str(self.file))
@@ -198,20 +225,50 @@ class Presentation(SortableMixin):
         return self.file.url
 
     class Meta:
-        ordering = ['order']
+        ordering = ['file']
 
 def image_path(obj, filename):
     return os.path.join(obj.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
 
 @python_2_unicode_compatible
-class Clarification(SortableMixin):
+class Clarification(models.Model):
+    number = models.PositiveIntegerField(default=0)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = models.TextField(help_text=MDHELP)
     image = models.ImageField(upload_to=image_path)
-    order = models.PositiveIntegerField(default=0, editable=False, db_index=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
 
+    def save(self, *args, **kwargs):
+        super(Clarification, self).save(*args, **kwargs)
+        number = 1
+        for clarification in self.step.clarifications.all():
+            clarification.number = number
+            super(Clarification, clarification).save()
+            number += 1
+
     class Meta:
-        ordering = ['order']
+        ordering = ['number']
+
+def reorder(instance, queryset, new_object_or_deleted):
+    orderfield = instance.__class__._meta.ordering[0]
+    if queryset and new_object_or_deleted:
+        lastplace = getattr(queryset.last(), orderfield) + 1
+        setattr(instance, orderfield, lastplace)
+    instance_order = getattr(instance, orderfield)
+    counter = 1
+    inserted = False
+    for obj in queryset.exclude(pk=instance.pk):
+        current_order = getattr(obj, orderfield)
+        if current_order >= instance_order and not inserted:
+            setattr(instance, orderfield, counter)
+            inserted = True
+            counter += 1
+        if current_order != counter:
+            setattr(obj, orderfield, counter)
+            super(obj.__class__, obj).save()
+        counter += 1
+    if not inserted:
+        setattr(instance, orderfield, counter)
+

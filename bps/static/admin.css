@@ -11,9 +11,15 @@
   background: #003366;
 }
 
+.vTextField {
+  width: auto !important;
+}
+.vIntegerField {
+  width: 3em !important;
+}
 select[multiple] {
-    height: 200px;
-    width: 623px;
+  height: 200px;
+  width: 623px;
 }
 
 textarea {

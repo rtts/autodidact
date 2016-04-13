@@ -113,15 +113,15 @@ class SessionTest(TestCase):
     def test_get_number(self):
         '''The session number is relative: i.e. session 1 is always the first session in the queryset course.sessions'''
 
-        self.assertEqual(self.session1.order, 1)
-        self.assertEqual(self.session2.order, 2)
-        self.assertEqual(self.session3.order, 3)
+        self.assertEqual(self.session1.number, 1)
+        self.assertEqual(self.session2.number, 2)
+        self.assertEqual(self.session3.number, 3)
         self.assertEqual(self.session1.get_number(), 1)
         self.assertEqual(self.session2.get_number(), 2)
         self.assertEqual(self.session3.get_number(), 3)
-        self.session1.order = 3
-        self.session2.order = 2
-        self.session3.order = 1
+        self.session1.number = 3
+        self.session2.number = 2
+        self.session3.number = 1
         self.assertEqual(self.session1.get_number(), 3)
         self.assertEqual(self.session2.get_number(), 2)
         self.assertEqual(self.session3.get_number(), 1)
@@ -159,15 +159,15 @@ class AssignmentTest(TestCase):
     def test_get_number(self):
         '''The assignment number is relative: i.e. assignment 1 is always the first assignment in the queryset session.assignments'''
 
-        self.assertEqual(self.assignment1.order, 1)
-        self.assertEqual(self.assignment2.order, 2)
-        self.assertEqual(self.assignment3.order, 3)
+        self.assertEqual(self.assignment1.number, 1)
+        self.assertEqual(self.assignment2.number, 2)
+        self.assertEqual(self.assignment3.number, 3)
         self.assertEqual(self.assignment1.get_number(), 1)
         self.assertEqual(self.assignment2.get_number(), 2)
         self.assertEqual(self.assignment3.get_number(), 3)
-        self.assignment1.order = 3
-        self.assignment2.order = 2
-        self.assignment3.order = 1
+        self.assignment1.number = 3
+        self.assignment2.number = 2
+        self.assignment3.number = 1
         self.assertEqual(self.assignment1.get_number(), 3)
         self.assertEqual(self.assignment2.get_number(), 2)
         self.assertEqual(self.assignment3.get_number(), 1)
@@ -219,15 +219,15 @@ class StepTest(TestCase):
     def test_get_number(self):
         '''The step number is relative: i.e. step 1 is always the first step in the queryset assignment.steps'''
 
-        self.assertEqual(self.step1.order, 1)
-        self.assertEqual(self.step2.order, 2)
-        self.assertEqual(self.step3.order, 3)
+        self.assertEqual(self.step1.number, 1)
+        self.assertEqual(self.step2.number, 2)
+        self.assertEqual(self.step3.number, 3)
         self.assertEqual(self.step1.get_number(), 1)
         self.assertEqual(self.step2.get_number(), 2)
         self.assertEqual(self.step3.get_number(), 3)
-        self.step1.order = 3
-        self.step2.order = 2
-        self.step3.order = 1
+        self.step1.number = 3
+        self.step2.number = 2
+        self.step3.number = 1
         self.assertEqual(self.step1.get_number(), 3)
         self.assertEqual(self.step2.get_number(), 2)
         self.assertEqual(self.step3.get_number(), 1)
