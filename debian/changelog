@@ -1,3 +1,11 @@
+autodidact (0.10) UNRELEASED; urgency=medium
+
+  * Added a new markdown construct for referencing uploaded files:
+    [filename.sav] will render a correct hyperlink, e.g., <a href="
+    /uploads/coursename/session/1/filename.sav">
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 13 Apr 2016 10:28:34 +0200
+
 autodidact (0.9) stable; urgency=medium
 
   * This release introduces the uvt_user application, which enhances the
