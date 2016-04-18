@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 7), apache2-dev, python3, dh-python, python3-setupt
 Standards-Version: 3.9.7
 
 Package: autodidact
-Architecture: any
+Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
 	python3-six,
 	python3-markdown,
