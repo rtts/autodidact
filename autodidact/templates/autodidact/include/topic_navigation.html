@@ -1,0 +1,5 @@
+<ul>
+  <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+  <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+  <li class="currentPage"><a href="{% url 'topic' course.slug topic.number %}">{{topic.number}}. {{topic.name}}</a></li>
+</ul>

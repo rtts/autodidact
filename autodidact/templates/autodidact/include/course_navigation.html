@@ -1,11 +1,22 @@
 <ul>
   <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
   <li class="currentPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
+
+  {% if course.topics.all %}
+  <li class="heading">Topics:</li>
+  {% for topic in course.topics.all %}
+  <li class="futurePage"><a href="{% url 'topic' course.slug topic.number %}">{{topic.number}}. {{topic.name}}</a></li>
+  {% endfor %}
+
+  <li class="spacer" />
+  {% endif %}
+
+  <li class="heading">Lab sessions:</li>
   {% for session in course.sessions.all %}
   {% if session.active %}
-  <li class="futurePage"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+  <li class="futurePage"><a href="{% url 'session' course.slug session.number %}">Session {{session.number}}: {{session.name}}</a></li>
   {% elif user.is_staff %}
-  <li class="futurePage inactive"><a href="{% url 'session' course.slug forloop.counter %}">Session {{forloop.counter}}: {{session.name}}</a></li>
+  <li class="futurePage inactive"><a href="{% url 'session' course.slug session.number %}">Session {{session.number}}: {{session.name}}</a></li>
   {% endif %}
   {% empty %}
   <li class="empty">No sessions available</li>

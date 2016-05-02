@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^startclass/$', startclass, name='startclass'),
     url(r'^endclass/$', endclass, name='endclass'),
     url(r'^([^/]+)/$', course, name='course'),
+    url(r'^([^/]+)/topic/([0-9]+)/$', topic, name='topic'),
     url(r'^([^/]+)/session/([0-9]+)/$', session, name='session'),
     url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/$', assignment, name='assignment'),
     url(r'^([^/]+)/session/([0-9]+)/students/$', progresses, name='progresses'),

@@ -32,12 +32,15 @@ class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class ProgrammeAdmin(admin.ModelAdmin):
     pass
 
+class InlineTopicAdmin(admin.TabularInline):
+    model = Topic
+
 class InlineSessionAdmin(admin.TabularInline):
     model = Session
 
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    inlines = [InlineSessionAdmin]
+    inlines = [InlineTopicAdmin, InlineSessionAdmin]
     list_display = ['order', '__str__', 'name', 'slug', 'url']
     list_display_links = ['__str__']
     list_filter = ['programmes']
@@ -58,6 +61,19 @@ class InlinePresentationAdmin(admin.StackedInline):
 class InlineClarificationAdmin(admin.StackedInline):
     model = Clarification
     extra = 1
+
+@admin.register(Topic)
+class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+    list_filter = ['course']
+    list_display = ['number', 'name', 'short_description']
+    exclude = ['course', 'number']
+    def short_description(self, topic):
+        s = topic.description
+        if len(s) > 250:
+            s = s[:250] + '...'
+        return s
 
 @admin.register(Session)
 class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):

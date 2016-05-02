@@ -64,6 +64,30 @@ class Course(models.Model):
         ordering = ['order']
 
 @python_2_unicode_compatible
+class Topic(models.Model):
+    number = models.PositiveIntegerField(default=0)
+    course = models.ForeignKey(Course, related_name="topics")
+    name = models.CharField(max_length=255, blank=True)
+    description = models.TextField(help_text=MDHELP, blank=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('session', args=[self.course.slug, self.number])
+
+    def save(self, *args, **kwargs):
+        reorder(self, self.course.topics.all(), self.pk is None)
+        super(Topic, self).save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        reorder(self, self.course.topics.all(), True)
+        super(Topic, self).delete(*args, **kwargs)
+
+    class Meta:
+        ordering = ['number']
+
+@python_2_unicode_compatible
 class Session(models.Model):
     number = models.PositiveIntegerField(default=0)
     course = models.ForeignKey(Course, related_name="sessions")
@@ -241,12 +265,12 @@ class Clarification(models.Model):
         return 'Clarification for %s' % str(self.step)
 
     def save(self, *args, **kwargs):
+        reorder(self, self.step.clarifications.all(), self.pk is None)
         super(Clarification, self).save(*args, **kwargs)
-        number = 1
-        for clarification in self.step.clarifications.all():
-            clarification.number = number
-            super(Clarification, clarification).save()
-            number += 1
+
+    def delete(self, *args, **kwargs):
+        reorder(self, self.step.clarifications.all(), True)
+        super(Clarification, self).delete(*args, **kwargs)
 
     class Meta:
         ordering = ['number']

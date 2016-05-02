@@ -30,6 +30,15 @@ def course(request, course):
 
 @login_required
 @needs_course
+def topic(request, course, topic_nr):
+    topic = get_object_or_404(Topic, course=course, number=topic_nr)
+    return render(request, 'autodidact/topic.html', {
+        'topic': topic,
+        'course': course,
+    })
+
+@login_required
+@needs_course
 @needs_session
 def session(request, course, session):
     user = request.user
