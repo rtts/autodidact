@@ -1,7 +1,21 @@
 {% extends "base.html" %}
 
+{% block navigation %}
+
+<ul>
+  <li class='visitedPage'><a href="/">Home</a></li>
+  <li class='currentPage'><a href="/logout/">Logged out</a></li>
+</ul>
+
+{% endblock %}
+
 {% block content %}
 
-<p>You are now logged out.</p>
+<section>
+  <h1>You are now logged out.</h1>
 
+  <p>
+    <a href="{% url 'login' %}">Click here</a> if you would like to log in again.
+  </p>
+</section>
 {% endblock %}

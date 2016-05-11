@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block navigation %}
+
+<ul>
+  <li class="visitedPage"><a href="/">Home</a></li>
+  <li class="currentPage"><a href="/login/">Log in</a></li>
+  <li class="futurePage"><a href="{% url 'login_sso' %}?{{param}}">Log in with a Tilburg University account</a></li>
+  <li class="futurePage"><a href="{% url 'login_regular' %}?{{param}}">Log in with a regular account</a></li>
+</ul>
+
+{% endblock %}
+
+{% block content %}
+
+<section>
+  <h1>
+    Please choose how you would like to log in:
+  </h1>
+
+  <a class="button" href="{% url 'login_sso' %}?{{param}}">Log in with a Tilburg University account</a>&nbsp;&nbsp;&nbsp;
+  <a class="button" href="{% url 'login_regular' %}?{{param}}">Log in with a regular account</a>
+
+  <p>
+    Currently, Best Practices in Statistics is only available for registered users. We are working on providing access to larger audiences. If you are interested and willing to help out, you can request an account by emailing <a href="mailto:J.J.Vens@tilburguniversity.edu">J.J.Vens@tilburguniversity.edu</a>.
+  </p>
+
+</section>
+
+{% endblock %}

@@ -101,7 +101,9 @@ if CAS_SERVER_URL:
         'django.contrib.auth.backends.ModelBackend',
         'cas.backends.CASBackend',
     ]
-    MIDDLEWARE_CLASSES += ['cas.middleware.CASMiddleware']
+    INSTALLED_APPS += ['cas']
+    #MIDDLEWARE_CLASSES += ['cas.middleware.CASMiddleware']
+    CAS_RESPONSE_CALLBACKS = ['uvt_user.cas.callback']
 
 if DEBUG:
     try:

@@ -17,18 +17,16 @@
     <header id="logo">
       <img src="{% static 'tiulogo.jpg' %}" />
       <img src="{% static 'tiuslogan.jpg' %}" />
+      {% if user.is_authenticated %}
       <div id="login">
-        {% if user.is_authenticated %}
         Logged in as <b>{{user.username}}</b>
         <a href="{% url 'logout' %}">Log out</a>
         {% if user.is_staff %}
         <br>
         <span class="staff">You are a staff member</span>
         {% endif %}
-	{% else %}
-        <a href="{% url 'login' %}">Log in</a>
-	{% endif %}
       </div>
+      {% endif %}
     </header>
 
     <header id="banner">
@@ -44,8 +42,8 @@
 
     <div id="content_wrapper">
       <nav>
-		{% block navigation %}
-		{% endblock %}
+	{% block navigation %}
+	{% endblock %}
       </nav>
 
       <header id="editor">
