@@ -1,5 +1,6 @@
 autodidact (1.0) UNRELEASED; urgency=medium
 
+  * A new Tag model for tagging courses, topics, sessions, and assignments
   * Rewrote the uvt_user app and BPS configuration to allow regular
     logins as well as CAS logins
   * Added the possibility to add topical pages to a course

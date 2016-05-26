@@ -4,6 +4,9 @@ from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
+from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
+from django.contrib.contenttypes.models import ContentType
+from mptt.models import MPTTModel, TreeForeignKey
 from .utils import clean
 
 MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
@@ -24,6 +27,23 @@ class Page(models.Model):
             return reverse('homepage')
 
 @python_2_unicode_compatible
+class Tag(MPTTModel):
+    name = models.CharField(max_length=255, unique=True)
+    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    material = GenericForeignKey()
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+@python_2_unicode_compatible
 class Programme(models.Model):
     name = models.CharField(max_length=255)
 
@@ -38,6 +58,7 @@ class Course(models.Model):
     slug = models.SlugField()
     description = models.TextField(help_text=MDHELP)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
+    tags = GenericRelation(Tag)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -69,6 +90,7 @@ class Topic(models.Model):
     course = models.ForeignKey(Course, related_name="topics")
     name = models.CharField(max_length=255, blank=True)
     description = models.TextField(help_text=MDHELP, blank=True)
+    tags = GenericRelation(Tag)
 
     def __str__(self):
         return self.name
@@ -95,6 +117,7 @@ class Session(models.Model):
     description = models.TextField(help_text=MDHELP, blank=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
+    tags = GenericRelation(Tag)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
@@ -123,6 +146,7 @@ class Assignment(models.Model):
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
+    tags = GenericRelation(Tag)
 
     def __str__(self):
         return 'Assignment {}'.format(self.get_number())
@@ -276,6 +300,7 @@ class Clarification(models.Model):
         ordering = ['number']
 
 def reorder(instance, queryset, new_object_or_deleted):
+    '''Reorders the queryset preserving the instance's current position (unless the instance is new or deleted)'''
     orderfield = instance.__class__._meta.ordering[0]
     if queryset and new_object_or_deleted:
         lastplace = getattr(queryset.last(), orderfield) + 1
@@ -295,4 +320,3 @@ def reorder(instance, queryset, new_object_or_deleted):
         counter += 1
     if not inserted:
         setattr(instance, orderfield, counter)
-
