@@ -39,11 +39,11 @@ Configuration
 
 1. Add `"autodidact"` to your installed apps:
 
-       INSTALLED_APPS += ["autodidact"]
+        INSTALLED_APPS += ["autodidact"]
 
 2. Add `autodidact.urls` to your URL patterns:
 
-       urlpatterns += [url(r'^', include(autodidact.urls)]
+        urlpatterns += [url(r'^', include(autodidact.urls)]
 
 3. Provide a base template. As a starting point, feel free to use [the
 template in use at Tilburg University](https://github.com/JaapJoris/autodidact/blob/master/bps/templates/base.html).
