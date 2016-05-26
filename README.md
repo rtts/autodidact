@@ -49,11 +49,11 @@ Configuration
 template in use at Tilburg University](https://github.com/JaapJoris/autodidact/blob/master/bps/templates/base.html).
 
 4. Start your development server (`./manage.py runserver`) and visit
-http://localhost:8000/admin/autodidact/page/add/ to add a
+[http://localhost:8000/admin/autodidact/page/add/](http://localhost:8000/admin/autodidact/page/add/) to add a
 homepage. Hit "Save" and you will redirected to the newly created
 homepage.
 
-5. Visit http://localhost:8000/admin and have a look at the database
+5. Visit [http://localhost:8000/admin/](http://localhost:8000/admin/) and have a look at the database
 tables. The most important ones are, listed in hierarchical order:
 Programmes, Courses, Sessions, Assignments, and Steps. Autodidact was
 designed to hide the admin from the user as much as possible, that's
