@@ -1,4 +1,4 @@
-autodidact (1.0) UNRELEASED; urgency=medium
+python3-django-autodidact (1.0) UNRELEASED; urgency=medium
 
   * Split `autodidact` and `bps` into two separate repositories
   * A new Tag model for tagging courses, topics, sessions, and assignments

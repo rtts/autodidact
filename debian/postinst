@@ -3,39 +3,3 @@
 set -e
 
 #DEBHELPER#
-
-KEYFILE=/etc/bps/secret.key
-UPLOADS=/var/lib/bps/uploads
-STATIC=/var/lib/bps/static
-
-case $1 in
-    configure)
-
-        # Generate a secret key for Django
-        if [ ! -e "$KEYFILE" ]
-	then
-	    umask 027
-	    makepasswd --chars=50 > "$KEYFILE"
-	    chgrp www-data "$KEYFILE"
-	fi
-
-        # Create run-time directories
-        if [ ! -e "$UPLOADS" ]
-        then
-            mkdir -p "$UPLOADS"
-            chown www-data:www-data "$UPLOADS"
-        fi
-        if [ ! -e "$STATIC" ]
-        then
-            mkdir -p "$STATIC"
-        fi
-
-        # Run management commands
-        su www-data -s /bin/sh -c 'manage.py migrate'
-	yes yes | manage.py collectstatic
-
-        # Insert correct dir into example configuration
-	project_dir=`python3 -c 'import os,bps; print(os.path.dirname(bps.__file__))'`
-	sed -i "s:%PROJECT_DIR%:$project_dir:" /etc/apache2/conf-available/bps.conf
-
-esac

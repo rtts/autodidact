@@ -3,8 +3,7 @@ import os, sys
 from setuptools import setup, find_packages
 
 if sys.argv[-1] == 'test':
-    # os.system('/usr/bin/env python3 manage.py test')
-    # FIXME: How to test django code without a project?
+    os.system('./runtests.py')
     sys.exit()
 
 setup(
@@ -16,7 +15,6 @@ setup(
     maintainer = 'Wessel Dankers',
     maintainer_email = 'wsl@fruit.je',
     license = 'AGPL',
-    scripts = ['manage.py'],
     packages = find_packages(),
     include_package_data = True,
     install_requires = [

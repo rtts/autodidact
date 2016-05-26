@@ -1,9 +1,9 @@
 #! /usr/bin/make -f
 
-export PYBUILD_NAME=autodidact
+export PYBUILD_NAME=python3-django-autodidact
 
 %:
-	dh $@ --with python3 --with apache2 --buildsystem=pybuild
+	dh $@ --with python3 --buildsystem=pybuild
 
 override_dh_auto_test:
-	python3 manage.py test
+	python3 runtests.py

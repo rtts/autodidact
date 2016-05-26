@@ -1,4 +1,4 @@
-Source: autodidact
+Source: python3-django-autodidact
 Section: web
 Priority: extra
 Maintainer: Wessel Dankers <wsl@fruit.je>
@@ -14,7 +14,7 @@ Build-Depends: debhelper (>= 7), apache2-dev, python3, dh-python, python3-setupt
         python3-django-pandocfield,
 Standards-Version: 3.9.7
 
-Package: autodidact
+Package: python3-django-autodidact
 Architecture: all
 Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
 	python3-six,
@@ -26,9 +26,8 @@ Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
 	python3-django-adminsortable,
         python3-django-mptt,
         python3-django-pandocfield,
-Recommends: apache2 (>= 2.4.10~), libapache2-mod-wsgi-py3, python3-psycopg2, python3-django-casclient
+Recommends: 
 Description: CMS for creating self-learning activities
  Autodidact is a simple content-management system (CMS) for creating
  self-learning activities. It is used at Tilburg University for the "Best
- Practices in Statistics" series of lab sessions, soon to be made available
- to the general public at https://bps.uvt.nl/
+ Practices in Statistics" series of lab sessions.

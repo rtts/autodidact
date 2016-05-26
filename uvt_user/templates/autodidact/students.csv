@@ -1,3 +1,0 @@
-"Name","ANR"{% for _ in assignments %},"Assignment {{forloop.counter}}"{% endfor %}
-{% for student in students %}"{{student.uvt_user.full_name}}","{{student.uvt_user.ANR}}"{% for percentage in student.progress %},"{{percentage}}%"{% endfor %}
-{% endfor %}

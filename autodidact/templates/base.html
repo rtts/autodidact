@@ -1,0 +1,29 @@
+{% load static %}
+{% load autodidact %}
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{% block title %}Your Title Here{% endblock %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    {% block extrahead %}{% endblock %}
+  </head>
+  <body>
+
+    <header>
+      {% autodidact_editor %}
+    </header>
+
+    <nav>
+      {% block navigation %}
+      {% endblock %}
+    </nav>
+
+    <article>
+      {% block content %}
+      {% endblock %}
+    </article>
+
+    {% block extrascript %}{% endblock %}
+  </body>
+</html>
