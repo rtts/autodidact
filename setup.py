@@ -3,12 +3,13 @@ import os, sys
 from setuptools import setup, find_packages
 
 if sys.argv[-1] == 'test':
-    os.system('/usr/bin/env python3 manage.py test')
+    # os.system('/usr/bin/env python3 manage.py test')
+    # FIXME: How to test django code without a project?
     sys.exit()
 
 setup(
     name = 'autodidact',
-    version = '0.9',
+    version = '1.0',
     url = 'https://github.com/JaapJoris/autodidact',
     author = 'Jaap Joris Vens',
     author_email = 'jj@rtts.eu',
@@ -25,5 +26,6 @@ setup(
         'six >= 1.8.0, <= 1.10.0',
         'django-admin-sortable == 2.0.12',
         'django-cleanup == 0.4.2',
+        'django-mptt==0.8.4',
     ],
 )

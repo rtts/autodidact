@@ -1,5 +1,6 @@
 autodidact (1.0) UNRELEASED; urgency=medium
 
+  * Split `autodidact` and `bps` into two separate repositories
   * A new Tag model for tagging courses, topics, sessions, and assignments
   * Rewrote the uvt_user app and BPS configuration to allow regular
     logins as well as CAS logins
