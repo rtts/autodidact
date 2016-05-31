@@ -16,6 +16,7 @@ setup(
     maintainer_email = 'wsl@fruit.je',
     license = 'AGPL',
     packages = find_packages(),
+    zip_safe = False,
     include_package_data = True,
     install_requires = [
         'django >= 1.7.7, <= 1.9.4',
