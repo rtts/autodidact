@@ -1,5 +1,4 @@
 {% extends 'base.html' %}
-{% load markdown_tag %}
 
 {% block navigation %}
 {% include 'autodidact/include/course_navigation.html' %}
@@ -8,6 +7,6 @@
 {% block content %}
 <section>
 <h1>{{course.name}}</h1>
-{{course.description|markdown}}
+{{course.description}}
 </section>
 {% endblock %}

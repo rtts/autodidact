@@ -1,4 +1,4 @@
-{% if edit_type == 'homepage' %}
+{% if edit_type == 'homepage' or edit_type == 'page' %}
 {% if perms.autodidact.change_page %}
 <a class="editlink" href="{% url 'admin:autodidact_page_change' page.pk %}">Edit this page</a>
 {% endif %}

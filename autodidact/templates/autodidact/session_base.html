@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load markdown_tag %}
+{% load autodidact %}
 
 {% block navigation %}
 {% include 'autodidact/include/session_navigation.html' %}
@@ -23,7 +23,7 @@
   <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
   {% endif %}
   {% endfor %}
-  {{session.description|markdown}}
+  {{session.description|upload_urls:session}}
 </section>
 
 {% if user.is_staff and current_class %}

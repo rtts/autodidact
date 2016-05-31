@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load autodidact %}
-{% load markdown_tag %}
 
 {% block navigation %}
 {% include 'autodidact/include/assignment_navigation.html' %}
@@ -21,7 +20,7 @@
       </tr>
       <tr>
 	<td class="content">
-	  {{step.description|upload_urls:session|markdown}}
+          {{step.description|upload_urls:session}}
 	</td>
       </tr>
       {% if step.answer_required %}

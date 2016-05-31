@@ -7,18 +7,19 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from mptt.models import MPTTModel, TreeForeignKey
+from pandocfield import PandocField
 from .utils import clean
 
-MDHELP = 'This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>'
 TICKET_LENGTH = 4
 
 @python_2_unicode_compatible
 class Page(models.Model):
-    slug = models.SlugField(blank=True, unique=True)
-    content = models.TextField(help_text=MDHELP)
+    slug = models.SlugField(blank=True, unique=True, help_text='Leave this field blank for the homepage')
+    title = models.CharField(max_length=255, blank=True)
+    content = PandocField(blank=True)
 
     def __str__(self):
-        return self.content
+        return str(self.content)
 
     def get_absolute_url(self):
         if self.slug:
@@ -56,7 +57,7 @@ class Course(models.Model):
     programmes = models.ManyToManyField(Programme, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField()
-    description = models.TextField(help_text=MDHELP)
+    description = PandocField(blank=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
     tags = GenericRelation(Tag)
 
@@ -89,7 +90,7 @@ class Topic(models.Model):
     number = models.PositiveIntegerField(default=0)
     course = models.ForeignKey(Course, related_name="topics")
     name = models.CharField(max_length=255, blank=True)
-    description = models.TextField(help_text=MDHELP, blank=True)
+    description = PandocField(blank=True)
     tags = GenericRelation(Tag)
 
     def __str__(self):
@@ -114,7 +115,7 @@ class Session(models.Model):
     number = models.PositiveIntegerField(default=0)
     course = models.ForeignKey(Course, related_name="sessions")
     name = models.CharField(max_length=255, blank=True)
-    description = models.TextField(help_text=MDHELP, blank=True)
+    description = PandocField(blank=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
     tags = GenericRelation(Tag)
@@ -180,7 +181,7 @@ class Step(models.Model):
     number = models.PositiveIntegerField(default=0)
     assignment = models.ForeignKey(Assignment, related_name='steps')
     name = models.CharField(max_length=255, blank=True)
-    description = models.TextField(help_text=MDHELP, blank=True)
+    description = PandocField(blank=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
     def __str__(self):
@@ -282,7 +283,7 @@ def image_path(obj, filename):
 class Clarification(models.Model):
     number = models.PositiveIntegerField(default=0)
     step = models.ForeignKey(Step, related_name='clarifications')
-    description = models.TextField(help_text=MDHELP)
+    description = PandocField(blank=True)
     image = models.ImageField(upload_to=image_path)
 
     def __str__(self):
