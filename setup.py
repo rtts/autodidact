@@ -25,6 +25,5 @@ setup(
         'six >= 1.8.0, <= 1.10.0',
         'django-admin-sortable == 2.0.12',
         'django-cleanup == 0.4.2',
-        'django-mptt==0.8.4',
     ],
 )

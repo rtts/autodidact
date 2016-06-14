@@ -10,7 +10,6 @@ Build-Depends: debhelper (>= 7), apache2-dev, python3, dh-python, python3-setupt
 	python3-django,
 	python3-django-cleanup,
 	python3-django-adminsortable,
-        python3-django-mptt,
         python3-django-pandocfield,
 Standards-Version: 3.9.7
 
@@ -24,7 +23,6 @@ Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
 	python3-django,
 	python3-django-cleanup,
 	python3-django-adminsortable,
-        python3-django-mptt,
         python3-django-pandocfield,
 Recommends: 
 Description: CMS for creating self-learning activities

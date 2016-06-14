@@ -6,7 +6,6 @@ from django.core.urlresolvers import reverse
 from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
-from mptt.models import MPTTModel, TreeForeignKey
 from pandocfield import PandocField
 from .utils import clean
 
@@ -28,15 +27,11 @@ class Page(models.Model):
             return reverse('homepage')
 
 @python_2_unicode_compatible
-class Tag(MPTTModel):
+class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    parent = TreeForeignKey('self', null=True, blank=True, related_name='children', db_index=True)
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     material = GenericForeignKey()
-
-    class MPTTMeta:
-        order_insertion_by = ['name']
 
     def __str__(self):
         return self.name
