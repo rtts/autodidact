@@ -4,6 +4,15 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 import pandocfield.fields
 
+import sys
+from autodidact.models import Assignment, Clarification, Course, Page, Session, Step, Topic
+def resave_all_text_fields(*args, **kwargs):
+    for klass in [Assignment, Clarification, Course, Page, Session, Step, Topic]:
+        print("\nRe-saving all {} objects.".format(klass.__name__), end='')
+        for obj in klass.objects.all():
+            sys.stdout.write('.')
+            sys.stdout.flush()
+            obj.save()
 
 class Migration(migrations.Migration):
 
@@ -207,4 +216,5 @@ class Migration(migrations.Migration):
             field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
             preserve_default=True,
         ),
+        migrations.RunPython(resave_all_text_fields, migrations.RunPython.noop),
     ]
