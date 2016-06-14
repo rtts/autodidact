@@ -216,5 +216,5 @@ class Migration(migrations.Migration):
             field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
             preserve_default=True,
         ),
-        migrations.RunPython(resave_all_text_fields, migrations.RunPython.noop),
+        migrations.RunPython(resave_all_text_fields),
     ]
