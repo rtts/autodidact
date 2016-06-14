@@ -20,10 +20,10 @@ class PageTest(TestCase):
     def test_content_accepts_unicode(self):
         '''The str() method returns proper utf-8 in Python 2, or proper unicode in Python 3.'''
 
-        page = Page(slug='', content=unicode_string)
+        page = Page(slug='', title=unicode_string)
         page.save()
         self.assertTrue(page.pk)
-        page = Page.objects.get(content=unicode_string)
+        page = Page.objects.get(title=unicode_string)
         page_representation = str(page)
         if sys.version_info >= (3,0,0):
             page_representation = page_representation.encode('utf-8')

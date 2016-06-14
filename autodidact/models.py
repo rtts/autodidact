@@ -18,7 +18,7 @@ class Page(models.Model):
     content = PandocField(blank=True)
 
     def __str__(self):
-        return str(self.content)
+        return str(self.title)
 
     def get_absolute_url(self):
         if self.slug:
