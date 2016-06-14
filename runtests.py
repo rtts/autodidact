@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import django
 from django.conf import settings
+from django.test.runner import DiscoverRunner
 
 TEMPLATE_CONTEXT_PROCESSORS = [
     'django.core.context_processors.debug',
@@ -51,16 +52,7 @@ settings.configure(
 )
 
 django.setup()
-
-try:
-    # Django <= 1.8
-    from django.test.simple import DjangoTestSuiteRunner
-    test_runner = DjangoTestSuiteRunner(verbosity=1)
-except ImportError:
-    # Django >= 1.8
-    from django.test.runner import DiscoverRunner
-    test_runner = DiscoverRunner(verbosity=1)
-
+test_runner = DiscoverRunner(verbosity=1)
 failures = test_runner.run_tests(['autodidact'])
 if failures:
     sys.exit(failures)
