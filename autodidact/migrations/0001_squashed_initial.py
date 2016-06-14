@@ -2,7 +2,6 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import adminsortable.fields
 import autodidact.models
 from django.conf import settings
 
@@ -137,7 +136,7 @@ class Migration(migrations.Migration):
                 ('registration_enabled', models.BooleanField(help_text='When enabled, class attendance will be registered', default=True)),
                 ('active', models.BooleanField(help_text='Inactive sessions are not visible to students', default=True)),
                 ('order', models.PositiveIntegerField(editable=False, default=0, db_index=True)),
-                ('course', adminsortable.fields.SortableForeignKey(to='autodidact.Course', related_name='sessions')),
+                ('course', models.ForeignKey(to='autodidact.Course', related_name='sessions')),
             ],
             options={
                 'ordering': ['order'],
@@ -152,7 +151,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField(help_text='This field supports <a target="_blank" href="http://daringfireball.net/projects/markdown/syntax">Markdown syntax</a>', blank=True)),
                 ('answer_required', models.BooleanField(help_text='If enabled, this step will show the student a text box where they can enter their answer', default=False)),
                 ('order', models.PositiveIntegerField(editable=False, default=0, db_index=True)),
-                ('assignment', adminsortable.fields.SortableForeignKey(to='autodidact.Assignment', related_name='steps')),
+                ('assignment', models.ForeignKey(to='autodidact.Assignment', related_name='steps')),
             ],
             options={
                 'ordering': ['order'],
@@ -162,7 +161,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='presentation',
             name='session',
-            field=adminsortable.fields.SortableForeignKey(to='autodidact.Session', related_name='presentations'),
+            field=models.ForeignKey(to='autodidact.Session', related_name='presentations'),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -216,7 +215,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='assignment',
             name='session',
-            field=adminsortable.fields.SortableForeignKey(to='autodidact.Session', related_name='assignments'),
+            field=models.ForeignKey(to='autodidact.Session', related_name='assignments'),
             preserve_default=True,
         ),
     ]
