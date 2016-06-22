@@ -1,4 +1,4 @@
-python3-django-autodidact (1.0) UNRELEASED; urgency=medium
+python3-django-autodidact (1.0) stable; urgency=medium
 
   * Introduction of django-pandocfield for rendering Markdown and LaTeX
   * Split `autodidact` and `bps` into two separate repositories
@@ -11,6 +11,8 @@ python3-django-autodidact (1.0) UNRELEASED; urgency=medium
     /uploads/coursename/session/1/filename.sav">
   * Removed the adminsortable application in favor of using
     session, assignment and step numbers for sorting
+  * Cleaned and squashed all pre-1.0 database migrations. Please upgrade
+    to 0.9 before upgrading to 1.0
 
  -- Jaap Joris Vens <jj@rtts.eu>  Wed, 13 Apr 2016 10:28:34 +0200
 

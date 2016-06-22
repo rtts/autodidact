@@ -23,7 +23,7 @@ setup(
         'markdown >= 2.5.1, <= 2.6.5',
         'pillow >= 2.6.1, <= 3.1.1',
         'six >= 1.8.0, <= 1.10.0',
-        'django-admin-sortable == 2.0.12',
         'django-cleanup == 0.4.2',
+        'django-pandocfield >= 0.1',
     ],
 )
