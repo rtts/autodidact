@@ -8,11 +8,14 @@ import sys
 from autodidact.models import Assignment, Clarification, Course, Page, Session, Step, Topic
 def resave_all_text_fields(*args, **kwargs):
     for klass in [Assignment, Clarification, Course, Page, Session, Step, Topic]:
-        print("\nRe-saving all {} objects.".format(klass.__name__), end='')
+        print("\nRe-saving all {} objects: ".format(klass.__name__), end='')
         for obj in klass.objects.all():
             sys.stdout.write('.')
             sys.stdout.flush()
             obj.save()
+        else:
+            print('(none exist)', end='')
+    print()
 
 class Migration(migrations.Migration):
 
