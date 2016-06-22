@@ -9,7 +9,7 @@ Build-Depends: debhelper (>= 7), apache2-dev, python3, dh-python, python3-setupt
         python3-ldap3,
 	python3-django,
 	python3-django-cleanup,
-        python3-django-pandocfield,
+        python3-django-pandocfield (= 0.1),
 Standards-Version: 3.9.7
 
 Package: python3-django-autodidact
@@ -21,7 +21,7 @@ Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
         python3-ldap3,
 	python3-django,
 	python3-django-cleanup,
-        python3-django-pandocfield,
+        python3-django-pandocfield (= 0.1),
 Recommends: 
 Description: CMS for creating self-learning activities
  Autodidact is a simple content-management system (CMS) for creating
