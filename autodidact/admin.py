@@ -31,11 +31,13 @@ class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class ProgrammeAdmin(admin.ModelAdmin):
     pass
 
-class InlineTopicAdmin(admin.TabularInline):
+class InlineTopicAdmin(admin.StackedInline):
     model = Topic
+    extra = 0
 
-class InlineSessionAdmin(admin.TabularInline):
+class InlineSessionAdmin(admin.StackedInline):
     model = Session
+    extra = 0
 
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
@@ -48,18 +50,19 @@ class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
 
 class InlineAssignmentAdmin(admin.TabularInline):
     model = Assignment
+    extra = 0
 
 class InlineDownloadAdmin(admin.StackedInline):
     model = Download
-    extra = 1
+    extra = 0
 
 class InlinePresentationAdmin(admin.StackedInline):
     model = Presentation
-    extra = 1
+    extra = 0
 
 class InlineClarificationAdmin(admin.StackedInline):
     model = Clarification
-    extra = 1
+    extra = 0
 
 @admin.register(Topic)
 class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
@@ -85,8 +88,9 @@ class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_editable = ['number', 'name', 'registration_enabled', 'active']
     exclude = ['course', 'number']
 
-class InlineStepAdmin(admin.TabularInline):
+class InlineStepAdmin(admin.StackedInline):
     model = Step
+    extra = 0
 
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):

@@ -11,10 +11,11 @@ python3-django-autodidact (1.0) stable; urgency=medium
     /uploads/coursename/session/1/filename.sav">
   * Removed the adminsortable application in favor of using
     session, assignment and step numbers for sorting
+  * Changed the look of inline admins
   * Cleaned and squashed all pre-1.0 database migrations. Please upgrade
     to 0.9 before upgrading to 1.0
 
- -- Jaap Joris Vens <jj@rtts.eu>  Wed, 13 Apr 2016 10:28:34 +0200
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 03 Aug 2016 15:58:52 +0200
 
 autodidact (0.9) stable; urgency=medium
 
