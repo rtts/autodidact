@@ -1,3 +1,9 @@
+python3-django-autodidact (1.1) UNRELEASED; urgency=medium
+
+  * Included clarifications of each step in the template
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Mon, 08 Aug 2016 17:47:06 +0200
+
 python3-django-autodidact (1.0) stable; urgency=medium
 
   * Introduction of django-pandocfield for rendering Markdown and LaTeX

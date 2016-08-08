@@ -3,68 +3,85 @@
 {% load autodidact %}
 
 {% block navigation %}
-{% include 'autodidact/include/assignment_navigation.html' %}
+  {% include 'autodidact/include/assignment_navigation.html' %}
 {% endblock %}
 
 {% block content %}
-{% if step %}
-<section class="step">
-  <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step.nr}}">
-    {% csrf_token %}
-    <table class="wizard">
-      <tr>
-	<td class="header">
-	  <img id="checkbox" src="{% if completedstep %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
-	  <h1>Step {{step.nr}} of {{count}}: {{step.name}}</h1>
-	</td>
-      </tr>
-      <tr>
-	<td class="content">
-          {{step.description|upload_urls:session}}
-	</td>
-      </tr>
-      {% if step.answer_required %}
-      <tr>
-	<td class="answer">
-	  Your answer:
-	  <textarea id="answerbox" name="answer">{{completedstep.answer}}</textarea>
-	</td>
-      </tr>
-      {% endif %}
-      <tr>
-	<td class="footer">
+  {% if step %}
+    <section class="step">
+      <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step.nr}}">
+        {% csrf_token %}
+
+        <table class="wizard">
+          <tr>
+	    <td class="header">
+	      <img id="checkbox" src="{% if completedstep %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
+	      <h1>Step {{step.nr}} of {{count}}: {{step.name}}</h1>
+	    </td>
+          </tr>
+
+          <tr>
+	    <td class="content">
+              {{step.description|upload_urls:session}}
+	    </td>
+          </tr>
+
+          {% if step.answer_required %}
+            <tr>
+	      <td class="answer">
+	        Your answer:
+	        <textarea id="answerbox" name="answer">{{completedstep.answer}}</textarea>
+	      </td>
+            </tr>
+          {% endif %}
+        </table>
+
+        <div class="step_clarifications">
+          {% for hint in step.clarifications.all %}
+            <input name="clarification" class="toggle" id="hint{{forloop.counter}}" type="radio">
+            <label for="hint{{forloop.counter}}" style="left: calc({{forloop.counter}} * 16px)"></label>
+            <div class="clarification">
+              {% if hint.image %}
+                <img src="{{hint.image.url}}">
+              {% endif %}
+              {{hint.description}}
+            </div>
+          {% endfor %}
+        </div>
+
+	<div class="step_footer">
 	  {% if not first %}
-	  <input class="left button" type="submit" name="previous" value="Previous" />
+	    <input class="left button" type="submit" name="previous" value="Previous" />
 	  {% endif %}
 	  {% if not last %}
-	  <input class="right button" type="submit" name="next" value="Next" />
+	    <input class="right button" type="submit" name="next" value="Next" />
 	  {% else %}
-	  <input class="right button finish" type="submit" value="Finish!" />
+	    <input class="right button finish" type="submit" value="Finish!" />
 	  {% endif %}
-	</td>
-      </tr>
-    </table>
-  </form>
+        </div>
+      </form>
 
-  <h2>Your progress in this assignment:</h2>
-  <ul class="progress">
-    {% for finished in step_overview %}
-    <li>
-      {% if forloop.counter == step.nr %}
-      <span class="current step">{{forloop.counter}}</span>
-      {% elif finished %}
-      <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
-      {% else %}
-      <span class="unfinished step">{{forloop.counter}}</span>
-      {% endif %}
-    </li>
-    {% endfor %}
-  </ul>
-</section>
+      <div class="step_progress">
+        <h2>Your progress in this assignment:</h2>
+        <ul class="progress">
+          {% for finished in step_overview %}
+            <li>
+              {% if forloop.counter == step.nr %}
+                <span class="current step">{{forloop.counter}}</span>
+              {% elif finished %}
+                <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+              {% else %}
+                <span class="unfinished step">{{forloop.counter}}</span>
+              {% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </section>
 
-{% else %}
-<section>
-  This step does not exist. <a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Go back to step 1</a>.
-</section>
-{% endif %}
+  {% else %}
+    <section>
+      This step does not exist. <a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Go back to step 1</a>.
+    </section>
+  {% endif %}
 {% endblock %}

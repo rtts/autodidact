@@ -279,7 +279,7 @@ class Clarification(models.Model):
     number = models.PositiveIntegerField(default=0)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = PandocField(blank=True)
-    image = models.ImageField(upload_to=image_path)
+    image = models.ImageField(upload_to=image_path, blank=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
