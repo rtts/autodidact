@@ -16,7 +16,7 @@
           <tr>
 	    <td class="header">
 	      <img id="checkbox" src="{% if completedstep %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24" />
-	      <h1>Step {{step.nr}} of {{count}}: {{step.name}}</h1>
+	      <h1>Assignment {{assignment.nr}} &ndash; step {{step.nr}} of {{count}}</h1>
 	    </td>
           </tr>
 

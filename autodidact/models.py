@@ -175,7 +175,6 @@ class Assignment(models.Model):
 class Step(models.Model):
     number = models.PositiveIntegerField(default=0)
     assignment = models.ForeignKey(Assignment, related_name='steps')
-    name = models.CharField(max_length=255, blank=True)
     description = PandocField(blank=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
 
@@ -276,24 +275,12 @@ def image_path(obj, filename):
 
 @python_2_unicode_compatible
 class Clarification(models.Model):
-    number = models.PositiveIntegerField(default=0)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = PandocField(blank=True)
     image = models.ImageField(upload_to=image_path, blank=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
-
-    def save(self, *args, **kwargs):
-        reorder(self, self.step.clarifications.all(), self.pk is None)
-        super(Clarification, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        reorder(self, self.step.clarifications.all(), True)
-        super(Clarification, self).delete(*args, **kwargs)
-
-    class Meta:
-        ordering = ['number']
 
 def reorder(instance, queryset, new_object_or_deleted):
     '''Reorders the queryset preserving the instance's current position (unless the instance is new or deleted)'''
