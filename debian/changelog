@@ -1,6 +1,7 @@
 python3-django-autodidact (1.1) UNRELEASED; urgency=medium
 
   * Included clarifications of each step in the template
+  * Added an (almost) complete stylesheet excluding TiU images
 
  -- Jaap Joris Vens <jj@rtts.eu>  Mon, 08 Aug 2016 17:47:06 +0200
 
