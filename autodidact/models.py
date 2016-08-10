@@ -7,7 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from pandocfield import PandocField
-from numberedmodel import NumberedModel
+from numberedmodel.models import NumberedModel
 from .utils import clean
 
 TICKET_LENGTH = 4
