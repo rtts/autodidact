@@ -8,7 +8,7 @@ if sys.argv[-1] == 'test':
 
 setup(
     name = 'autodidact',
-    version = '1.0',
+    version = '1.1',
     url = 'https://github.com/JaapJoris/autodidact',
     author = 'Jaap Joris Vens',
     author_email = 'jj@rtts.eu',
@@ -24,6 +24,7 @@ setup(
         'pillow >= 2.6.1, <= 3.1.1',
         'six >= 1.8.0, <= 1.10.0',
         'django-cleanup == 0.4.2',
-        'django-pandocfield == 0.1',
+        'django-pandocfield == 0.2.1',
+        'django-orderedmodel == 0.1',
     ],
 )

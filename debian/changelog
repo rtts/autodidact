@@ -3,6 +3,7 @@ python3-django-autodidact (1.1) UNRELEASED; urgency=medium
   * A nice way to show clarifications of each step
   * Added an (almost) complete stylesheet excluding TiU images
   * Removed step name and clarification number
+  * New dependency on django-numberedmodel (which is now a separate app)
 
  -- Jaap Joris Vens <jj@rtts.eu>  Mon, 08 Aug 2016 17:47:06 +0200
 

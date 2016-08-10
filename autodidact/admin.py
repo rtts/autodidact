@@ -48,7 +48,7 @@ class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_editable = ['order', 'name', 'slug']
     fields = ['name', 'slug', 'active', 'description', 'programmes']
 
-class InlineAssignmentAdmin(admin.TabularInline):
+class InlineAssignmentAdmin(admin.StackedInline):
     model = Assignment
     extra = 0
 

@@ -7,6 +7,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.contrib.contenttypes.fields import GenericForeignKey, GenericRelation
 from django.contrib.contenttypes.models import ContentType
 from pandocfield import PandocField
+from numberedmodel import NumberedModel
 from .utils import clean
 
 TICKET_LENGTH = 4
@@ -47,8 +48,8 @@ class Programme(models.Model):
         return self.name
 
 @python_2_unicode_compatible
-class Course(models.Model):
-    order = models.PositiveIntegerField(default=0)
+class Course(NumberedModel):
+    order = models.PositiveIntegerField(blank=True)
     programmes = models.ManyToManyField(Programme, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField()
@@ -69,20 +70,12 @@ class Course(models.Model):
     def get_absolute_url(self):
         return reverse('course', args=[self.slug])
 
-    def save(self, *args, **kwargs):
-        reorder(self, Course.objects.all(), self.pk is None)
-        super(Course, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        reorder(self, Course.objects.all(), True)
-        super(Course, self).delete(*args, **kwargs)
-
     class Meta:
         ordering = ['order']
 
 @python_2_unicode_compatible
-class Topic(models.Model):
-    number = models.PositiveIntegerField(default=0)
+class Topic(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
     course = models.ForeignKey(Course, related_name="topics")
     name = models.CharField(max_length=255, blank=True)
     description = PandocField(blank=True)
@@ -94,20 +87,15 @@ class Topic(models.Model):
     def get_absolute_url(self):
         return reverse('session', args=[self.course.slug, self.number])
 
-    def save(self, *args, **kwargs):
-        reorder(self, self.course.topics.all(), self.pk is None)
-        super(Topic, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        reorder(self, self.course.topics.all(), True)
-        super(Topic, self).delete(*args, **kwargs)
+    def number_with_respect_to(self):
+        return self.course.topics.all()
 
     class Meta:
         ordering = ['number']
 
 @python_2_unicode_compatible
-class Session(models.Model):
-    number = models.PositiveIntegerField(default=0)
+class Session(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
     course = models.ForeignKey(Course, related_name="sessions")
     name = models.CharField(max_length=255, blank=True)
     description = PandocField(blank=True)
@@ -124,20 +112,15 @@ class Session(models.Model):
     def get_absolute_url(self):
         return reverse('session', args=[self.course.slug, self.get_number()])
 
-    def save(self, *args, **kwargs):
-        reorder(self, self.course.sessions.all(), self.pk is None)
-        super(Session, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        reorder(self, self.course.sessions.all(), True)
-        super(Session, self).delete(*args, **kwargs)
+    def number_with_respect_to(self):
+        return self.course.sessions.all()
 
     class Meta:
         ordering = ['number']
 
 @python_2_unicode_compatible
-class Assignment(models.Model):
-    number = models.PositiveIntegerField(default=0)
+class Assignment(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
     session = models.ForeignKey(Session, related_name="assignments")
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
@@ -156,24 +139,22 @@ class Assignment(models.Model):
     def get_absolute_url(self):
         return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
 
+    def number_with_respect_to(self):
+        return self.session.assignments.all()
+
     def save(self, *args, **kwargs):
-        reorder(self, self.session.assignments.all(), self.pk is None)
         super(Assignment, self).save(*args, **kwargs)
 
         # Ensure at least one step
         if not self.steps.first():
             Step(assignment=self).save()
 
-    def delete(self, *args, **kwargs):
-        reorder(self, self.session.assignments.all(), True)
-        super(Assignment, self).delete(*args, **kwargs)
-
     class Meta:
         ordering = ['number']
 
 @python_2_unicode_compatible
-class Step(models.Model):
-    number = models.PositiveIntegerField(default=0)
+class Step(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
     assignment = models.ForeignKey(Assignment, related_name='steps')
     description = PandocField(blank=True)
     answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
@@ -191,13 +172,8 @@ class Step(models.Model):
             self.assignment.get_number(),
         ]) + '?step=' + str(self.get_number())
 
-    def save(self, *args, **kwargs):
-        reorder(self, self.assignment.steps.all(), self.pk is None)
-        super(Step, self).save(*args, **kwargs)
-
-    def delete(self, *args, **kwargs):
-        reorder(self, self.assignment.steps.all(), True)
-        super(Step, self).delete(*args, **kwargs)
+    def number_with_respect_to(self):
+        return self.assignment.steps.all()
 
     class Meta:
         ordering = ['number']
@@ -281,25 +257,3 @@ class Clarification(models.Model):
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
-
-def reorder(instance, queryset, new_object_or_deleted):
-    '''Reorders the queryset preserving the instance's current position (unless the instance is new or deleted)'''
-    orderfield = instance.__class__._meta.ordering[0]
-    if queryset and new_object_or_deleted:
-        lastplace = getattr(queryset.last(), orderfield) + 1
-        setattr(instance, orderfield, lastplace)
-    instance_order = getattr(instance, orderfield)
-    counter = 1
-    inserted = False
-    for obj in queryset.exclude(pk=instance.pk):
-        current_order = getattr(obj, orderfield)
-        if current_order >= instance_order and not inserted:
-            setattr(instance, orderfield, counter)
-            inserted = True
-            counter += 1
-        if current_order != counter:
-            setattr(obj, orderfield, counter)
-            super(obj.__class__, obj).save()
-        counter += 1
-    if not inserted:
-        setattr(instance, orderfield, counter)

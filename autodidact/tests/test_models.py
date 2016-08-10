@@ -98,7 +98,7 @@ class SessionTest(TestCase):
     def test_string_representation(self):
         '''The string representation of a session object is equal to "Course code: Session X"'''
 
-        representation = '{}: Session {}'.format(self.course.colloquial_name(), self.session.get_number())
+        representation = '{}: Session {}'.format(self.course.colloquial_name(), self.session.number)
         self.assertEqual(str(self.session), representation)
 
     def test_get_absolute_url(self):
@@ -106,25 +106,16 @@ class SessionTest(TestCase):
 
         correct_url = reverse('session', args=[
             self.course.slug,
-            self.session.get_number()
+            self.session.number,
         ])
         self.assertEqual(self.session.get_absolute_url(), correct_url)
 
-    def test_get_number(self):
+    def test_number(self):
         '''The session number is relative: i.e. session 1 is always the first session in the queryset course.sessions'''
 
         self.assertEqual(self.session1.number, 1)
         self.assertEqual(self.session2.number, 2)
         self.assertEqual(self.session3.number, 3)
-        self.assertEqual(self.session1.get_number(), 1)
-        self.assertEqual(self.session2.get_number(), 2)
-        self.assertEqual(self.session3.get_number(), 3)
-        self.session1.number = 3
-        self.session2.number = 2
-        self.session3.number = 1
-        self.assertEqual(self.session1.get_number(), 3)
-        self.assertEqual(self.session2.get_number(), 2)
-        self.assertEqual(self.session3.get_number(), 1)
 
 class AssignmentTest(TestCase):
     def setUp(self):
@@ -143,7 +134,7 @@ class AssignmentTest(TestCase):
     def test_string_representation(self):
         '''The string representation of an assignment is equal to "Assignment X"'''
 
-        representation = 'Assignment {}'.format(self.assignment.get_number())
+        representation = 'Assignment {}'.format(self.assignment.number)
         self.assertEqual(str(self.assignment), representation)
 
     def test_get_absolute_url(self):
@@ -151,26 +142,17 @@ class AssignmentTest(TestCase):
 
         correct_url = reverse('assignment', args=[
             self.course.slug,
-            self.session.get_number(),
-            self.assignment.get_number()
+            self.session.number,
+            self.assignment.number,
         ])
         self.assertEqual(self.assignment.get_absolute_url(), correct_url)
 
-    def test_get_number(self):
+    def test_number(self):
         '''The assignment number is relative: i.e. assignment 1 is always the first assignment in the queryset session.assignments'''
 
         self.assertEqual(self.assignment1.number, 1)
         self.assertEqual(self.assignment2.number, 2)
         self.assertEqual(self.assignment3.number, 3)
-        self.assertEqual(self.assignment1.get_number(), 1)
-        self.assertEqual(self.assignment2.get_number(), 2)
-        self.assertEqual(self.assignment3.get_number(), 3)
-        self.assignment1.number = 3
-        self.assignment2.number = 2
-        self.assignment3.number = 1
-        self.assertEqual(self.assignment1.get_number(), 3)
-        self.assertEqual(self.assignment2.get_number(), 2)
-        self.assertEqual(self.assignment3.get_number(), 1)
 
     def test_at_least_one_step(self):
         '''Creating an assignment also creates an associated first step'''
@@ -203,7 +185,7 @@ class StepTest(TestCase):
     def test_string_representation(self):
         '''The string representation of a step is equal to "Step X"'''
 
-        representation = 'Step {}'.format(self.step.get_number())
+        representation = 'Step {}'.format(self.step.number)
         self.assertEqual(str(self.step), representation)
 
     def test_get_absolute_url(self):
@@ -211,27 +193,18 @@ class StepTest(TestCase):
 
         correct_url = reverse('assignment', args=[
             self.course.slug,
-            self.session.get_number(),
-            self.assignment.get_number()
-        ]) + '?step=' + str(self.step.get_number())
+            self.session.number,
+            self.assignment.number,
+        ]) + '?step=' + str(self.step.number)
         self.assertEqual(self.step.get_absolute_url(), correct_url)
 
-    def test_get_number(self):
+    def test_number(self):
         '''The step number is relative: i.e. step 1 is always the first step in the queryset assignment.steps'''
 
         self.assertEqual(self.step1.number, 1)
         self.assertEqual(self.step2.number, 2)
         self.assertEqual(self.step3.number, 3)
-        self.assertEqual(self.step1.get_number(), 1)
-        self.assertEqual(self.step2.get_number(), 2)
-        self.assertEqual(self.step3.get_number(), 3)
-        self.step1.number = 3
-        self.step2.number = 2
-        self.step3.number = 1
-        self.assertEqual(self.step1.get_number(), 3)
-        self.assertEqual(self.step2.get_number(), 2)
-        self.assertEqual(self.step3.get_number(), 1)
-
+ 
 class CompletedStepTest(TestCase):
     def setUp(self):
         self.course = Course(name=course_name, slug=course_slug)
@@ -397,7 +370,7 @@ class ClarificationTest(TestCase):
     def test_string_representation(self):
         '''The string representation of a clarification is "Clarification for Step 1".'''
 
-        representation = "Clarification for Step {}".format(self.step.get_number())
+        representation = "Clarification for Step {}".format(self.step.number)
         self.assertEqual(str(self.clarification), representation)
 
     def test_write_permissions(self):
