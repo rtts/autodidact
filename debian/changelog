@@ -1,4 +1,4 @@
-python3-django-autodidact (1.1) UNRELEASED; urgency=medium
+python3-django-autodidact (1.1) stable; urgency=medium
 
   * A nice way to show clarifications of each step
   * Added an (almost) complete stylesheet excluding TiU images
