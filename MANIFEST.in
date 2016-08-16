@@ -1,2 +1,3 @@
+recursive-include autodidact/static *
 recursive-include autodidact/templates *
 recursive-exclude .gitignore

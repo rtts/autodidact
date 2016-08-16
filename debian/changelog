@@ -1,3 +1,11 @@
+python3-django-autodidact (1.1.1) stable; urgency=medium
+
+  * Fixed erroneously excluded static files
+  * Fixed Python2 incompatibility
+  * Updated dependencies
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 16 Aug 2016 14:16:07 +0200
+
 python3-django-autodidact (1.1) stable; urgency=medium
 
   * A nice way to show clarifications of each step
