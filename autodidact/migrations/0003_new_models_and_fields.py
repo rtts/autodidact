@@ -1,35 +1,23 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from __future__ import print_function
 
 from django.db import models, migrations
 import pandocfield.fields
+import autodidact.models
 
-import sys
-from autodidact.models import Assignment, Clarification, Course, Page, Session, Step, Topic
-def resave_all_text_fields(*args, **kwargs):
-    for klass in [Assignment, Clarification, Course, Page, Session, Step, Topic]:
-        print("\nRe-saving all {} objects: ".format(klass.__name__), end='')
-        for obj in klass.objects.all():
-            sys.stdout.write('.')
-            sys.stdout.flush()
-            obj.save()
-        else:
-            print('(none exist)', end='')
-    print()
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('contenttypes', '0001_initial'),
-        ('autodidact', '0001_squashed_initial'),
+        ('autodidact', '0002_rename_order_to_number'),
     ]
 
     operations = [
         migrations.CreateModel(
             name='Tag',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
                 ('name', models.CharField(unique=True, max_length=255)),
                 ('object_id', models.PositiveIntegerField()),
                 ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
@@ -42,10 +30,10 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Topic',
             fields=[
-                ('id', models.AutoField(auto_created=True, serialize=False, primary_key=True, verbose_name='ID')),
-                ('number', models.PositiveIntegerField(default=0)),
+                ('id', models.AutoField(primary_key=True, serialize=False, verbose_name='ID', auto_created=True)),
+                ('number', models.PositiveIntegerField(blank=True)),
                 ('name', models.CharField(max_length=255, blank=True)),
-                ('description', pandocfield.fields.PandocField(blank=True, auto_create_html_field=False)),
+                ('description', pandocfield.fields.PandocField(auto_create_html_field=False, blank=True)),
                 ('_description_html', models.TextField(editable=False, blank=True)),
                 ('course', models.ForeignKey(to='autodidact.Course', related_name='topics')),
             ],
@@ -60,7 +48,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AlterModelOptions(
             name='clarification',
-            options={'ordering': ['number']},
+            options={},
         ),
         migrations.AlterModelOptions(
             name='presentation',
@@ -75,10 +63,6 @@ class Migration(migrations.Migration):
             options={'ordering': ['number']},
         ),
         migrations.RemoveField(
-            model_name='assignment',
-            name='order',
-        ),
-        migrations.RemoveField(
             model_name='clarification',
             name='order',
         ),
@@ -87,29 +71,13 @@ class Migration(migrations.Migration):
             name='order',
         ),
         migrations.RemoveField(
-            model_name='session',
-            name='order',
-        ),
-        migrations.RemoveField(
             model_name='step',
-            name='order',
-        ),
-        migrations.AddField(
-            model_name='assignment',
-            name='number',
-            field=models.PositiveIntegerField(default=0),
-            preserve_default=True,
+            name='name',
         ),
         migrations.AddField(
             model_name='clarification',
             name='_description_html',
             field=models.TextField(editable=False, blank=True),
-            preserve_default=True,
-        ),
-        migrations.AddField(
-            model_name='clarification',
-            name='number',
-            field=models.PositiveIntegerField(default=0),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -137,51 +105,45 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='session',
-            name='number',
-            field=models.PositiveIntegerField(default=0),
-            preserve_default=True,
-        ),
-        migrations.AddField(
             model_name='step',
             name='_description_html',
             field=models.TextField(editable=False, blank=True),
             preserve_default=True,
         ),
-        migrations.AddField(
-            model_name='step',
-            name='number',
-            field=models.PositiveIntegerField(default=0),
-            preserve_default=True,
-        ),
         migrations.AlterField(
             model_name='assignment',
-            name='session',
-            field=models.ForeignKey(to='autodidact.Session', related_name='assignments'),
+            name='number',
+            field=models.PositiveIntegerField(blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='clarification',
             name='description',
-            field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
+            field=pandocfield.fields.PandocField(auto_create_html_field=False, blank=True),
+            preserve_default=True,
+        ),
+        migrations.AlterField(
+            model_name='clarification',
+            name='image',
+            field=models.ImageField(upload_to=autodidact.models.image_path, blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='course',
             name='description',
-            field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
+            field=pandocfield.fields.PandocField(auto_create_html_field=False, blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='course',
             name='order',
-            field=models.PositiveIntegerField(default=0),
+            field=models.PositiveIntegerField(blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='page',
             name='content',
-            field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
+            field=pandocfield.fields.PandocField(auto_create_html_field=False, blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
@@ -191,34 +153,27 @@ class Migration(migrations.Migration):
             preserve_default=True,
         ),
         migrations.AlterField(
-            model_name='presentation',
-            name='session',
-            field=models.ForeignKey(to='autodidact.Session', related_name='presentations'),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
-            model_name='session',
-            name='course',
-            field=models.ForeignKey(to='autodidact.Course', related_name='sessions'),
-            preserve_default=True,
-        ),
-        migrations.AlterField(
             model_name='session',
             name='description',
-            field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
+            field=pandocfield.fields.PandocField(auto_create_html_field=False, blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
-            model_name='step',
-            name='assignment',
-            field=models.ForeignKey(to='autodidact.Assignment', related_name='steps'),
+            model_name='session',
+            name='number',
+            field=models.PositiveIntegerField(blank=True),
             preserve_default=True,
         ),
         migrations.AlterField(
             model_name='step',
             name='description',
-            field=pandocfield.fields.PandocField(blank=True, auto_create_html_field=False),
+            field=pandocfield.fields.PandocField(auto_create_html_field=False, blank=True),
             preserve_default=True,
         ),
-        migrations.RunPython(resave_all_text_fields),
+        migrations.AlterField(
+            model_name='step',
+            name='number',
+            field=models.PositiveIntegerField(blank=True),
+            preserve_default=True,
+        ),
     ]
