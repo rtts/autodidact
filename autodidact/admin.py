@@ -22,15 +22,6 @@ class FunkySaveAdmin(object):
 
     save_on_top = True
 
-@admin.register(Page)
-class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    list_display = ['slug', 'content']
-    save_on_top = False
-
-@admin.register(Programme)
-class ProgrammeAdmin(admin.ModelAdmin):
-    pass
-
 class InlineTopicAdmin(admin.StackedInline):
     model = Topic
     extra = 0
@@ -38,15 +29,6 @@ class InlineTopicAdmin(admin.StackedInline):
 class InlineSessionAdmin(admin.StackedInline):
     model = Session
     extra = 0
-
-@admin.register(Course)
-class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    inlines = [InlineTopicAdmin, InlineSessionAdmin]
-    list_display = ['order', '__str__', 'name', 'slug', 'url']
-    list_display_links = ['__str__']
-    list_filter = ['programmes']
-    list_editable = ['order', 'name', 'slug']
-    fields = ['name', 'slug', 'active', 'description', 'programmes']
 
 class InlineAssignmentAdmin(admin.StackedInline):
     model = Assignment
@@ -63,6 +45,24 @@ class InlinePresentationAdmin(admin.StackedInline):
 class InlineClarificationAdmin(admin.StackedInline):
     model = Clarification
     extra = 0
+
+@admin.register(Programme)
+class ProgrammeAdmin(admin.ModelAdmin):
+    pass
+
+@admin.register(Page)
+class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
+    list_display = ['name', 'title']
+    save_on_top = False
+    def name(self, page):
+        return page.slug if page.slug else 'homepage'
+
+@admin.register(Course)
+class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
+    inlines = [InlineTopicAdmin, InlineSessionAdmin]
+    list_display = ['order', 'name', 'url']
+    list_display_links = ['name']
+    list_filter = ['programmes']
 
 @admin.register(Topic)
 class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
@@ -81,11 +81,11 @@ class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    inlines = [InlineAssignmentAdmin, InlineDownloadAdmin, InlinePresentationAdmin]
+    ordering = ['course__order', 'number']
     list_filter = ['course']
-    list_display = ['number', '__str__', 'name', 'course', 'registration_enabled', 'active']
+    list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
     list_display_links = ['__str__']
-    list_editable = ['number', 'name', 'registration_enabled', 'active']
+    inlines = [InlineAssignmentAdmin, InlineDownloadAdmin, InlinePresentationAdmin]
     exclude = ['course', 'number']
 
 class InlineStepAdmin(admin.StackedInline):
@@ -96,61 +96,39 @@ class InlineStepAdmin(admin.StackedInline):
 class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    inlines = [InlineStepAdmin]
-    list_display = ['number', '__str__', 'session', 'name', 'nr_of_steps', 'locked', 'active']
-    list_display_links = ['__str__']
+    ordering = ['session__course__order', 'session__number', 'number']
+    list_display = ['number', 'name', 'session', 'nr_of_steps', 'locked', 'active']
+    list_display_links = ['name']
     list_filter = ['session__course', 'session']
-    list_editable = ['number', 'name', 'locked', 'active']
+    inlines = [InlineStepAdmin]
     exclude = ['session', 'number']
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    inlines = [InlineClarificationAdmin]
-    list_display = ['number', '__str__', 'description', 'answer_required', 'assignment']
-    list_display_links = ['__str__']
-    list_editable = ['number', 'answer_required']
+    ordering = ['assignment__session__course__order', 'assignment__session__number', 'assignment__number', 'number']
+    list_display = ['__str__', 'assignment', 'description', 'answer_required']
     list_filter = ['assignment__session', 'assignment']
+    inlines = [InlineClarificationAdmin]
     exclude = ['assignment']
 
 @admin.register(CompletedStep)
 class CompletedStepAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    list_display = ['whom', 'step', 'date', 'answer']
+    list_display = ['date', 'step', 'whom', 'answer']
+    list_display_links = ['step']
     list_filter = ['step__assignment__session__course', 'whom']
+    ordering = ['-date']
     exclude = ['step', 'whom']
-
-@admin.register(Download)
-class DownloadAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-    list_filter = ['session']
-    list_display = ['__str__', 'session']
-    exclude = ['session']
-
-@admin.register(Presentation)
-class PresentationAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-    list_filter = ['session']
-    list_display = ['__str__', 'session', 'visibility']
-    radio_fields = {'visibility': admin.HORIZONTAL}
-    exclude = ['session']
 
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     list_filter = ['session__course', 'session']
-    list_display = ['number', 'date', 'session', 'ticket', 'nr_of_students', 'teacher', 'dismissed']
-    exclude = ['session']
-
-@admin.register(Clarification)
-class ClarificationAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-    list_filter = ['step__assignment__session']
-    list_display = ['__str__', 'step', 'description']
-    exclude = ['step']
+    list_display = ['date', 'number', 'session', 'ticket', 'nr_of_students', 'teacher', 'dismissed']
+    list_display_links = ['number']
+    ordering = ['-date']
+    fields = ['number', 'ticket', 'dismissed']

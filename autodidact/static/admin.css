@@ -11,9 +11,6 @@
   background: #003366;
 }
 
-.vTextField {
-  width: auto !important;
-}
 .vIntegerField {
   width: 3em !important;
 }
@@ -24,10 +21,6 @@ select[multiple] {
 
 textarea {
   font-family: monospace;
-}
-
-div.breadcrumbs {
-  display: none;
 }
 
 #user-tools {

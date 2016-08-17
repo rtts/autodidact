@@ -3,6 +3,7 @@ python3-django-autodidact (1.2) UNRELEASED; urgency=medium
   * Rewrote migrations to preserve Autodidact 0.9 orderings.
     The current migrations DO NOT support migrating from any 1.1x
     series database.
+  * Cleaned up admin views
 
  -- Jaap Joris Vens <jj@rtts.eu>  Wed, 17 Aug 2016 13:30:16 +0200
 
