@@ -19,14 +19,15 @@ def resave_all_text_fields(apps, schema_editor):
 
     for klass in [Assignment, Clarification, Course, Page, Session, Step, Topic]:
         print("    Re-saving {}s: ".format(klass.__name__), end='')
+        obj = None
         for obj in klass.objects.all():
             sys.stdout.write('.')
             sys.stdout.flush()
             obj.save()
-        else:
-            print(' done')
         if obj is None:
             print('(none exist)')
+        else:
+            print(' done')
     print()
 
 def noop(*args):

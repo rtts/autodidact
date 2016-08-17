@@ -52,10 +52,10 @@ def session(request, course, session):
         if request.method == 'POST':
             ticket = request.POST.get('ticket')
             try:
-                newclass = Class.objects.get(ticket=ticket)
+                newclass = Class.objects.get(ticket=ticket, dismissed=False)
             except Class.DoesNotExist:
                 newclass = None
-            if newclass and newclass.session == session and not newclass.dismissed:
+            if newclass and newclass.session == session:
                 newclass.students.add(user)
                 return redirect(session)
             else:
@@ -226,7 +226,6 @@ def endclass(request):
     session = get_object_or_404(Session, pk=session_pk)
     try:
         group = Class.objects.get(pk=class_pk)
-        group.teacher = None
         group.dismissed = True
         group.save()
     except Class.DoesNotExist:

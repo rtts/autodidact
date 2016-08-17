@@ -8,7 +8,7 @@ HUMAN_FRIENDLY_CHARS = '234679ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnpqrstuvwxyz'
 
 def get_current_class(session, user):
     if user.is_staff:
-        classes = user.teaches.all() & session.classes.all()
+        classes = user.teaches.filter(dismissed=False) & session.classes.all()
     else:
         classes = user.attends.all() & session.classes.all()
     return classes[0] if classes else None

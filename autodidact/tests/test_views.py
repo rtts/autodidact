@@ -357,7 +357,9 @@ class EndclassViewTest(TestCase):
         self.assertRedirects(c.post(url, {'session': '1'}), reverse('session', args=[self.course.slug, 1]))
         self.assertRedirects(c.post(url, {'session': '1', 'class': '1'}), reverse('session', args=[self.course.slug, 1]))
         self.assertTrue(Class.objects.first().dismissed)
-        self.assertFalse(Class.objects.first().teacher)
+
+        # The teacher remains after the class is dismissed, for future reference
+        self.assertTrue(Class.objects.first().teacher)
 
 class AddAssignmentTest(TestCase):
     def setUp(self):
