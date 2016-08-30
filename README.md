@@ -52,9 +52,14 @@ Configuration
             "numberedmodel",
         ]
 
-2. Add `autodidact.urls` to your URL patterns:
+2. Add the following urls to your URL patterns:
 
-        urlpatterns += [url(r'^', include(autodidact.urls)]
+        urlpatterns = patterns('',
+            url(r'^admin/', include(admin.site.urls)),
+            url(r'^accounts/login/$', django.contrib.auth.views.login),
+            url(r'^accounts/logout/$', django.contrib.auth.views.logout),
+            url(r'^', include(autodidact.urls)),
+        )
 
 3. Make sure that `django.core.context_processors.request` is included in your `TEMPLATE_CONTEXT_PROCESSORS`:
 
@@ -76,17 +81,6 @@ Configuration
         $ ./manage.py migrate
         $ ./manage.py createsuperuser
 
-5. Start your development server (`./manage.py runserver`) and visit
-[http://localhost:8000/](http://localhost:8000/). 
-
-6. Visit [http://localhost:8000/admin/](http://localhost:8000/admin/) and have a look at the database
-tables. The most important ones are, listed in hierarchical order:
-Programmes, Courses, Sessions, Assignments, and Steps. Autodidact was
-designed to hide the admin from the user as much as possible, that's
-why you will be redirected to the website after saving most
-objects. Once you've added a Programme and a Course, you won't need to
-visit the admin again and can just use the appropriate "add" and
-"edit" links that are present throughout the website.
-
-Have fun! If you have any questions or bug reports, feel free to
+5. You're all set! Start the development server (`./manage.py runserver`) and visit
+[http://localhost:8000/](http://localhost:8000/). In the admin you can add Programmes, Courses, Sessions, Assignments, and Steps. Have fun! If you have any questions or bug reports, feel free to
 contact the author or submit a Github issue.
