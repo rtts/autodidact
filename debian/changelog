@@ -1,3 +1,10 @@
+python3-django-autodidact (1.3) UNRELEASED; urgency=medium
+
+  * Include useful base template and registration templates
+  * Automatically create homepage upon first run
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 07 Sep 2016 14:03:11 +0200
+
 python3-django-autodidact (1.2) stable; urgency=medium
 
   * Rewrote migrations to preserve Autodidact 0.9 orderings.

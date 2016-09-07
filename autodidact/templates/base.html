@@ -6,23 +6,53 @@
   <head>
     <title>{% block title %}Your Title Here{% endblock %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}"/>
     {% block extrahead %}{% endblock %}
   </head>
   <body>
 
-    <header>
-      {% autodidact_editor %}
+    <header id="logo">
+      {% if user.is_authenticated %}
+      <div id="login">
+        Logged in as <b>{{user.username}}</b>
+        <a href="{% url 'django.contrib.auth.views.logout' %}">Log out</a>
+        {% if user.is_staff %}
+        <br>
+        <span class="staff">You are a staff member</span>
+        {% endif %}
+      </div>
+      {% endif %}
     </header>
 
-    <nav>
-      {% block navigation %}
-      {% endblock %}
-    </nav>
+    <header id="banner">
+      <div id="banner_image">
+        <div id="banner_text">
+          {% block banner %}
+          <h1>My Online Learning System</h1>
+          <h2>Built using Autodidact</h2>
+          {% endblock %}
+        </div>
+      </div>
+    </header>
 
-    <article>
-      {% block content %}
-      {% endblock %}
-    </article>
+    <div id="content_wrapper">
+      <nav>
+	{% block navigation %}
+	{% endblock %}
+      </nav>
+
+      <header id="editor">
+        {% autodidact_editor %}
+      </header>
+
+      <article>
+        {% block content %}
+        {% endblock %}
+      </article>
+    </div>
+
+    <footer>
+    </footer>
 
     {% block extrascript %}{% endblock %}
   </body>
