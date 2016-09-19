@@ -23,7 +23,7 @@ class PageViewTest(TestCase):
         self.user = get_user_model()(username=username)
         self.user.set_password(password)
         self.user.save()
-        self.page = Page(slug='', content=unicode_string)
+        self.page = Page(slug='test', content=unicode_string)
         self.page.save()
         self.programme = Programme(name=unicode_string)
         self.programme.save()
@@ -36,7 +36,6 @@ class PageViewTest(TestCase):
         url = reverse('homepage')
         response = c.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['page'], self.page)
         self.assertQuerysetEqual(response.context['programmes'], map(repr, Programme.objects.all()))
 
 class CourseViewTest(TestCase):
@@ -207,7 +206,7 @@ class ProgressesViewTest(TestCase):
         self.assertEqual(response.status_code, 400)
         response = c.get(url, {'days': 1})
         self.assertEqual(response.status_code, 200)
-        
+
     def test_context_variables(self):
         '''The progress() view supplies the context variables "course", "session", "current_class", "assignments", and "students". If a CSV file is requested, the template "autodidact/students.csv" is used.'''
 
@@ -265,7 +264,7 @@ class AssignmentViewTest(TestCase):
         self.assignment.active = True
         self.assignment.save()
         response = c.get(url)
-        self.assertEqual(response.status_code, 200)        
+        self.assertEqual(response.status_code, 200)
         response = c.get(url, {'step': 'haha'})
         self.assertEqual(response.status_code, 400)
         response = c.get(url, {'step': -1})

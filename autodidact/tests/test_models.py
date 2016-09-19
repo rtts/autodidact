@@ -20,7 +20,7 @@ class PageTest(TestCase):
     def test_content_accepts_unicode(self):
         '''The str() method returns proper utf-8 in Python 2, or proper unicode in Python 3.'''
 
-        page = Page(slug='', title=unicode_string)
+        page = Page(slug='test', title=unicode_string)
         page.save()
         self.assertTrue(page.pk)
         page = Page.objects.get(title=unicode_string)
@@ -30,12 +30,16 @@ class PageTest(TestCase):
         string_representation = unicode_string.encode('utf-8')
         self.assertEqual(page_representation, string_representation)
 
+    def test_homepage_exists(self):
+        '''A page with an empty slug should have been automatically created'''
+        self.assertTrue(Page.objects.filter(slug='').exists())
+
     def test_get_absolute_url(self):
         '''The get_absolute_url() function return the 'homepage' urlpattern when the slug is empty, or the 'page' urlpattern when the slug is not empty'''
 
         homepage_url = reverse('homepage')
         about_page_url = reverse('page', args=['about'])
-        page = Page(slug='', content='X')
+        page = Page.objects.get(slug='')
         self.assertEqual(page.get_absolute_url(), homepage_url)
         page.slug = 'about'
         self.assertEqual(page.get_absolute_url(), about_page_url)
@@ -204,7 +208,7 @@ class StepTest(TestCase):
         self.assertEqual(self.step1.number, 1)
         self.assertEqual(self.step2.number, 2)
         self.assertEqual(self.step3.number, 3)
- 
+
 class CompletedStepTest(TestCase):
     def setUp(self):
         self.course = Course(name=course_name, slug=course_slug)

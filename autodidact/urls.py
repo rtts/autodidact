@@ -1,9 +1,12 @@
+import django.contrib.auth.views
 from django.conf.urls import include, url
 from django.contrib import admin
 from .views import *
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^login/regular/$', django.contrib.auth.views.login, name='login_regular'),
+    url(r'^logout/regular/$', django.contrib.auth.views.logout, name='logout_regular'),
     url(r'^$', page, name='homepage'),
     url(r'^page/([^/]+)/$', page, name='page'),
     url(r'^startclass/$', startclass, name='startclass'),
