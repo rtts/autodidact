@@ -1,6 +1,8 @@
 import sys
-from datetime import datetime, timedelta
-from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
+import xlsxwriter
+from datetime import timedelta
+from django.utils import timezone
+from django.http import HttpResponse, Http404, HttpResponseForbidden, HttpResponseBadRequest, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.core.urlresolvers import reverse
 from django.views.decorators.http import require_http_methods
@@ -114,8 +116,13 @@ def progresses(request, course, session):
     filetype = request.GET.get('filetype')
     assignments = session.assignments.prefetch_related('steps')
     current_class = get_current_class(session, request.user)
-    enddate = datetime.today() + timedelta(days=1)
-    startdate = enddate - timedelta(days=days+1)
+
+    # End date is today 23:59:59
+    enddate = timezone.now().replace(hour=23, minute=59, second=59, microsecond=0)
+
+    # Start date is $days earlier, 00:00:00
+    startdate = (enddate - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
+
     classes = Class.objects.filter(session=session, date__range=[startdate, enddate]).prefetch_related('students')
     students = get_user_model().objects.filter(attends__in=classes).distinct()
     for s in students:
@@ -125,8 +132,68 @@ def progresses(request, course, session):
 
     if filetype == 'csv':
         response = render(request, 'autodidact/students.csv', {'assignments': assignments, 'students': students})
-        response['Content-Disposition'] = 'attachment; filename="{}_session{}.csv"'.format(course.slug, session.nr)
+        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.csv"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
         return response
+
+    elif filetype == 'xlsx':
+        try:
+            # Python 2
+            from StringIO import StringIO
+        except ImportError:
+            # Python 3
+            from io import BytesIO as StringIO
+
+        file = StringIO()
+        workbook = xlsxwriter.Workbook(file)
+        worksheet = workbook.add_worksheet()
+        worksheet.set_column(0, 0, 24)
+        default = workbook.add_format({'border': 1})
+        bold = workbook.add_format({'bold': True, 'border': 1})
+        green = workbook.add_format({'bg_color': '#66cc33', 'border': 1})
+        red = workbook.add_format({'bg_color': '#f45b3d', 'border': 1})
+
+        try:
+            # TODO: Figure out how move this code to the uvt_user package
+            from uvt_user.models import UvtUser
+            worksheet.write(0, 0, 'Name', bold)
+            worksheet.write(0, 1, 'ANR', bold)
+            for ass, _ in enumerate(assignments, start=1):
+                worksheet.write(0, ass+1, 'Assignment {}'.format(ass), bold)
+            for row, student in enumerate(students, start=1):
+                try:
+                    worksheet.write(row, 0, student.uvt_user.full_name, default)
+                    worksheet.write(row, 1, student.uvt_user.ANR, default)
+                except UvtUser.DoesNotExist:
+                    worksheet.write(row, 0, student.get_full_name(), default)
+                    worksheet.write(row, 1, student.username, default)
+                for ass, perc in enumerate(student.progress):
+                    if perc == 100:
+                        worksheet.write(row, ass+2, str(perc) + '%', green)
+                    else:
+                        worksheet.write(row, ass+2, str(perc) + '%', red)
+            worksheet.set_column(1, ass+2, 12)
+
+        except ImportError:
+            worksheet.write(0, 0, 'First name', bold)
+            worksheet.write(0, 1, 'Last name', bold)
+            for ass, _ in enumerate(assignments, start=1):
+                worksheet.write(0, ass+1, 'Assignment {}'.format(ass), bold)
+            for row, student in enumerate(students, start=1):
+                worksheet.write(row, 0, student.first_name, default)
+                worksheet.write(row, 1, student.last_name, default)
+                for ass, perc in enumerate(student.progress):
+                    if perc == 100:
+                        worksheet.write(row, ass+2, str(perc) + '%', green)
+                    else:
+                        worksheet.write(row, ass+2, str(perc) + '%', red)
+            worksheet.set_column(1, ass+2, 12)
+
+        workbook.close()
+        response = HttpResponse(file.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.xslx"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
+        file.close()
+        return response
+
     else:
         return render(request, 'autodidact/session_progresses.html', {
         'days': days,

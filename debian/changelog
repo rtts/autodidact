@@ -1,8 +1,9 @@
-python3-django-autodidact (1.3) UNRELEASED; urgency=medium
+python3-django-autodidact (1.3) stable; urgency=medium
 
   * Include useful base template and registration templates
   * Automatically create homepage upon first run
   * Provide hyperlinks to steps in session overview
+  * Added Excel export function
 
  -- Jaap Joris Vens <jj@rtts.eu>  Wed, 07 Sep 2016 14:03:11 +0200
 
