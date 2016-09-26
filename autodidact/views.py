@@ -190,7 +190,7 @@ def progresses(request, course, session):
 
         workbook.close()
         response = HttpResponse(file.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.xslx"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
+        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.xlsx"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
         file.close()
         return response
 
