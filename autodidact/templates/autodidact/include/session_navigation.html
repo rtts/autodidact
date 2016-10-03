@@ -14,7 +14,7 @@
 
   {% elif not assignment.active %}
 
-  {% elif not present and assignment.locked and not current_class %}
+  {% elif not current_class and assignment.locked %}
   <li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 
   {% else %}
