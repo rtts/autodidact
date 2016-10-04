@@ -1,12 +1,17 @@
 {% extends 'autodidact/session_base.html' %}
 
 {% block content %}
-<section class="session progress">
-  <h1>The progress of student “{{student.username}}”:</h1>
-  {% include 'autodidact/include/progress.html' %}
-</section>
-<section class="session answers">
-  <h1>The answers of student “{{student.username}}”:</h1>
-  {% include 'autodidact/include/answers.html' %}
-</section>
+  {% if student_attends %}
+    <a class="staff remove_student" href="{% url 'remove_student' course.slug session.number student.username %}" onclick="window.confirm('Are you sure?')">Remove this student from class</a>
+  {% else %}
+    <span class="staff remove_student">This student is not registered for {{session}}</span>
+  {% endif %}
+  <section class="session progress">
+    <h1>The progress of {% include 'autodidact/include/student_name.html' %}:</h1>
+    {% include 'autodidact/include/progress.html' %}
+  </section>
+  <section class="session answers">
+    <h1>The answers of {% include 'autodidact/include/student_name.html' %}:</h1>
+    {% include 'autodidact/include/answers.html' %}
+  </section>
 {% endblock %}

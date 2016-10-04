@@ -223,6 +223,11 @@ a.editlink, .staff {
   font-weight: bold;
   color: #f45b3d !important; }
 
+.remove_student {
+  position: absolute;
+  top: -23px;
+  right: 0; }
+
 section.attendance {
   float: right;
   z-index: 1000;

@@ -1,0 +1,10 @@
+{% if student.uvt_user.full_name %}
+  {{student.uvt_user.full_name}}
+  {% if student.first_name %}
+    ({{student.first_name}})
+  {% endif %}
+{% elif student.get_full_name %}
+  {{student.get_full_name}}
+{% else %}
+  &ldquo;{{student.username}}&rdquo;
+{% endif %}
