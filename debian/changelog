@@ -3,9 +3,11 @@ python3-django-autodidact (1.4.0) UNRELEASED; urgency=medium
   * Squashed all migrations. Please upgrade to 1.3.x before upgrading to
     1.4.0
   * Added ordering to clarifications
-  * Added option to remove students from class (although you won't see
-    it with the templates from BPS < 1.0.3)
+  * Added option to remove students from class (although you won't see it
+    with the templates from BPS < 1.0.3)
   * New fullscreen layout for assignments
+  * Reinstated the BPS-specific base template - it's just easier to be able
+    to upgrade Autodidact without also having to upgrade BPS
 
  -- Jaap Joris Vens <jj@rtts.eu>  Tue, 04 Oct 2016 14:39:59 +0200
 

@@ -248,7 +248,7 @@ nav {
   }
 }
 
-#content_wrapper {
+main {
   width: 960px;
   margin: auto;
   position: relative;
@@ -260,12 +260,6 @@ nav {
   right: 0;
 }
 
-#fullscreen_editor {
-  position: fixed;
-  top: 5px;
-  right: 10px;
-}
-
 article {
   margin-left: 260px;
   padding: 20px;
@@ -273,7 +267,7 @@ article {
   padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px;
-  overflow: auto;
+  //overflow: auto;
 
   h1:first-child {
     margin-top: 0;
@@ -289,7 +283,7 @@ footer {
   clear: both;
   width: 960px;
   margin: auto;
-  padding-top: 20px;
+  padding: 20px 0;
   height: 100px;
   color: #c3bcb2;
   font-size: 12px;
@@ -479,7 +473,7 @@ section.step {
     width: 100%;
     height: 400px;
     margin-top: -15px;
-    margin-bottom: 50px;
+    //margin-bottom: 50px;
 
     td {
       vertical-align: top;
@@ -521,7 +515,8 @@ section.step {
 
       textarea {
 	vertical-align: top;
-	width: 400px;
+        width: 100%;
+	max-width: 400px;
 	height: 70px;
         border: none;
         border: 1px solid $bordergrey;
@@ -682,8 +677,13 @@ section.step {
   }
 }
 
-article.fullscreen {
+main.fullscreen {
   position: relative;
   margin: 2em auto;
-  max-width: 660px;
+  width: 100%;
+  max-width: 750px;
+
+  article {
+    margin: 0;
+  }
 }

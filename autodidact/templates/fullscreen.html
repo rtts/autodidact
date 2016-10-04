@@ -1,25 +1,22 @@
+{% extends 'base.html' %}
 {% load static %}
 {% load autodidact %}
 
-<!doctype html>
-<html>
-  <head>
-    <title>{% include 'site_title.html' %}</title>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="{% static 'main.css' %}">
-    {% block extrahead %}{% endblock %}
-  </head>
-  <body>
+{% block header %}
+{% endblock %}
 
-    <header id="fullscreen_editor">
+{% block main %}
+  <main class="fullscreen">
+    <div id="editor">
       {% autodidact_editor %}
-    </header>
+    </div>
 
-    <article class="fullscreen">
+    <article>
       {% block content %}
       {% endblock %}
     </article>
+  </main>
+{% endblock %}
 
-    {% block extrascript %}{% endblock %}
-  </body>
-</html>
+{% block footer %}
+{% endblock %}

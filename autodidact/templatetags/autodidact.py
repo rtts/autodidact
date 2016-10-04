@@ -6,6 +6,16 @@ from ..models import *
 
 register = template.Library()
 
+@register.simple_tag
+def autodidact_version():
+    import autodidact
+    return autodidact.__version__
+
+@register.simple_tag
+def bps_version():
+    import bps
+    return bps.__version__
+
 @register.inclusion_tag('autodidact/include/editor.html', takes_context=True)
 def autodidact_editor(context):
     context['edit_type'] = context['request'].resolver_match.view_name

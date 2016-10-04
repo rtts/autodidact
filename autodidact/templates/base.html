@@ -1,58 +1,79 @@
 {% load static %}
 {% load autodidact %}
 
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
-    <title>{% block title %}Your Title Here{% endblock %}</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}"/>
+    <meta charset="utf-8">
+    <title>{% block title %}Best Practices in Statistics - Tilburg University{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main2.css' %}"/>
+    <link rel="stylesheet" href="{% static 'uvt.css' %}"/>
     {% block extrahead %}{% endblock %}
   </head>
   <body>
 
-    <header id="logo">
-      {% if user.is_authenticated %}
-      <div id="login">
-        Logged in as <b>{{user.username}}</b>
-        <a href="{% url 'django.contrib.auth.views.logout' %}">Log out</a>
-        {% if user.is_staff %}
-        <br>
-        <span class="staff">You are a staff member</span>
+    {% block header %}
+      <header id="logo">
+        <img src="{% static 'tiulogo.jpg' %}" />
+        <img src="{% static 'tiuslogan.jpg' %}" />
+        {% if user.is_authenticated %}
+          <div id="login">
+            Logged in as <b>{{user.username}}</b>
+            <a href="{% url 'logout' %}">Log out</a>
+            {% if user.is_staff %}
+              <br>
+              <span class="staff">You are a staff member</span>
+            {% endif %}
+          </div>
         {% endif %}
-      </div>
-      {% endif %}
-    </header>
-
-    <header id="banner">
-      <div id="banner_image">
-        <div id="banner_text">
-          {% block banner %}
-          <h1>My Online Learning System</h1>
-          <h2>Built using Autodidact</h2>
-          {% endblock %}
-        </div>
-      </div>
-    </header>
-
-    <div id="content_wrapper">
-      <nav>
-	{% block navigation %}
-	{% endblock %}
-      </nav>
-
-      <header id="editor">
-        {% autodidact_editor %}
       </header>
 
-      <article>
-        {% block content %}
-        {% endblock %}
-      </article>
-    </div>
+      <header id="banner">
+        <div id="banner_image">
+          <div id="banner_text">
+            {% block banner %}
+              <h1>Best Practices in Statistics</h1>
+              <h2>Online Statistics Practice for Students in the Social Sciences</h2>
+            {% endblock %}
+          </div>
+        </div>
+      </header>
+    {% endblock %}
 
-    <footer>
-    </footer>
+    {% block main %}
+      <main>
+        <nav>
+	  {% block navigation %}
+	  {% endblock %}
+        </nav>
+
+        <div id="editor">
+          {% autodidact_editor %}
+        </div>
+
+        <article>
+          {% block content %}
+          {% endblock %}
+        </article>
+      </main>
+    {% endblock %}
+
+    {% block footer %}
+      <footer>
+        <p>
+          BPS version {% bps_version %}<br>
+        </p>
+        <p>
+          Autodidact version {% autodidact_version %}<br>
+        </p>
+        <p>
+          Copyright 2016 Tilburg University.
+        </p>
+        <p>
+          BPS is built using <a href="https://github.com/JaapJoris/autodidact">Autodidact</a>. Autodidact is free software: you can modify and/or redistribute it under the terms of the <a href="https://www.gnu.org/licenses/agpl-3.0-standalone.html">GNU Affero General Public License</a>.
+        </p>
+      </footer>
+    {% endblock %}
 
     {% block extrascript %}{% endblock %}
   </body>
