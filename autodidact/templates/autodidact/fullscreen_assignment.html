@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'fullscreen.html' %}
 
 {% block navigation %}
   {% include 'autodidact/include/assignment_navigation.html' %}
@@ -6,7 +6,7 @@
 
 {% block content %}
   {% if step %}
-    {% include 'autodidact/include/step.html' %}
+    {% include 'autodidact/include/step.html' with fullscreen=True %}
   {% else %}
     <section>
       This step does not exist. <a href="{% url 'assignment' course.slug session.nr assignment.nr %}">Go back to step 1</a>.

@@ -260,6 +260,12 @@ nav {
   right: 0;
 }
 
+#fullscreen_editor {
+  position: fixed;
+  top: 5px;
+  right: 10px;
+}
+
 article {
   margin-left: 260px;
   padding: 20px;
@@ -485,9 +491,14 @@ section.step {
       padding: 10px;
       height: 10px;
 
-      img {
+      img#checkbox {
 	margin-left: -12px;
 	vertical-align: top;
+      }
+
+      img#fullscreen_toggle {
+        float: right;
+        margin-right: -12px;
       }
 
       h1, h2 {
@@ -669,4 +680,10 @@ section.step {
       border-left: $step_height/2 solid $unfinished_color;
     }
   }
+}
+
+article.fullscreen {
+  position: relative;
+  margin: 2em auto;
+  max-width: 660px;
 }

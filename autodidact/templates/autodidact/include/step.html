@@ -1,0 +1,74 @@
+{% load static %}
+{% load autodidact %}
+
+<section class="step{% if fullscreen %} fullscreen{% endif %}">
+  <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step.nr}}{% if fullscreen %}&fullscreen{% endif %}">
+    {% csrf_token %}
+
+    <table class="wizard">
+      <tr>
+	<td class="header">
+          <a href="{{step.get_absolute_url}}{% if not fullscreen %}&fullscreen{% endif %}"><img id="fullscreen_toggle" src="{% if fullscreen %}{% static 'fullscreen_off.png' %}{% else %}{% static 'fullscreen_on.png' %}{% endif %}" width="24" height="24"></a>
+	  <img id="checkbox" src="{% if completedstep %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24">
+	  <h1>Assignment {{assignment.nr}} &ndash; step {{step.nr}} of {{count}}</h1>
+	</td>
+      </tr>
+
+      <tr>
+	<td class="content">
+          {{step.description|upload_urls:session}}
+	</td>
+      </tr>
+
+      {% if step.answer_required %}
+        <tr>
+	  <td class="answer">
+	    Your answer:
+	    <textarea id="answerbox" name="answer">{{completedstep.answer}}</textarea>
+	  </td>
+        </tr>
+      {% endif %}
+    </table>
+
+    <div class="step_clarifications">
+      {% for hint in step.clarifications.all %}
+        <input name="clarification" class="toggle" id="hint{{forloop.counter}}" type="radio">
+        <label for="hint{{forloop.counter}}" style="left: calc({{forloop.counter}} * 16px)"></label>
+        <div class="clarification">
+          {% if hint.image %}
+            <img src="{{hint.image.url}}">
+          {% endif %}
+          {{hint.description}}
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="step_footer">
+      {% if not first %}
+	<input class="left button" type="submit" name="previous" value="Previous" />
+      {% endif %}
+      {% if not last %}
+	<input class="right button" type="submit" name="next" value="Next" />
+      {% else %}
+	<input class="right button finish" type="submit" value="Finish!" />
+      {% endif %}
+    </div>
+  </form>
+
+  <div class="step_progress">
+    <h2>Your progress in this assignment:</h2>
+    <ul class="progress">
+      {% for finished in step_overview %}
+        <li>
+          {% if forloop.counter == step.nr %}
+            <span class="current step">{{forloop.counter}}</span>
+          {% elif finished %}
+            <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+          {% else %}
+            <span class="unfinished step">{{forloop.counter}}</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>

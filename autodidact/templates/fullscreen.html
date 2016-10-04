@@ -1,0 +1,25 @@
+{% load static %}
+{% load autodidact %}
+
+<!doctype html>
+<html>
+  <head>
+    <title>{% include 'site_title.html' %}</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="{% static 'main.css' %}">
+    {% block extrahead %}{% endblock %}
+  </head>
+  <body>
+
+    <header id="fullscreen_editor">
+      {% autodidact_editor %}
+    </header>
+
+    <article class="fullscreen">
+      {% block content %}
+      {% endblock %}
+    </article>
+
+    {% block extrascript %}{% endblock %}
+  </body>
+</html>

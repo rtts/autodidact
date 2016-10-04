@@ -189,6 +189,11 @@ nav {
   top: -23px;
   right: 0; }
 
+#fullscreen_editor {
+  position: fixed;
+  top: 5px;
+  right: 10px; }
+
 article {
   margin-left: 260px;
   padding: 20px;
@@ -352,9 +357,12 @@ section.step table.wizard {
     margin-top: -15px;
     padding: 10px;
     height: 10px; }
-    section.step table.wizard td.header img {
+    section.step table.wizard td.header img#checkbox {
       margin-left: -12px;
       vertical-align: top; }
+    section.step table.wizard td.header img#fullscreen_toggle {
+      float: right;
+      margin-right: -12px; }
     section.step table.wizard td.header h1, section.step table.wizard td.header h2 {
       display: inline-block;
       font-size: 18px;
@@ -481,5 +489,10 @@ section.step ul.progress {
     background: #e9e7e4; }
   section.step ul.progress .unfinished:after {
     border-left: 10px solid #e9e7e4; }
+
+article.fullscreen {
+  position: relative;
+  margin: 2em auto;
+  max-width: 660px; }
 
 /*# sourceMappingURL=main.css.map */

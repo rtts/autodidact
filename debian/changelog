@@ -5,6 +5,7 @@ python3-django-autodidact (1.4.0) UNRELEASED; urgency=medium
   * Added ordering to clarifications
   * Added option to remove students from class (although you won't see
     it with the templates from BPS < 1.0.3)
+  * New fullscreen layout for assignments
 
  -- Jaap Joris Vens <jj@rtts.eu>  Tue, 04 Oct 2016 14:39:59 +0200
 

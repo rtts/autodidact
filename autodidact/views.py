@@ -241,6 +241,13 @@ def assignment(request, course, session, assignment):
     except CompletedStep.DoesNotExist:
         completedstep = None
 
+    if 'fullscreen' in request.GET:
+        template = 'autodidact/fullscreen_assignment.html'
+        parameter = '&fullscreen'
+    else:
+        template = 'autodidact/assignment.html'
+        parameter = ''
+
     if request.method == 'POST':
         answer = request.POST.get('answer', '')
         if completedstep:
@@ -249,9 +256,9 @@ def assignment(request, course, session, assignment):
         else:
             CompletedStep(step=step, whom=request.user, answer=answer).save()
         if 'previous' in request.POST:
-            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1))
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1) + parameter)
         elif 'next' in request.POST:
-            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1))
+            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1) + parameter)
         else:
             return redirect(session)
 
@@ -269,7 +276,7 @@ def assignment(request, course, session, assignment):
     first = step == steps[0]
     count = len(steps)
 
-    return render(request, 'autodidact/assignment.html', {
+    return render(request, template, {
         'course': course,
         'session': session,
         'assignment': assignment,
