@@ -250,10 +250,17 @@ def image_path(obj, filename):
     return os.path.join(obj.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
 
 @python_2_unicode_compatible
-class Clarification(models.Model):
+class Clarification(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = PandocField(blank=True)
     image = models.ImageField(upload_to=image_path, blank=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
+
+    def number_with_respect_to(self):
+        return self.step.clarifications.all()
+
+    class Meta:
+        ordering = ['number']
