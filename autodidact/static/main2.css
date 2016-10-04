@@ -485,11 +485,16 @@ section.step ul.progress {
     border-left: 10px solid #e9e7e4; }
 
 main.fullscreen {
-  position: relative;
-  margin: 2em auto;
-  width: 100%;
-  max-width: 750px; }
+  display: flex;
+  display: -webkit-flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  width: 100%; }
   main.fullscreen article {
-    margin: 0; }
+    flex-grow: 1;
+    max-width: 750px;
+    margin: 2em auto;
+    position: relative; }
 
 /*# sourceMappingURL=main2.css.map */
