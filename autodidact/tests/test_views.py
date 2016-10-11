@@ -326,7 +326,6 @@ class StartclassViewTest(TestCase):
         c.login(username='teacher', password=password)
         url = reverse('startclass')
         self.assertEqual(c.get(url).status_code, 405)
-        self.assertEqual(c.post(url).status_code, 400)
         self.assertEqual(c.post(url, {'class_nr': 'testclassnumbertoolong'}).status_code, 400)
         self.assertEqual(c.post(url, {'class_nr': 'testclass'}).status_code, 404)
         self.assertEqual(c.post(url, {'session': '348734', 'class_nr': 'testclass'}).status_code, 404)

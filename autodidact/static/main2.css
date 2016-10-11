@@ -180,6 +180,7 @@ nav {
       display: block; }
 
 main {
+  display: block;
   width: 960px;
   margin: auto;
   position: relative; }
@@ -432,7 +433,7 @@ section.step ul.progress {
     -moz-box-flex: 1;
     -ms-flex: 1 1 0;
     -webkit-flex: 1 1 0;
-    flex: 1 1 0;
+    flex: 1 1 auto;
     margin-bottom: 5px; }
   section.step ul.progress .step {
     padding-left: 20px;
@@ -487,14 +488,17 @@ section.step ul.progress {
 main.fullscreen {
   display: flex;
   display: -webkit-flex;
+  text-align: center;
   min-height: 100vh;
   align-items: center;
   justify-content: center;
   width: 100%; }
   main.fullscreen article {
-    flex-grow: 1;
+    display: inline-block;
+    text-align: left;
+    width: 100%;
     max-width: 750px;
-    margin: 2em auto;
+    margin: 2em 0;
     position: relative; }
 
 /*# sourceMappingURL=main2.css.map */

@@ -1,3 +1,11 @@
+python3-django-autodidact (1.4.0~rc3) stable; urgency=medium
+
+  * Fix layout problems with IE11
+  * Added option to manually add students to a class
+  * Allow empty class names to prevent HTTP 400 errors
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 11 Oct 2016 13:09:48 +0200
+
 python3-django-autodidact (1.4.0~rc2) stable; urgency=medium
 
   * Fix errors when tests are run outside BPS

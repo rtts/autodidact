@@ -30,6 +30,12 @@
 <section class="session students">
   <h1>Students in this class:</h1>
   {% include 'autodidact/include/progresses.html' %}
+  Add students manually:<br>
+  <form method="POST" action="{% url 'add_student' course.slug session.number %}">
+    {% csrf_token %}
+    <input type="text" name="username" placeholder="Username" style="width: 7.5em">
+    <input type="submit" value="Add">
+  </form>
 </section>
 
 {% else %}

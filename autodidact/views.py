@@ -108,6 +108,20 @@ def progress(request, course, session, username):
 @staff_member_required
 @needs_course
 @needs_session
+@require_http_methods(['POST'])
+def add_student(request, course, session):
+    try:
+        username = request.POST['username']
+        student = get_user_model().objects.get(username=username)
+        klass = get_current_class(session, request.user)
+        klass.students.add(student)
+    except (AttributeError, KeyError, get_user_model().DoesNotExist):
+        pass
+    return redirect('session', course.slug, session.number)
+
+@staff_member_required
+@needs_course
+@needs_session
 def remove_student(request, course, session, username):
     try:
         student = get_user_model().objects.get(username=username)
@@ -293,8 +307,10 @@ def assignment(request, course, session, assignment):
 def startclass(request):
     session_pk = request.POST.get('session')
     class_nr = request.POST.get('class_nr')
-    if not class_nr or len(class_nr) > 16:
+    if len(class_nr) > 16:
         return HttpResponseBadRequest()
+    if class_nr == '':
+        class_nr = 'nameless'
     session = get_object_or_404(Session, pk=session_pk)
 
     # Generate unique registration code
