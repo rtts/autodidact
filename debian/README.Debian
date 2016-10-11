@@ -1,0 +1,5 @@
+Remember, when you upgrade the Autodidact library you should re-run
+the management commands of all the Django projects that use Autodidact:
+
+manage.py migrate
+manage.py collectstatic
