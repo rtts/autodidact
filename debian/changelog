@@ -1,3 +1,9 @@
+python3-django-autodidact (1.4.1) UNRELEASED; urgency=medium
+
+  * Fix bug where staff members cannot be removed from class
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 08 Nov 2016 11:56:49 +0100
+
 python3-django-autodidact (1.4.0) stable; urgency=medium
 
   * Fix layout problems with IE11

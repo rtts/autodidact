@@ -93,7 +93,7 @@ def progress(request, course, session, username):
     assignments = session.assignments.prefetch_related('steps')
     (answers, progress) = calculate_progress(student, assignments)
     current_class = get_current_class(session, request.user)
-    student_attends = get_current_class(session, student)
+    student_attends = (student.attends.all() & session.classes.all()).first()
     return render(request, 'autodidact/session_progress.html', {
         'course': course,
         'session': session,
@@ -130,7 +130,7 @@ def remove_student(request, course, session, username):
     classes = student.attends.filter(session=session)
     for klass in classes:
         klass.students.remove(student)
-    return redirect('progress', course.slug, session.number, student.username)
+    return redirect('session', course.slug, session.number)
 
 @staff_member_required
 @needs_course
