@@ -347,7 +347,7 @@ def add_assignment(request, course, session):
     return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
 
 @staff_member_required
-@permission_required('autodidact.change_step')
+@permission_required(['autodidact.add_step', 'autodidact.change_step'])
 @needs_course
 @needs_session
 @needs_assignment

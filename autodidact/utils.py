@@ -40,6 +40,8 @@ def calculate_progress(student, assignments):
             progress[-1] = int(100 * completed_count/step_count)
         else:
             progress[-1] = 0
+        if not completed_count:
+            answers[-1] = []
     return (answers, progress)
 
 def random_string(length):
