@@ -256,7 +256,7 @@ def assignment(request, course, session, assignment):
         completedstep = None
 
     if 'fullscreen' in request.GET:
-        template = 'autodidact/fullscreen_assignment.html'
+        template = 'autodidact/assignment_fullscreen.html'
         parameter = '&fullscreen'
     else:
         template = 'autodidact/assignment.html'
@@ -302,6 +302,33 @@ def assignment(request, course, session, assignment):
         'last': last,
     })
 
+@login_required
+@needs_course
+def quiz(request, course):
+    try:
+        quiz = Quiz.objects.get(pk=request.session.get('quiz'))
+    except Quiz.DoesNotExist:
+        quiz = course.quizzes.order_by('?').first()
+    try:
+        question = quiz.questions.get(number=request.session.get('progress'))
+    except Question.DoesNotExist:
+        question = quiz.questions.first()
+    if 'fullscreen' in request.GET:
+        template = 'autodidact/quiz_fullscreen.html'
+        parameter = '&fullscreen'
+    else:
+        template = 'autodidact/quiz.html'
+        parameter = ''
+
+    question_overview = [question.number > q.number for q in quiz.questions.all()]
+
+    return render(request, template, {
+        'course': course,
+        'question': question,
+        'question_overview': question_overview,
+        'count': quiz.questions.count(),
+    })
+
 @staff_member_required
 @require_http_methods(['POST'])
 def startclass(request):
@@ -338,7 +365,7 @@ def endclass(request):
     return redirect(session)
 
 @staff_member_required
-@permission_required('autodidact.change_assignment')
+@permission_required(['autodidact.add_assignment', 'autodidact.change_assignment'])
 @needs_course
 @needs_session
 def add_assignment(request, course, session):

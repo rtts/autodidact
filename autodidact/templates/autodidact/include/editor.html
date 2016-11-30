@@ -16,6 +16,12 @@
   {% endif %}
 {% endif %}
 
+{% if edit_type == 'topic' %}
+  {% if request.user.is_staff and perms.autodidact.change_topic %}
+    <a class="editlink" href="{% url 'admin:autodidact_topic_change' topic.pk %}">Edit this topic</a>
+  {% endif %}
+{% endif %}
+
 {% if edit_type == 'assignment' %}
   {% if perms.autodidact.change_assignment %}
     <a class="editlink" href="{% url 'admin:autodidact_assignment_change' assignment.pk %}">Edit this assignment</a>

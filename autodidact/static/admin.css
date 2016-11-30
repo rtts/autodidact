@@ -35,14 +35,9 @@ a.viewsitelink {
   display: none !important;
 }
 
-p.deletelink-box {
-  float: right !important;
-}
-
 div.submit-row a.deletelink {
   background: none !important;
   color: #B5B5B5 !important;
-  float: right;
 }
 
 div.submit-row input.default {

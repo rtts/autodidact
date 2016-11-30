@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^([^/]+)/session/([0-9]+)/student/([^/]+)/$', progress, name='progress'),
     url(r'^([^/]+)/session/([0-9]+)/student/$', add_student, name='add_student'),
     url(r'^([^/]+)/session/([0-9]+)/student/([^/]+)/remove/$', remove_student, name='remove_student'),
-    url(r'^([^/]+)/session/([0-9]+)/add/$', add_assignment, name='add_assignment'),
-    url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/add/$', add_step, name='add_step'),
+    url(r'^([^/]+)/session/([0-9]+)/add_assignment/$', add_assignment, name='add_assignment'),
+    url(r'^([^/]+)/quiz/$', quiz, name='quiz'),
+    url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/add_step/$', add_step, name='add_step'),
 ]

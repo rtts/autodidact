@@ -1,5 +1,7 @@
 from __future__ import unicode_literals
 import os
+from datetime import timedelta
+from django.utils import timezone
 from django.db import models
 from django.conf import settings
 from django.core.urlresolvers import reverse
@@ -47,6 +49,9 @@ class Programme(models.Model):
     def __str__(self):
         return self.name
 
+def week_later():
+    return timezone.now() + timedelta(days=7)
+
 @python_2_unicode_compatible
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
@@ -56,6 +61,8 @@ class Course(NumberedModel):
     description = PandocField(blank=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
     tags = GenericRelation(Tag)
+    quiz_from = models.DateTimeField('Quiz available from', default=timezone.now)
+    quiz_until = models.DateTimeField('Quiz available until', default=week_later)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -85,7 +92,7 @@ class Topic(NumberedModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('session', args=[self.course.slug, self.number])
+        return reverse('topic', args=[self.course.slug, self.number])
 
     def number_with_respect_to(self):
         return self.course.topics.all()
@@ -192,6 +199,74 @@ class CompletedStep(models.Model):
         verbose_name_plural = 'completed steps'
 
 @python_2_unicode_compatible
+class Quiz(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
+    course = models.ForeignKey(Course, related_name="quizzes")
+
+    def __str__(self):
+        return 'Quiz {}'.format(self.number)
+
+    def nr_of_questions(self):
+        return self.questions.count()
+
+    def number_with_respect_to(self):
+        return self.course.quizzes.all()
+
+    def save(self, *args, **kwargs):
+        super(Quiz, self).save(*args, **kwargs)
+
+        # Ensure at least one step
+        if not self.questions.first():
+            Question(quiz=self).save()
+
+    class Meta:
+        verbose_name_plural = 'quizzes'
+        ordering = ['number']
+
+@python_2_unicode_compatible
+class Question(NumberedModel):
+    number = models.PositiveIntegerField(blank=True)
+    quiz = models.ForeignKey(Quiz, related_name='questions')
+    description = PandocField(blank=True)
+
+    def __str__(self):
+        return 'Question {}'.format(self.number)
+
+    def number_with_respect_to(self):
+        return self.quiz.questions.all()
+
+    class Meta:
+        ordering = ['number']
+
+@python_2_unicode_compatible
+class RightAnswer(models.Model):
+    question = models.ForeignKey(Question, related_name='right_answers')
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return 'Right answer for question {}'.format(self.question)
+
+@python_2_unicode_compatible
+class WrongAnswer(models.Model):
+    question = models.ForeignKey(Question, related_name='wrong_answers')
+    value = models.CharField(max_length=255)
+
+    def __str__(self):
+        return 'Wrong answer for question {}'.format(self.question)
+
+@python_2_unicode_compatible
+class CompletedQuiz(models.Model):
+    quiz = models.ForeignKey(Question, related_name='completed_quizzes')
+    whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed_quizzes')
+    date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return '%s has completed %s' % (self.whom.username, str(self.quiz))
+
+    class Meta:
+        verbose_name_plural = 'completed quizzes'
+
+@python_2_unicode_compatible
 class Class(models.Model):
     session = models.ForeignKey(Session, related_name='classes')
     number = models.CharField(max_length=16)
@@ -209,6 +284,23 @@ class Class(models.Model):
 
     class Meta:
         verbose_name_plural = 'classes'
+
+def course_path(obj, filename):
+    return os.path.join(obj.course.get_absolute_url()[1:], clean(filename))
+
+@python_2_unicode_compatible
+class QuizFile(models.Model):
+    quiz = models.ForeignKey(Quiz, related_name='files')
+    file = models.FileField(upload_to=course_path)
+
+    def __str__(self):
+        return os.path.basename(str(self.file))
+
+    def url(self):
+        return self.file.url
+
+    class Meta:
+        ordering = ['file']
 
 def session_path(obj, filename):
     return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))

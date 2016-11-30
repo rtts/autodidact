@@ -1,0 +1,59 @@
+{% load static %}
+{% load autodidact %}
+
+<section class="step{% if fullscreen %} fullscreen{% endif %}">
+  <form method="POST" action="{% url 'quiz' course.slug %}{% if fullscreen %}&fullscreen{% endif %}">
+    {% csrf_token %}
+
+    <table class="wizard">
+      <tr>
+	<td class="header">
+          <a href="{% url 'quiz' course.slug %}{% if not fullscreen %}?fullscreen{% endif %}"><img id="fullscreen_toggle" src="{% if fullscreen %}{% static 'fullscreen_off.png' %}{% else %}{% static 'fullscreen_on.png' %}{% endif %}" width="24" height="24"></a>
+          <img id="checkbox" src="{% static 'unchecked.png' %}" width="24" height="24">
+	  <h1>Question {{question.number}} of {{count}}</h1>
+	</td>
+      </tr>
+
+      <tr>
+	<td class="content">
+          {{question.description}}
+	</td>
+      </tr>
+
+      <tr>
+	<td class="answer">
+	  Your answer:
+	  <textarea id="answerbox" name="answer"></textarea>
+	</td>
+      </tr>
+
+    </table>
+
+    <div class="step_footer">
+      {% if not last %}
+        <input class="right button" type="submit" name="next" value="Next" />
+      {% else %}
+        <input class="right button finish" type="submit" value="Finish!" />
+      {% endif %}
+    </div>
+
+    <div class="step_progress">
+      <h2>Your progress in this quiz:</h2>
+      <ul class="progress">
+        {% for finished in question_overview %}
+          <li>
+            {% if forloop.counter == question.nr %}
+              <span class="current step">{{forloop.counter}}</span>
+            {% elif finished %}
+              <a class="finished step">{{forloop.counter}}</a>
+            {% else %}
+              <span class="unfinished step">{{forloop.counter}}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </form>
+
+</section>
+

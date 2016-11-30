@@ -6,6 +6,7 @@ $grey: #e1ddd8;
 $lightgrey: #e9e7e4;
 $reallylightgrey: #f9f9f9;
 $bordergrey: #ccc;
+$red: #f45b3d;
 
 body, html {
   font-family: "Arial", sans-serif;
@@ -25,6 +26,17 @@ a.button {
   padding: 8px 16px;
   text-decoration: none;
   font-size: 1.15em;
+}
+
+a.quiz {
+  color: white;
+  border-radius: 10px;
+  padding: 6px 12px;
+  background: $red;
+  text-decoration: none;
+  font-size: 1em;
+  display: inline-block;
+  margin-right: 10px;
 }
 
 h1 {

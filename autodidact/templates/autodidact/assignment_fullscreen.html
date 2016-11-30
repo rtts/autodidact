@@ -1,9 +1,5 @@
 {% extends 'fullscreen.html' %}
 
-{% block navigation %}
-  {% include 'autodidact/include/assignment_navigation.html' %}
-{% endblock %}
-
 {% block content %}
   {% if step %}
     {% include 'autodidact/include/step.html' with fullscreen=True %}
