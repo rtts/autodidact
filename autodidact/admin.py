@@ -102,24 +102,24 @@ class InlineStepAdmin(admin.StackedInline):
 
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
     ordering = ['session__course__order', 'session__number', 'number']
     list_display = ['number', 'name', 'session', 'nr_of_steps', 'active', 'locked']
     list_display_links = ['name']
     list_filter = ['active', 'locked', 'session__course', 'session']
     inlines = [InlineStepAdmin]
-    exclude = ['session']
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
     ordering = ['assignment__session__course__order', 'assignment__session__number', 'assignment__number', 'number']
-    list_display = ['__str__', 'assignment', 'description', 'answer_required']
+    list_display = ['__str__', 'assignment', 'get_description', 'answer_required']
     list_filter = ['assignment__session', 'assignment']
     inlines = [InlineClarificationAdmin]
     exclude = ['assignment']
+
+    def get_description(self, obj):
+        return mark_safe(obj.description.raw.replace('\n', '<br>'))
 
 @admin.register(CompletedStep)
 class CompletedStepAdmin(admin.ModelAdmin):
@@ -140,7 +140,7 @@ class InlineQuestionAdmin(admin.StackedInline):
     def edit_link(self, instance):
         url = reverse('admin:{}_{}_change'.format(instance._meta.app_label, instance._meta.model_name), args=[instance.pk])
         if instance.pk:
-            return mark_safe('<a href="{}">edit</a>'.format(url))
+            return mark_safe('<a href="{}">Edit</a><p class="help">This link will take you to the question editor. If you have made any changes on this page, please make sure to hit the "save" button first!</p>'.format(url))
         else:
             return '(please save this question first)'
     edit_link.short_description = 'Possible answers'
@@ -151,7 +151,7 @@ class InlineQuizFileAdmin(admin.StackedInline):
 
 @admin.register(Quiz)
 class QuizAdmin(admin.ModelAdmin):
-    ordering = ['course__order']
+    ordering = ['course__order', 'number']
     list_display = ['__str__', 'course', 'nr_of_questions']
     list_filter = ['course']
     exclude = ['number']
@@ -173,8 +173,13 @@ class QuestionAdmin(admin.ModelAdmin):
         else:
             return super(QuestionAdmin, self).response_change(request, obj)
 
+    # Hide this admin from the admin index
+    def get_model_perms(self, request):
+        return {}
+
     def has_add_permission(self, request):
         return False
+
     ordering = ['quiz__course__order', 'number']
     list_display = ['__str__', 'quiz', 'description']
     list_filter = ['quiz__course', 'quiz']

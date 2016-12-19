@@ -204,7 +204,7 @@ class Quiz(NumberedModel):
     course = models.ForeignKey(Course, related_name="quizzes")
 
     def __str__(self):
-        return 'Quiz {}'.format(self.number)
+        return 'Quiz for {} (alternative {})'.format(self.course.colloquial_name(), self.number)
 
     def nr_of_questions(self):
         return self.questions.count()
@@ -215,7 +215,7 @@ class Quiz(NumberedModel):
     def save(self, *args, **kwargs):
         super(Quiz, self).save(*args, **kwargs)
 
-        # Ensure at least one step
+        # Ensure at least one question
         if not self.questions.first():
             Question(quiz=self).save()
 
@@ -236,12 +236,13 @@ class Question(NumberedModel):
         return self.quiz.questions.all()
 
     class Meta:
+        verbose_name = 'quiz question'
         ordering = ['number']
 
 @python_2_unicode_compatible
 class RightAnswer(models.Model):
     question = models.ForeignKey(Question, related_name='right_answers')
-    value = models.CharField(max_length=255)
+    value = models.CharField(max_length=255, help_text='This value can either be a case-insensitive string or a numeric value. For numeric values you can use the <a target="_blank" href="https://docs.moodle.org/23/en/GIFT_format">GIFT notation</a> of "answer:tolerance" or "low..high".')
 
     def __str__(self):
         return 'Right answer for question {}'.format(self.question)
@@ -249,7 +250,7 @@ class RightAnswer(models.Model):
 @python_2_unicode_compatible
 class WrongAnswer(models.Model):
     question = models.ForeignKey(Question, related_name='wrong_answers')
-    value = models.CharField(max_length=255)
+    value = models.CharField(max_length=255, help_text='Supplying one or more wrong answers will automatically turn the question into a multiple choice question.')
 
     def __str__(self):
         return 'Wrong answer for question {}'.format(self.question)
