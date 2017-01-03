@@ -1,5 +1,6 @@
 python3-django-autodidact (1.4.1) UNRELEASED; urgency=medium
 
+  * New quiz-taking functionality for each course (work in progress)
   * Fix bug where staff members cannot be removed from class
   * Improved formatting of answers
 

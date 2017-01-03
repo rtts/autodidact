@@ -57,7 +57,7 @@ class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
     programmes = models.ManyToManyField(Programme, related_name='courses')
     name = models.CharField(max_length=255)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
     description = PandocField(blank=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
     tags = GenericRelation(Tag)
@@ -257,7 +257,7 @@ class WrongAnswer(models.Model):
 
 @python_2_unicode_compatible
 class CompletedQuiz(models.Model):
-    quiz = models.ForeignKey(Question, related_name='completed_quizzes')
+    quiz = models.ForeignKey(Quiz, related_name='completed_quizzes')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed_quizzes')
     date = models.DateTimeField(auto_now_add=True)
 

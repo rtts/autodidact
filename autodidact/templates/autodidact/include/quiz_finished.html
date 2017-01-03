@@ -1,0 +1,49 @@
+{% load static %}
+{% load autodidact %}
+
+<section class="step{% if fullscreen %} fullscreen{% endif %}">
+  <form method="GET" action="{% url 'course' course.slug %}">
+    <table class="wizard">
+      <tr>
+	<td class="header">
+          <img id="checkbox" src="{% static 'checked.png' %}" width="24" height="24">
+	  <h1>Finished!</h1>
+	</td>
+      </tr>
+
+      <tr>
+	<td class="content">
+          <p>
+            Congratulations, you have succesfully finished the quiz!
+          </p>
+          <p>
+            Click "Finish" to return to the course overview.
+          </p>
+	</td>
+      </tr>
+
+    </table>
+
+    <div class="step_footer">
+      <input class="right button finish" type="submit" value="Finish!" />
+    </div>
+
+    <div class="step_progress">
+      <h2>Your progress in this quiz:</h2>
+      <ul class="progress">
+        {% for finished in question_overview %}
+          <li>
+            {% if forloop.counter == question.nr %}
+              <span class="current step">{{forloop.counter}}</span>
+            {% elif finished %}
+              <a class="finished step">{{forloop.counter}}</a>
+            {% else %}
+              <span class="unfinished step">{{forloop.counter}}</span>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </form>
+
+</section>

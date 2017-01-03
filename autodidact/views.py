@@ -305,20 +305,44 @@ def assignment(request, course, session, assignment):
 @login_required
 @needs_course
 def quiz(request, course):
+
+    current_quiz = 'quiz_for_{}'.format(course.slug)
+    current_question = 'question_for_{}'.format(course.slug)
+
+    # Check whether the user has finished this quiz
+    completed_quiz = CompletedQuiz.objects.filter(whom=request.user, quiz__course=course).first()
+    if completed_quiz:
+        return quiz_finished(request, course, completed_quiz.quiz)
+
+    # Retrieve the correct alternative or choose one at random
     try:
-        quiz = Quiz.objects.get(pk=request.session.get('quiz'))
+        quiz = course.quizzes.get(pk=request.session.get(current_quiz))
     except Quiz.DoesNotExist:
         quiz = course.quizzes.order_by('?').first()
+        request.session[current_quiz] = quiz.pk
+
+    # Retrieve the current question or start at question 1
     try:
-        question = quiz.questions.get(number=request.session.get('progress'))
+        question = quiz.questions.get(pk=request.session.get(current_question))
     except Question.DoesNotExist:
         question = quiz.questions.first()
     if 'fullscreen' in request.GET:
         template = 'autodidact/quiz_fullscreen.html'
-        parameter = '&fullscreen'
     else:
         template = 'autodidact/quiz.html'
-        parameter = ''
+
+    # Parse answer and advance question if correct
+    if request.method == 'POST':
+        
+        # TODO: parse answer
+        
+        next_question = quiz.questions.filter(number__gt=question.number).first()
+        if next_question:
+            question = next_question
+            request.session[current_question] = question.pk
+        else:
+            CompletedQuiz(quiz=quiz, whom=request.user).save()
+            return quiz_finished(request, course, quiz)
 
     question_overview = [question.number > q.number for q in quiz.questions.all()]
 
@@ -327,6 +351,17 @@ def quiz(request, course):
         'question': question,
         'question_overview': question_overview,
         'count': quiz.questions.count(),
+    })
+
+def quiz_finished(request, course, quiz):
+    if 'fullscreen' in request.GET:
+        template = 'autodidact/quiz_finished_fullscreen.html'
+    else:
+        template = 'autodidact/quiz_finished.html'
+
+    return render(request, template, {
+        'course': course,
+        'question_overview': [True] * len(quiz.questions.all()),
     })
 
 @staff_member_required

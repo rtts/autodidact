@@ -2,7 +2,7 @@
 {% load autodidact %}
 
 <section class="step{% if fullscreen %} fullscreen{% endif %}">
-  <form method="POST" action="{% url 'quiz' course.slug %}{% if fullscreen %}&fullscreen{% endif %}">
+  <form method="POST" action="{% url 'quiz' course.slug %}{% if fullscreen %}?fullscreen{% endif %}">
     {% csrf_token %}
 
     <table class="wizard">

@@ -157,6 +157,16 @@ class QuizAdmin(admin.ModelAdmin):
     exclude = ['number']
     inlines = [InlineQuizFileAdmin, InlineQuestionAdmin]
 
+@admin.register(CompletedQuiz)
+class CompletedQuizAdmin(admin.ModelAdmin):
+    def has_add_permission(self, request):
+        return False
+    list_display = ['date', 'quiz', 'whom']
+    list_display_links = ['quiz']
+    list_filter = ['quiz__course', 'whom']
+    ordering = ['-date']
+    exclude = ['quiz', 'whom']
+
 class InlineRightAnswerAdmin(admin.StackedInline):
     model = RightAnswer
     extra = 1
