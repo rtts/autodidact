@@ -43,6 +43,10 @@ a.quiz {
   margin-right: 10px;
 }
 
+div.incorrect {
+  color: $red;
+}
+
 ul.answers {
   margin: 0;
   padding: 0;

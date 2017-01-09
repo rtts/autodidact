@@ -28,6 +28,9 @@ a.quiz {
   display: inline-block;
   margin-right: 10px; }
 
+div.incorrect {
+  color: #f45b3d; }
+
 ul.answers {
   margin: 0;
   padding: 0;

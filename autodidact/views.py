@@ -13,6 +13,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 
 from .decorators import *
 from .utils import *
+from .gift import is_correct
 from .models import *
 
 @login_required
@@ -307,6 +308,7 @@ def assignment(request, course, session, assignment):
 @needs_course
 def quiz(request, course):
 
+    incorrect = False
     current_quiz = 'quiz_for_{}'.format(course.slug)
     current_question = 'question_for_{}'.format(course.slug)
 
@@ -332,22 +334,46 @@ def quiz(request, course):
     else:
         template = 'autodidact/quiz.html'
 
-    # Parse answer and advance question if correct
     if request.method == 'POST':
-        
-        # TODO: parse answer
-        
-        next_question = quiz.questions.filter(number__gt=question.number).first()
-        if next_question:
-            question = next_question
-            request.session[current_question] = question.pk
+        given_answers = request.POST.getlist('answer')
+        right_answers = [a.value for a in question.right_answers.all()]
+
+        # The following would be a oneliner in Haskell...
+        if question.wrong_answers.exists():
+            all_correct = True
+            for right in right_answers:
+                one_correct = False
+                for given in given_answers:
+                    if is_correct(given, right):
+                        one_correct = True
+                        break
+                if not one_correct:
+                    all_correct = False
+                    break
+            correct = all_correct
         else:
-            # Don't save quizzes for staff, so they can re-take them
-            if not request.user.is_staff:
-                CompletedQuiz(quiz=quiz, whom=request.user).save()
-            request.session.pop(current_quiz, None)
-            request.session.pop(current_question, None)
-            return quiz_finished(request, course, quiz)
+            any_correct = False
+            for right in right_answers:
+                for given in given_answers:
+                    if is_correct(given, right):
+                        any_correct = True
+                        break
+            correct = any_correct
+
+        if correct:
+            next_question = quiz.questions.filter(number__gt=question.number).first()
+            if next_question:
+                question = next_question
+                request.session[current_question] = question.pk
+            else:
+                # Don't save quizzes for staff, so they can re-take them
+                if not request.user.is_staff:
+                    CompletedQuiz(quiz=quiz, whom=request.user).save()
+                request.session.pop(current_quiz, None)
+                request.session.pop(current_question, None)
+                return quiz_finished(request, course, quiz)
+        else:
+            incorrect = True
 
     # Determine question type
     if question.wrong_answers.all():
@@ -366,6 +392,7 @@ def quiz(request, course):
 
     return render(request, template, {
         'course': course,
+        'incorrect': incorrect,
         'question': question,
         'question_type': question_type,
         'answers': answers,

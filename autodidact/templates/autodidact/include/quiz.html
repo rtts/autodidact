@@ -22,6 +22,11 @@
 
       <tr>
 	<td class="answer">
+          {% if incorrect %}
+            <div class="incorrect">
+              Sorry, that answer is incorrect. Please try again.
+            </div>
+          {% endif %}
           Your answer:
           {% if answers %}
             <ul class="answers">
@@ -33,7 +38,7 @@
               {% endfor %}
             </ul>
             {% if question_type == 'checkbox' %}
-              <small>(check <i>at least</i> two correct answers!)</small>
+              <br><small>(check <i>at least</i> two correct answers!)</small>
             {% endif %}
           {% else %}
 	    <textarea id="answerbox" name="answer"></textarea>
