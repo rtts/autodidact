@@ -22,8 +22,22 @@
 
       <tr>
 	<td class="answer">
-	  Your answer:
-	  <textarea id="answerbox" name="answer"></textarea>
+          Your answer:
+          {% if answers %}
+            <ul class="answers">
+              {% for answer in answers %}
+                <li>
+                  <input type="{{question_type}}" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}">
+                  <label for="answer_{{forloop.counter}}">{{answer}}</label>
+                </li>
+              {% endfor %}
+            </ul>
+            {% if question_type == 'checkbox' %}
+              <small>(check <i>at least</i> two correct answers!)</small>
+            {% endif %}
+          {% else %}
+	    <textarea id="answerbox" name="answer"></textarea>
+          {% endif %}
 	</td>
       </tr>
 

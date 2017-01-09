@@ -1,4 +1,5 @@
 import sys
+import random
 import xlsxwriter
 from datetime import timedelta
 from django.utils import timezone
@@ -341,14 +342,33 @@ def quiz(request, course):
             question = next_question
             request.session[current_question] = question.pk
         else:
-            CompletedQuiz(quiz=quiz, whom=request.user).save()
+            # Don't save quizzes for staff, so they can re-take them
+            if not request.user.is_staff:
+                CompletedQuiz(quiz=quiz, whom=request.user).save()
+            request.session.pop(current_quiz, None)
+            request.session.pop(current_question, None)
             return quiz_finished(request, course, quiz)
+
+    # Determine question type
+    if question.wrong_answers.all():
+        if len(question.right_answers.all()) > 1:
+            question_type = 'checkbox'
+        else:
+            question_type = 'radio'
+        answers = [a.value for a in question.wrong_answers.all()] + \
+                  [a.value for a in question.right_answers.all()]
+        random.shuffle(answers)
+    else:
+        question_type = 'text'
+        answers = []
 
     question_overview = [question.number > q.number for q in quiz.questions.all()]
 
     return render(request, template, {
         'course': course,
         'question': question,
+        'question_type': question_type,
+        'answers': answers,
         'question_overview': question_overview,
         'count': quiz.questions.count(),
     })
