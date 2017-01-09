@@ -185,13 +185,13 @@ def progresses(request, course, session):
             # TODO: Figure out how move this code to the uvt_user package
             from uvt_user.models import UvtUser
             worksheet.write(0, 0, 'Name', bold)
-            worksheet.write(0, 1, 'ANR', bold)
+            worksheet.write(0, 1, 'emplId', bold)
             for ass, _ in enumerate(assignments, start=1):
                 worksheet.write(0, ass+1, 'Assignment {}'.format(ass), bold)
             for row, student in enumerate(students, start=1):
                 try:
                     worksheet.write(row, 0, student.uvt_user.full_name, default)
-                    worksheet.write(row, 1, student.uvt_user.ANR, default)
+                    worksheet.write(row, 1, student.uvt_user.emplId, default)
                 except UvtUser.DoesNotExist:
                     worksheet.write(row, 0, student.get_full_name(), default)
                     worksheet.write(row, 1, student.username, default)
