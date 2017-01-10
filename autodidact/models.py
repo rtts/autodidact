@@ -228,6 +228,7 @@ class Question(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     quiz = models.ForeignKey(Quiz, related_name='questions')
     description = PandocField(blank=True)
+    multiple_answers_allowed = models.BooleanField(default=False)
 
     def __str__(self):
         return 'Question {}'.format(self.number)
@@ -287,7 +288,7 @@ class Class(models.Model):
         verbose_name_plural = 'classes'
 
 def course_path(obj, filename):
-    return os.path.join(obj.course.get_absolute_url()[1:], clean(filename))
+    return os.path.join(obj.quiz.course.get_absolute_url()[1:], clean(filename))
 
 @python_2_unicode_compatible
 class QuizFile(models.Model):

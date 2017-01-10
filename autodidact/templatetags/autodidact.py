@@ -28,7 +28,7 @@ def autodidact_editor(context):
     return context
 
 @register.filter()
-def upload_urls(string, session):
+def upload_urls(string, url):
     '''Replaces filenames between [brackets] with a Markdown hyperlink to the correct uploads directory'''
 
     # Some people, when confronted with a problem, think "I know,
@@ -43,7 +43,7 @@ def upload_urls(string, session):
         match = pattern.search(string)
         if match:
             filename = match.group('filename')
-            url = settings.MEDIA_URL + session.get_absolute_url()[1:] + filename
+            url = settings.MEDIA_URL + url[1:] + filename
             html = '<a download href="{url}">{filename}</a>'.format(
                 filename = filename,
                 url = url,

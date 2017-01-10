@@ -134,13 +134,17 @@ class CompletedStepAdmin(admin.ModelAdmin):
 class InlineQuestionAdmin(admin.StackedInline):
     model = Question
     extra = 0
-    fields = ['number', 'description', 'edit_link']
+    fields = ['number', 'description', 'edit_link', 'multiple_answers_allowed']
     readonly_fields = ['edit_link']
 
     def edit_link(self, instance):
         url = reverse('admin:{}_{}_change'.format(instance._meta.app_label, instance._meta.model_name), args=[instance.pk])
         if instance.pk:
-            return mark_safe('<a href="{}">Edit</a><p class="help">This link will take you to the question editor. If you have made any changes on this page, please make sure to hit the "save" button first!</p>'.format(url))
+            answers = [a.value for a in instance.right_answers.all()] + \
+                      [a.value for a in instance.wrong_answers.all()]
+            html = ''.join(['&bull; {}<br>'.format(a) for a in answers] + \
+                           ['<br><a href="{}">Edit answers</a>'.format(url)])
+            return mark_safe(html)
         else:
             return '(please save this question first)'
     edit_link.short_description = 'Possible answers'

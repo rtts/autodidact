@@ -11,9 +11,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 
+from . import gift
 from .decorators import *
 from .utils import *
-from .gift import is_correct
 from .models import *
 
 @login_required
@@ -338,27 +338,10 @@ def quiz(request, course):
         given_answers = request.POST.getlist('answer')
         right_answers = [a.value for a in question.right_answers.all()]
 
-        # The following would be a oneliner in Haskell...
-        if question.wrong_answers.exists():
-            all_correct = True
-            for right in right_answers:
-                one_correct = False
-                for given in given_answers:
-                    if is_correct(given, right):
-                        one_correct = True
-                        break
-                if not one_correct:
-                    all_correct = False
-                    break
-            correct = all_correct
+        if question.multiple_answers_allowed:
+            correct = gift.all_correct(given_answers, right_answers)
         else:
-            any_correct = False
-            for right in right_answers:
-                for given in given_answers:
-                    if is_correct(given, right):
-                        any_correct = True
-                        break
-            correct = any_correct
+            correct = gift.any_correct(given_answers, right_answers)
 
         if correct:
             next_question = quiz.questions.filter(number__gt=question.number).first()
@@ -366,27 +349,24 @@ def quiz(request, course):
                 question = next_question
                 request.session[current_question] = question.pk
             else:
-                # Don't save quizzes for staff, so they can re-take them
                 if not request.user.is_staff:
                     CompletedQuiz(quiz=quiz, whom=request.user).save()
-                request.session.pop(current_quiz, None)
+                request.session.pop(current_quiz)
                 request.session.pop(current_question, None)
                 return quiz_finished(request, course, quiz)
         else:
             incorrect = True
 
-    # Determine question type
-    if question.wrong_answers.all():
-        if len(question.right_answers.all()) > 1:
-            question_type = 'checkbox'
-        else:
-            question_type = 'radio'
-        answers = [a.value for a in question.wrong_answers.all()] + \
-                  [a.value for a in question.right_answers.all()]
-        random.shuffle(answers)
+    if question.multiple_answers_allowed:
+        question_type = 'checkbox'
+    elif question.wrong_answers.all():
+        question_type = 'radio'
     else:
         question_type = 'text'
-        answers = []
+
+    answers = [a.value for a in question.right_answers.all()] + \
+              [a.value for a in question.wrong_answers.all()]
+    random.shuffle(answers)
 
     question_overview = [question.number > q.number for q in quiz.questions.all()]
 

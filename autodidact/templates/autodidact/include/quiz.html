@@ -16,7 +16,7 @@
 
       <tr>
 	<td class="content">
-          {{question.description}}
+          {{question.description|upload_urls:course.get_absolute_url}}
 	</td>
       </tr>
 
@@ -28,7 +28,9 @@
             </div>
           {% endif %}
           Your answer:
-          {% if answers %}
+          {% if question_type == 'text' %}
+	    <textarea id="answerbox" name="answer"></textarea>
+          {% else %}
             <ul class="answers">
               {% for answer in answers %}
                 <li>
@@ -38,10 +40,8 @@
               {% endfor %}
             </ul>
             {% if question_type == 'checkbox' %}
-              <br><small>(check <i>at least</i> two correct answers!)</small>
+              <br><small>(multiple answers are allowed)</small>
             {% endif %}
-          {% else %}
-	    <textarea id="answerbox" name="answer"></textarea>
           {% endif %}
 	</td>
       </tr>

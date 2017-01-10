@@ -1,5 +1,22 @@
 import fractions
 
+def any_correct(given_answers, correct_answers):
+    '''Returns true if ANY of the given answers are correct, given the correct answers'''
+
+    for correct in correct_answers:
+        for given in given_answers:
+            if is_correct(given, correct):
+                return True
+    return False
+
+def all_correct(given_answers, correct_answers):
+    '''Returns true if ALL of the given answers are correct, given the correct answers'''
+
+    for correct in correct_answers:
+        if not any_correct(given_answers, [correct]):
+            return False
+    return True
+
 def convert_to_number(answer):
     '''Tries to convert the supplied answer to a numeric value. Raises ValueError on failure.'''
 

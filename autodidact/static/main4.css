@@ -56,7 +56,8 @@ ul.answers {
 
 td.quiz_answer {
   font-weight: bold;
-  text-align: right; }
+  text-align: right;
+  height: 0; }
 
 h1 {
   font-size: 1.5em; }
