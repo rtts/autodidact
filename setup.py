@@ -24,7 +24,7 @@ setup(
         'pillow >= 2.6.1, <= 3.1.1',
         'six >= 1.8.0, <= 1.10.0',
         'django-cleanup == 0.4.2',
-        'django-pandocfield == 0.2.1',
-        'django-numberedmodel == 0.1',
+        'django-pandocfield >= 0.2.4',
+        'django-numberedmodel >= 0.1',
     ],
 )
