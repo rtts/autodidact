@@ -24,12 +24,8 @@ def needs_session(view):
             session = session_nr
         else:
             session_nr = int(session_nr)
-            if session_nr < 1:
-                raise Http404()
-            try:
-                session = course.sessions.all()[session_nr-1]
-                session.nr = session_nr
-            except IndexError:
+            session = course.sessions.filter(number=session_nr).first()
+            if session is None:
                 raise Http404()
             if not session.active and not request.user.is_staff:
                 raise Http404()
@@ -47,10 +43,8 @@ def needs_assignment(view):
             assignment = assignment_nr
         else:
             assignment_nr = int(assignment_nr)
-            try:
-                assignment = session.assignments.all()[assignment_nr-1]
-                assignment.nr = assignment_nr
-            except IndexError:
+            assignment = session.assignments.filter(number=assignment_nr).first()
+            if assignment is None:
                 raise Http404()
             if assignment.locked and not request.user.is_staff:
                 if not request.user.attends.all() & session.classes.all():

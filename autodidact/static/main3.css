@@ -15,6 +15,9 @@ a.button {
   text-decoration: none;
   font-size: 1.15em; }
 
+small {
+  font-weight: normal; }
+
 a.quiz {
   color: white;
   border-radius: 10px;
@@ -24,6 +27,37 @@ a.quiz {
   font-size: 1em;
   display: inline-block;
   margin-right: 10px; }
+
+div.incorrect {
+  color: #f45b3d; }
+
+ul.answers {
+  margin: 0;
+  padding: 0;
+  display: inline-block;
+  padding-right: 15px;
+  max-width: 400px;
+  vertical-align: top;
+  border: 1px solid #ccc;
+  list-style: none;
+  text-align: left;
+  font-weight: normal; }
+  ul.answers li {
+    text-indent: -24px;
+    margin: 0;
+    margin-left: 24px;
+    padding: 0; }
+  ul.answers input {
+    vertical-align: top;
+    position: relative;
+    top: 2px; }
+  ul.answers input, ul.answers label {
+    cursor: pointer; }
+
+td.quiz_answer {
+  font-weight: bold;
+  text-align: right;
+  height: 0; }
 
 h1 {
   font-size: 1.5em; }
@@ -352,7 +386,8 @@ section.answers table {
 section.step table.wizard {
   width: 100%;
   height: 400px;
-  margin-top: -15px; }
+  margin-top: -15px;
+  border-collapse: collapse; }
   section.step table.wizard td {
     vertical-align: top;
     height: 100%; }

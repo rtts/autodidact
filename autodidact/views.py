@@ -163,7 +163,7 @@ def progresses(request, course, session):
 
     if filetype == 'csv':
         response = render(request, 'autodidact/students.csv', {'assignments': assignments, 'students': students})
-        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.csv"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
+        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.csv"'.format(course.colloquial_name(), session.number, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
         return response
 
     elif filetype == 'xlsx':
@@ -221,7 +221,7 @@ def progresses(request, course, session):
 
         workbook.close()
         response = HttpResponse(file.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.xlsx"'.format(course.colloquial_name(), session.nr, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
+        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.xlsx"'.format(course.colloquial_name(), session.number, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
         file.close()
         return response
 
@@ -240,48 +240,62 @@ def progresses(request, course, session):
 @needs_session
 @needs_assignment
 def assignment(request, course, session, assignment):
-    steps = list(assignment.steps.all())
-    try:
-        step_nr = int(request.GET.get('step', 1))
-    except ValueError:
-        return HttpResponseBadRequest('Invalid step number')
-    if step_nr < 1 or step_nr > sys.maxsize:
-        return HttpResponseBadRequest('Invalid step number')
-    try:
-        step = steps[step_nr-1]
-        step.nr = step_nr
-    except IndexError:
-        raise Http404
-    try:
-        completedstep = request.user.completed.get(step=step)
-    except CompletedStep.DoesNotExist:
-        completedstep = None
-
     if 'fullscreen' in request.GET:
         template = 'autodidact/assignment_fullscreen.html'
-        parameter = '&fullscreen'
+        fullscreen_parameter = '&fullscreen'
     else:
         template = 'autodidact/assignment.html'
-        parameter = ''
+        fullscreen_parameter = ''
+
+    try:
+        step = assignment.steps.filter(number=request.GET.get('step')).first()
+        if step is None:
+            return redirect(assignment.steps.first())
+    except ValueError:
+        return HttpResponseBadRequest('Invalid step number')
+    completedstep = request.user.completed.filter(step=step).first()
+
+    right_answers = [a.value for a in step.right_answers.all()]
+    wrong_answers = [a.value for a in step.wrong_answers.all()]
+    grade_answer = bool(right_answers)
+    multiple_choice = bool(wrong_answers)
+    multiple_answers_allowed = multiple_choice and len(right_answers) > 1
 
     if request.method == 'POST':
-        answer = request.POST.get('answer', '')
+        given_answers = request.POST.getlist('answer')
+        answer = '\x1e'.join(given_answers) # Use ASCII 1e as the record separator
         if completedstep:
             completedstep.answer = answer
-            completedstep.save()
         else:
-            CompletedStep(step=step, whom=request.user, answer=answer).save()
+            completedstep = CompletedStep(step=step, whom=request.user, answer=answer)
+
+        if grade_answer:
+            if multiple_choice and multiple_answers_allowed:
+                completedstep.passed = gift.all_correct(given_answers, right_answers)
+            else:
+                completedstep.passed = gift.any_correct(given_answers, right_answers)
+        else:
+            completedstep.passed = True
+
+        completedstep.save()
+
         if 'previous' in request.POST:
-            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr - 1) + parameter)
-        elif 'next' in request.POST:
-            return redirect(reverse('assignment', args=[course.slug, session.nr, assignment.nr]) + "?step=" + str(step_nr + 1) + parameter)
+            new_step = assignment.steps.filter(number__lt=step.number).last()
+        elif 'next' in request.POST and completedstep.passed:
+            new_step = assignment.steps.filter(number__gt=step.number).first()
+        else:
+            new_step = step
+
+        if new_step:
+            return redirect(new_step.get_absolute_url() + fullscreen_parameter)
         else:
             return redirect(session)
 
     # Calculate for all steps whether they have answers
     step_overview = []
-    all_answers = request.user.completed.filter(step__assignment=assignment).select_related('step')
+    all_answers = request.user.completed.filter(passed=True, step__assignment=assignment).select_related('step')
     answered_steps = [ans.step for ans in all_answers]
+    steps = list(assignment.steps.all())
     for s in steps:
         if s in answered_steps:
             step_overview.append(True)
@@ -292,104 +306,115 @@ def assignment(request, course, session, assignment):
     first = step == steps[0]
     count = len(steps)
 
+    answers = right_answers + wrong_answers
+    random.shuffle(answers)
+
+    if completedstep:
+        given_answers = completedstep.answer.split('\x1e')
+    else:
+        given_answers = []
+
     return render(request, template, {
         'course': course,
         'session': session,
         'assignment': assignment,
         'step': step,
-        'count': count,
         'completedstep': completedstep,
+        'count': count,
+        'answers': answers,
+        'given_answers': given_answers,
+        'grade_answer': grade_answer,
         'step_overview': step_overview,
         'first': first,
         'last': last,
     })
 
-@login_required
-@needs_course
-def quiz(request, course):
+# @login_required
+# @needs_course
+# def quiz(request, course):
 
-    incorrect = False
-    current_quiz = 'quiz_for_{}'.format(course.slug)
-    current_question = 'question_for_{}'.format(course.slug)
+#     incorrect = False
+#     current_quiz = 'quiz_for_{}'.format(course.slug)
+#     current_question = 'question_for_{}'.format(course.slug)
 
-    # Check whether the user has finished this quiz
-    completed_quiz = CompletedQuiz.objects.filter(whom=request.user, quiz__course=course).first()
-    if completed_quiz:
-        return quiz_finished(request, course, completed_quiz.quiz)
+#     # Check whether the user has finished this quiz
+#     completed_quiz = CompletedQuiz.objects.filter(whom=request.user, quiz__course=course).first()
+#     if completed_quiz:
+#         return quiz_finished(request, course, completed_quiz.quiz)
 
-    # Retrieve the correct alternative or choose one at random
-    try:
-        quiz = course.quizzes.get(pk=request.session.get(current_quiz))
-    except Quiz.DoesNotExist:
-        quiz = course.quizzes.order_by('?').first()
-        request.session[current_quiz] = quiz.pk
+#     # Retrieve the correct alternative or choose one at random
+#     try:
+#         quiz = course.quizzes.get(pk=request.session.get(current_quiz))
+#     except Quiz.DoesNotExist:
+#         quiz = course.quizzes.order_by('?').first()
+#         request.session[current_quiz] = quiz.pk
 
-    # Retrieve the current question or start at question 1
-    try:
-        question = quiz.questions.get(pk=request.session.get(current_question))
-    except Question.DoesNotExist:
-        question = quiz.questions.first()
-    if 'fullscreen' in request.GET:
-        template = 'autodidact/quiz_fullscreen.html'
-    else:
-        template = 'autodidact/quiz.html'
+#     # Retrieve the current question or start at question 1
+#     try:
+#         question = quiz.questions.get(pk=request.session.get(current_question))
+#     except Question.DoesNotExist:
+#         question = quiz.questions.first()
+#     if 'fullscreen' in request.GET:
+#         template = 'autodidact/quiz_fullscreen.html'
+#     else:
+#         template = 'autodidact/quiz.html'
 
-    if request.method == 'POST':
-        given_answers = request.POST.getlist('answer')
-        right_answers = [a.value for a in question.right_answers.all()]
+#     if request.method == 'POST':
+#         given_answers = request.POST.getlist('answer')
+#         right_answers = [a.value for a in question.right_answers.all()]
 
-        if question.multiple_answers_allowed:
-            correct = gift.all_correct(given_answers, right_answers)
-        else:
-            correct = gift.any_correct(given_answers, right_answers)
+#         if question.multiple_answers_allowed:
+#             correct = gift.all_correct(given_answers, right_answers)
+#         else:
+#             correct = gift.any_correct(given_answers, right_answers)
 
-        if correct:
-            next_question = quiz.questions.filter(number__gt=question.number).first()
-            if next_question:
-                question = next_question
-                request.session[current_question] = question.pk
-            else:
-                if not request.user.is_staff:
-                    CompletedQuiz(quiz=quiz, whom=request.user).save()
-                request.session.pop(current_quiz)
-                request.session.pop(current_question, None)
-                return quiz_finished(request, course, quiz)
-        else:
-            incorrect = True
+#         if correct:
+#             next_question = quiz.questions.filter(number__gt=question.number).first()
+#             if next_question:
+#                 question = next_question
+#                 request.session[current_question] = question.pk
+#             else:
+#                 if not request.user.is_staff:
+#                     CompletedQuiz(quiz=quiz, whom=request.user).save()
+#                 request.session.pop(current_quiz)
+#                 request.session.pop(current_question, None)
+#                 return quiz_finished(request, course, quiz)
+#         else:
+#             incorrect = True
 
-    if question.multiple_answers_allowed:
-        question_type = 'checkbox'
-    elif question.wrong_answers.all():
-        question_type = 'radio'
-    else:
-        question_type = 'text'
+#     if question.multiple_answers_allowed:
+#         question_type = 'checkbox'
+#     elif question.wrong_answers.all():
+#         question_type = 'radio'
+#     else:
+#         question_type = 'text'
 
-    answers = [a.value for a in question.right_answers.all()] + \
-              [a.value for a in question.wrong_answers.all()]
-    random.shuffle(answers)
+#     answers = [a.value for a in question.right_answers.all()] + \
+#               [a.value for a in question.wrong_answers.all()]
+#     random.shuffle(answers)
 
-    question_overview = [question.number > q.number for q in quiz.questions.all()]
+#     question_overview = [question.number > q.number for q in quiz.questions.all()]
 
-    return render(request, template, {
-        'course': course,
-        'incorrect': incorrect,
-        'question': question,
-        'question_type': question_type,
-        'answers': answers,
-        'question_overview': question_overview,
-        'count': quiz.questions.count(),
-    })
+#     return render(request, template, {
+#         'course': course,
+#         'incorrect': incorrect,
+#         'question': question,
+#         'question_type': question_type,
+#         'answers': answers,
+#         'question_overview': question_overview,
+#         'count': quiz.questions.count(),
+#     })
 
-def quiz_finished(request, course, quiz):
-    if 'fullscreen' in request.GET:
-        template = 'autodidact/quiz_finished_fullscreen.html'
-    else:
-        template = 'autodidact/quiz_finished.html'
+# def quiz_finished(request, course, quiz):
+#     if 'fullscreen' in request.GET:
+#         template = 'autodidact/quiz_finished_fullscreen.html'
+#     else:
+#         template = 'autodidact/quiz_finished.html'
 
-    return render(request, template, {
-        'course': course,
-        'question_overview': [True] * len(quiz.questions.all()),
-    })
+#     return render(request, template, {
+#         'course': course,
+#         'question_overview': [True] * len(quiz.questions.all()),
+#     })
 
 @staff_member_required
 @require_http_methods(['POST'])

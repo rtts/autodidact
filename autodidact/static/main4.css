@@ -28,6 +28,9 @@ a.quiz {
   display: inline-block;
   margin-right: 10px; }
 
+div.correct {
+  color: #390; }
+
 div.incorrect {
   color: #f45b3d; }
 
@@ -53,11 +56,6 @@ ul.answers {
     top: 2px; }
   ul.answers input, ul.answers label {
     cursor: pointer; }
-
-td.quiz_answer {
-  font-weight: bold;
-  text-align: right;
-  height: 0; }
 
 h1 {
   font-size: 1.5em; }
@@ -413,7 +411,7 @@ section.step table.wizard {
     padding-bottom: 15px;
     text-align: right;
     font-weight: bold;
-    height: 70px; }
+    height: 0; }
     section.step table.wizard td.answer textarea {
       vertical-align: top;
       width: 100%;

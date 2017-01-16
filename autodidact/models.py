@@ -61,8 +61,6 @@ class Course(NumberedModel):
     description = PandocField(blank=True)
     active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
     tags = GenericRelation(Tag)
-    quiz_from = models.DateTimeField('Quiz available from', default=timezone.now)
-    quiz_until = models.DateTimeField('Quiz available until', default=week_later)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -111,13 +109,10 @@ class Session(NumberedModel):
     tags = GenericRelation(Tag)
 
     def __str__(self):
-        return '%s: Session %i' % (self.course.colloquial_name(), self.get_number())
-
-    def get_number(self):
-        return self.number
+        return '%s: Session %i' % (self.course.colloquial_name(), self.number)
 
     def get_absolute_url(self):
-        return reverse('session', args=[self.course.slug, self.get_number()])
+        return reverse('session', args=[self.course.slug, self.number])
 
     def number_with_respect_to(self):
         return self.course.sessions.all()
@@ -135,16 +130,13 @@ class Assignment(NumberedModel):
     tags = GenericRelation(Tag)
 
     def __str__(self):
-        return 'Assignment {}'.format(self.get_number())
-
-    def get_number(self):
-        return self.number
+        return 'Assignment {}'.format(self.number)
 
     def nr_of_steps(self):
         return self.steps.count()
 
     def get_absolute_url(self):
-        return reverse('assignment', args=[self.session.course.slug, self.session.get_number(), self.get_number()])
+        return reverse('assignment', args=[self.session.course.slug, self.session.number, self.number])
 
     def number_with_respect_to(self):
         return self.session.assignments.all()
@@ -164,20 +156,17 @@ class Step(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     assignment = models.ForeignKey(Assignment, related_name='steps')
     description = PandocField(blank=True)
-    answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show the student a text box where they can enter their answer')
+    answer_required = models.BooleanField(default=False, help_text='If enabled, this step will show students an input field where they can enter their answer. Add one or more right answers below to have students’ answers checked for correctness.')
 
     def __str__(self):
-        return 'Step {}'.format(self.get_number())
-
-    def get_number(self):
-        return self.number
+        return 'Step {}'.format(self.number)
 
     def get_absolute_url(self):
         return reverse('assignment', args=[
             self.assignment.session.course.slug,
-            self.assignment.session.get_number(),
-            self.assignment.get_number(),
-        ]) + '?step=' + str(self.get_number())
+            self.assignment.session.number,
+            self.assignment.number,
+        ]) + '?step=' + str(self.number)
 
     def number_with_respect_to(self):
         return self.assignment.steps.all()
@@ -186,11 +175,28 @@ class Step(NumberedModel):
         ordering = ['number']
 
 @python_2_unicode_compatible
+class RightAnswer(models.Model):
+    step = models.ForeignKey(Step, related_name='right_answers')
+    value = models.CharField(max_length=255, help_text='This value can either be a case-insensitive string or a numeric value. For numeric values you can use the <a target="_blank" href="https://docs.moodle.org/23/en/GIFT_format">GIFT notation</a> of "answer:tolerance" or "low..high".')
+
+    def __str__(self):
+        return 'Right answer for {}'.format(self.step)
+
+@python_2_unicode_compatible
+class WrongAnswer(models.Model):
+    step = models.ForeignKey(Step, related_name='wrong_answers')
+    value = models.CharField(max_length=255, help_text='Supplying one or more wrong answers will turn this into a multiple choice question.')
+
+    def __str__(self):
+        return 'Wrong answer for {}'.format(self.step)
+
+@python_2_unicode_compatible
 class CompletedStep(models.Model):
     step = models.ForeignKey(Step, related_name='completed')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed')
     date = models.DateTimeField(auto_now_add=True)
     answer = models.TextField(blank=True)
+    passed = models.BooleanField(default=True)
 
     def __str__(self):
         return '%s has completed %s' % (self.whom.username, str(self.step))
@@ -198,75 +204,61 @@ class CompletedStep(models.Model):
     class Meta:
         verbose_name_plural = 'completed steps'
 
-@python_2_unicode_compatible
-class Quiz(NumberedModel):
-    number = models.PositiveIntegerField(blank=True)
-    course = models.ForeignKey(Course, related_name="quizzes")
+# @python_2_unicode_compatible
+# class Quiz(NumberedModel):
+#     number = models.PositiveIntegerField(blank=True)
+#     course = models.ForeignKey(Course, related_name="quizzes")
 
-    def __str__(self):
-        return 'Quiz for {} (alternative {})'.format(self.course.colloquial_name(), self.number)
+#     def __str__(self):
+#         return 'Quiz for {} (alternative {})'.format(self.course.colloquial_name(), self.number)
 
-    def nr_of_questions(self):
-        return self.questions.count()
+#     def nr_of_questions(self):
+#         return self.questions.count()
 
-    def number_with_respect_to(self):
-        return self.course.quizzes.all()
+#     def number_with_respect_to(self):
+#         return self.course.quizzes.all()
 
-    def save(self, *args, **kwargs):
-        super(Quiz, self).save(*args, **kwargs)
+#     def save(self, *args, **kwargs):
+#         super(Quiz, self).save(*args, **kwargs)
 
-        # Ensure at least one question
-        if not self.questions.first():
-            Question(quiz=self).save()
+#         # Ensure at least one question
+#         if not self.questions.first():
+#             Question(quiz=self).save()
 
-    class Meta:
-        verbose_name_plural = 'quizzes'
-        ordering = ['number']
+#     class Meta:
+#         verbose_name_plural = 'quizzes'
+#         ordering = ['number']
 
-@python_2_unicode_compatible
-class Question(NumberedModel):
-    number = models.PositiveIntegerField(blank=True)
-    quiz = models.ForeignKey(Quiz, related_name='questions')
-    description = PandocField(blank=True)
-    multiple_answers_allowed = models.BooleanField(default=False)
+# @python_2_unicode_compatible
+# class Question(NumberedModel):
+#     number = models.PositiveIntegerField(blank=True)
+#     quiz = models.ForeignKey(Quiz, related_name='questions')
+#     description = PandocField(blank=True)
+#     multiple_answers_allowed = models.BooleanField(default=False)
 
-    def __str__(self):
-        return 'Question {}'.format(self.number)
+#     def __str__(self):
+#         return 'Question {}'.format(self.number)
 
-    def number_with_respect_to(self):
-        return self.quiz.questions.all()
+#     def number_with_respect_to(self):
+#         return self.quiz.questions.all()
 
-    class Meta:
-        verbose_name = 'quiz question'
-        ordering = ['number']
+#     class Meta:
+#         verbose_name = 'quiz question'
+#         ordering = ['number']
 
-@python_2_unicode_compatible
-class RightAnswer(models.Model):
-    question = models.ForeignKey(Question, related_name='right_answers')
-    value = models.CharField(max_length=255, help_text='This value can either be a case-insensitive string or a numeric value. For numeric values you can use the <a target="_blank" href="https://docs.moodle.org/23/en/GIFT_format">GIFT notation</a> of "answer:tolerance" or "low..high".')
 
-    def __str__(self):
-        return 'Right answer for question {}'.format(self.question)
 
-@python_2_unicode_compatible
-class WrongAnswer(models.Model):
-    question = models.ForeignKey(Question, related_name='wrong_answers')
-    value = models.CharField(max_length=255, help_text='Supplying one or more wrong answers will automatically turn the question into a multiple choice question.')
+# @python_2_unicode_compatible
+# class CompletedQuiz(models.Model):
+#     quiz = models.ForeignKey(Quiz, related_name='completed_quizzes')
+#     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed_quizzes')
+#     date = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return 'Wrong answer for question {}'.format(self.question)
+#     def __str__(self):
+#         return '%s has completed %s' % (self.whom.username, str(self.quiz))
 
-@python_2_unicode_compatible
-class CompletedQuiz(models.Model):
-    quiz = models.ForeignKey(Quiz, related_name='completed_quizzes')
-    whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed_quizzes')
-    date = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return '%s has completed %s' % (self.whom.username, str(self.quiz))
-
-    class Meta:
-        verbose_name_plural = 'completed quizzes'
+#     class Meta:
+#         verbose_name_plural = 'completed quizzes'
 
 @python_2_unicode_compatible
 class Class(models.Model):
@@ -287,22 +279,22 @@ class Class(models.Model):
     class Meta:
         verbose_name_plural = 'classes'
 
-def course_path(obj, filename):
-    return os.path.join(obj.quiz.course.get_absolute_url()[1:], clean(filename))
+# def course_path(obj, filename):
+#     return os.path.join(obj.quiz.course.get_absolute_url()[1:], clean(filename))
 
-@python_2_unicode_compatible
-class QuizFile(models.Model):
-    quiz = models.ForeignKey(Quiz, related_name='files')
-    file = models.FileField(upload_to=course_path)
+# @python_2_unicode_compatible
+# class QuizFile(models.Model):
+#     quiz = models.ForeignKey(Quiz, related_name='files')
+#     file = models.FileField(upload_to=course_path)
 
-    def __str__(self):
-        return os.path.basename(str(self.file))
+#     def __str__(self):
+#         return os.path.basename(str(self.file))
 
-    def url(self):
-        return self.file.url
+#     def url(self):
+#         return self.file.url
 
-    class Meta:
-        ordering = ['file']
+#     class Meta:
+#         ordering = ['file']
 
 def session_path(obj, filename):
     return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))

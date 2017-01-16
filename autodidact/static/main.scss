@@ -7,6 +7,7 @@ $lightgrey: #e9e7e4;
 $reallylightgrey: #f9f9f9;
 $bordergrey: #ccc;
 $red: #f45b3d;
+$green: #390;
 
 body, html {
   font-family: "Arial", sans-serif;
@@ -43,6 +44,9 @@ a.quiz {
   margin-right: 10px;
 }
 
+div.correct {
+  color: $green;
+}
 div.incorrect {
   color: $red;
 }
@@ -73,12 +77,6 @@ ul.answers {
   input, label {
     cursor: pointer;
   }
-}
-
-td.quiz_answer {
-  font-weight: bold;
-  text-align: right;
-  height: 0;
 }
 
 h1 {
@@ -566,7 +564,7 @@ section.step {
       padding-bottom: 15px;
       text-align: right;
       font-weight: bold;
-      height: 70px;
+      height: 0;
 
       textarea {
 	vertical-align: top;

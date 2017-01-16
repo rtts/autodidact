@@ -13,7 +13,7 @@
 {% endif %}
 
 <section class="session description">
-  <h1>Session {{session.nr}}: {{session.name}}</h1>
+  <h1>Session {{session.number}}: {{session.name}}</h1>
   {% for presentation in session.presentations.all %}
   {% if presentation.visibility == 1 and request.user.is_staff %}
   <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>

@@ -24,6 +24,7 @@
 
 </ul>
 
+{% comment %}
 <p>
   {% if course.quizzes.exists %}
     <a class="quiz" href="{% url 'quiz' course.slug %}">Take the quiz</a>
@@ -32,5 +33,4 @@
     <a class="editlink" href="{% url 'admin:autodidact_quiz_changelist' %}?course__id__exact={{course.pk}}">Manage quizzes</a>
   {% endif %}
 </p>
-
-
+{% endcomment %}

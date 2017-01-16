@@ -61,7 +61,7 @@
       <ul class="progress">
         {% for finished in question_overview %}
           <li>
-            {% if forloop.counter == question.nr %}
+            {% if forloop.counter == question.number %}
               <span class="current step">{{forloop.counter}}</span>
             {% elif finished %}
               <a class="finished step">{{forloop.counter}}</a>

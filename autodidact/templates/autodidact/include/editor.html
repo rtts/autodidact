@@ -32,7 +32,7 @@
   {% if perms.autodidact.change_step %}
     <a class="editlink" href="{% url 'admin:autodidact_step_change' step.pk %}">Edit this step</a>
     {% if perms.autodidact.add_step %}
-      - <a class="editlink" href="{% url 'add_step' course.slug session.nr assignment.nr %}">Add new step</a>
+      - <a class="editlink" href="{% url 'add_step' course.slug session.number assignment.number %}">Add new step</a>
     {% endif %}
   {% endif %}
 {% endif %}

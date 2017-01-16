@@ -3,6 +3,7 @@ from django.db import models
 from django.forms import RadioSelect
 from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
+from django.core.urlresolvers import reverse
 from django.forms import CheckboxSelectMultiple
 from .models import *
 
@@ -42,6 +43,14 @@ class InlineDownloadAdmin(admin.StackedInline):
 
 class InlinePresentationAdmin(admin.StackedInline):
     model = Presentation
+    extra = 0
+
+class InlineRightAnswerAdmin(admin.StackedInline):
+    model = RightAnswer
+    extra = 0
+
+class InlineWrongAnswerAdmin(admin.StackedInline):
+    model = WrongAnswer
     extra = 0
 
 class InlineClarificationAdmin(admin.StackedInline):
@@ -115,7 +124,7 @@ class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     ordering = ['assignment__session__course__order', 'assignment__session__number', 'assignment__number', 'number']
     list_display = ['__str__', 'assignment', 'get_description', 'answer_required']
     list_filter = ['assignment__session', 'assignment']
-    inlines = [InlineClarificationAdmin]
+    inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin, InlineClarificationAdmin]
     exclude = ['assignment']
 
     def get_description(self, obj):
@@ -125,80 +134,72 @@ class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class CompletedStepAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
-    list_display = ['date', 'step', 'whom', 'answer']
-    list_display_links = ['step']
+    list_display = ['step', 'whom', 'answer', 'passed', 'date']
     list_filter = ['step__assignment__session__course', 'whom']
     ordering = ['-date']
     exclude = ['step', 'whom']
 
-class InlineQuestionAdmin(admin.StackedInline):
-    model = Question
-    extra = 0
-    fields = ['number', 'description', 'edit_link', 'multiple_answers_allowed']
-    readonly_fields = ['edit_link']
+# class InlineQuestionAdmin(admin.StackedInline):
+#     model = Question
+#     extra = 0
+#     fields = ['number', 'description', 'edit_link', 'multiple_answers_allowed']
+#     readonly_fields = ['edit_link']
 
-    def edit_link(self, instance):
-        url = reverse('admin:{}_{}_change'.format(instance._meta.app_label, instance._meta.model_name), args=[instance.pk])
-        if instance.pk:
-            answers = [a.value for a in instance.right_answers.all()] + \
-                      [a.value for a in instance.wrong_answers.all()]
-            html = ''.join(['&bull; {}<br>'.format(a) for a in answers] + \
-                           ['<br><a href="{}">Edit answers</a>'.format(url)])
-            return mark_safe(html)
-        else:
-            return '(please save this question first)'
-    edit_link.short_description = 'Possible answers'
+#     def edit_link(self, instance):
+#         url = reverse('admin:{}_{}_change'.format(instance._meta.app_label, instance._meta.model_name), args=[instance.pk])
+#         if instance.pk:
+#             answers = [a.value for a in instance.right_answers.all()] + \
+#                       [a.value for a in instance.wrong_answers.all()]
+#             html = ''.join(['&bull; {}<br>'.format(a) for a in answers] + \
+#                            ['<br><a href="{}">Edit answers</a>'.format(url)])
+#             return mark_safe(html)
+#         else:
+#             return '(please save this question first)'
+#     edit_link.short_description = 'Possible answers'
 
-class InlineQuizFileAdmin(admin.StackedInline):
-    model = QuizFile
-    extra = 0
+# class InlineQuizFileAdmin(admin.StackedInline):
+#     model = QuizFile
+#     extra = 0
 
-@admin.register(Quiz)
-class QuizAdmin(admin.ModelAdmin):
-    ordering = ['course__order', 'number']
-    list_display = ['__str__', 'course', 'nr_of_questions']
-    list_filter = ['course']
-    exclude = ['number']
-    inlines = [InlineQuizFileAdmin, InlineQuestionAdmin]
+# @admin.register(Quiz)
+# class QuizAdmin(admin.ModelAdmin):
+#     ordering = ['course__order', 'number']
+#     list_display = ['__str__', 'course', 'nr_of_questions']
+#     list_filter = ['course']
+#     exclude = ['number']
+#     inlines = [InlineQuizFileAdmin, InlineQuestionAdmin]
 
-@admin.register(CompletedQuiz)
-class CompletedQuizAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-    list_display = ['date', 'quiz', 'whom']
-    list_display_links = ['quiz']
-    list_filter = ['quiz__course', 'whom']
-    ordering = ['-date']
-    exclude = ['quiz', 'whom']
+# @admin.register(CompletedQuiz)
+# class CompletedQuizAdmin(admin.ModelAdmin):
+#     def has_add_permission(self, request):
+#         return False
+#     list_display = ['date', 'quiz', 'whom']
+#     list_display_links = ['quiz']
+#     list_filter = ['quiz__course', 'whom']
+#     ordering = ['-date']
+#     exclude = ['quiz', 'whom']
 
-class InlineRightAnswerAdmin(admin.StackedInline):
-    model = RightAnswer
-    extra = 1
 
-class InlineWrongAnswerAdmin(admin.StackedInline):
-    model = WrongAnswer
-    extra = 0
+# @admin.register(Question)
+# class QuestionAdmin(admin.ModelAdmin):
+#     def response_change(self, request, obj):
+#         if '_save' in request.POST:
+#             return redirect('admin:autodidact_quiz_change', obj.quiz.pk)
+#         else:
+#             return super(QuestionAdmin, self).response_change(request, obj)
 
-@admin.register(Question)
-class QuestionAdmin(admin.ModelAdmin):
-    def response_change(self, request, obj):
-        if '_save' in request.POST:
-            return redirect('admin:autodidact_quiz_change', obj.quiz.pk)
-        else:
-            return super(QuestionAdmin, self).response_change(request, obj)
+#     # Hide this admin from the admin index
+#     def get_model_perms(self, request):
+#         return {}
 
-    # Hide this admin from the admin index
-    def get_model_perms(self, request):
-        return {}
+#     def has_add_permission(self, request):
+#         return False
 
-    def has_add_permission(self, request):
-        return False
-
-    ordering = ['quiz__course__order', 'number']
-    list_display = ['__str__', 'quiz', 'description']
-    list_filter = ['quiz__course', 'quiz']
-    exclude = ['quiz']
-    inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin]
+#     ordering = ['quiz__course__order', 'number']
+#     list_display = ['__str__', 'quiz', 'description']
+#     list_filter = ['quiz__course', 'quiz']
+#     exclude = ['quiz']
+#     inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin]
 
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):

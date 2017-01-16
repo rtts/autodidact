@@ -2,7 +2,7 @@
 {% load autodidact %}
 
 <section class="step{% if fullscreen %} fullscreen{% endif %}">
-  <form method="POST" action="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{step.nr}}{% if fullscreen %}&fullscreen{% endif %}">
+  <form method="POST" action="{% url 'assignment' course.slug session.number assignment.number %}?step={{step.number}}{% if fullscreen %}&fullscreen{% endif %}">
     {% csrf_token %}
 
     <table class="wizard">
@@ -10,7 +10,7 @@
 	<td class="header">
           <a href="{{step.get_absolute_url}}{% if not fullscreen %}&fullscreen{% endif %}"><img id="fullscreen_toggle" src="{% if fullscreen %}{% static 'fullscreen_off.png' %}{% else %}{% static 'fullscreen_on.png' %}{% endif %}" width="24" height="24"></a>
 	  <img id="checkbox" src="{% if completedstep %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24">
-	  <h1>Assignment {{assignment.nr}} &ndash; step {{step.nr}} of {{count}}</h1>
+	  <h1>Assignment {{assignment.number}} &ndash; step {{step.number}} of {{count}}</h1>
 	</td>
       </tr>
 
@@ -23,8 +23,37 @@
       {% if step.answer_required %}
         <tr>
 	  <td class="answer">
-	    Your answer:
-	    <textarea id="answerbox" name="answer">{{completedstep.answer}}</textarea>
+            {% if grade_answer %}
+              {% if completedstep.passed %}
+                <div class="correct">
+                  Correct answer
+                </div>
+                {% elif completedstep %}
+                <div class="incorrect">
+                  Sorry, that answer is incorrect. Please try again.
+                </div>
+              {% endif %}
+            {% endif %}
+            Your answer:
+            {% if multiple_choice %}
+              <ul class="answers">
+                {% for answer in answers %}
+                  <li>
+                    {% if multiple_answers_allowed %}
+                      <input type="checkbox" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}">
+                    {% else %}
+                      <input type="checkbox" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}">
+                    {% endif %}
+                    <label for="answer_{{forloop.counter}}">{{answer}}</label>
+                  </li>
+                {% endfor %}
+              </ul>
+              {% if multiple_answers_allowed %}
+                <br><small>(multiple answers are allowed)</small>
+              {% endif %}
+            {% else %}
+	      <textarea id="answerbox" name="answer">{{given_answers.0}}</textarea>
+            {% endif %}
 	  </td>
         </tr>
       {% endif %}
@@ -50,7 +79,7 @@
       {% if not last %}
 	<input class="right button" type="submit" name="next" value="Next" />
       {% else %}
-	<input class="right button finish" type="submit" value="Finish!" />
+	<input class="right button finish" type="submit" name="next" value="Finish!" />
       {% endif %}
     </div>
   </form>
@@ -60,12 +89,12 @@
     <ul class="progress">
       {% for finished in step_overview %}
         <li>
-          {% if forloop.counter == step.nr %}
+          {% if forloop.counter == step.number %}
             <span class="current step">{{forloop.counter}}</span>
           {% elif finished %}
-            <a class="finished step" href="{% url 'assignment' course.slug session.nr assignment.nr %}?step={{forloop.counter}}">{{forloop.counter}}</a>
+            <a class="finished step" href="{% url 'assignment' course.slug session.number assignment.number %}?step={{forloop.counter}}{% if fullscreen %}&fullscreen{% endif %}">{{forloop.counter}}</a>
           {% else %}
-            <span class="unfinished step">{{forloop.counter}}</span>
+            <a class="unfinished step" href="{% url 'assignment' course.slug session.number assignment.number %}?step={{forloop.counter}}{% if fullscreen %}&fullscreen{% endif %}">{{forloop.counter}}</a>
           {% endif %}
         </li>
       {% endfor %}

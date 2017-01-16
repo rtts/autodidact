@@ -7,14 +7,14 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('autodidact', '0008_auto_20170103_1439'),
+        ('autodidact', '0003_auto_20170116_1142'),
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='completedquiz',
-            name='quiz',
-            field=models.ForeignKey(related_name='completed_quizzes', to='autodidact.Quiz'),
+        migrations.AddField(
+            model_name='completedstep',
+            name='passed',
+            field=models.BooleanField(default=True),
             preserve_default=True,
         ),
     ]

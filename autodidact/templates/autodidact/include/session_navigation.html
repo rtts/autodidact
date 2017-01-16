@@ -1,16 +1,16 @@
 <ul>
   <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
   <li class="visitedPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
-  <li class="currentPage"><a href="{% url 'session' course.slug session.nr %}">Session {{session.nr}}</a></li>
+  <li class="currentPage"><a href="{% url 'session' course.slug session.number %}">Session {{session.number}}</a></li>
 
   <li class="heading">Assignments:</li>
   {% for assignment in assignments %}
 
   {% if user.is_staff and not assignment.active %}
-  <li class="futurePage inactive"><a href="{% url 'assignment' session.course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+  <li class="futurePage inactive"><a href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
 
   {% elif user.is_staff and assignment.locked and not current_class %}
-  <li class="futurePage"><a class="locked" href="{% url 'assignment' session.course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
+  <li class="futurePage"><a class="locked" href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
 
   {% elif not assignment.active %}
 
@@ -18,7 +18,7 @@
   <li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 
   {% else %}
-  <li class="futurePage"><a href="{% url 'assignment' session.course.slug session.nr forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+  <li class="futurePage"><a href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
   {% endif %}
 
   {% endfor %}
@@ -26,7 +26,7 @@
   {% if perms.autodidact.add_assignment %}
   <li>
     <div class='add'>
-	  <a class="editlink" href="{% url 'add_assignment' course.slug session.nr %}">Add an assignment</a>
+	  <a class="editlink" href="{% url 'add_assignment' course.slug session.number %}">Add an assignment</a>
 	</div>
   </li>
   {% endif %}

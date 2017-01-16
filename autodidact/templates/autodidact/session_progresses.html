@@ -2,7 +2,7 @@
 
 {% block content %}
 <section class="students">
-  <h1>{{students|length}} students attended session {{session.nr}} in the past {{days}} day{{days|pluralize}}</h1>
+  <h1>{{students|length}} students attended session {{session.number}} in the past {{days}} day{{days|pluralize}}</h1>
   <form method="GET" style="float: left">
 	<input type="hidden" name="days" value="{{days}}" />
 	<input type="hidden" name="filetype" value="csv" />
