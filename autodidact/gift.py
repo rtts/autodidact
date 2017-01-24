@@ -12,9 +12,16 @@ def any_correct(given_answers, correct_answers):
 def all_correct(given_answers, correct_answers):
     '''Returns true if ALL of the given answers are correct, given the correct answers'''
 
+    # First, check if all correct answers were given
     for correct in correct_answers:
         if not any_correct(given_answers, [correct]):
             return False
+
+    # Second, check if all given answers are correct
+    for given in given_answers:
+        if not any_correct(correct_answers, [given]):
+            return False
+
     return True
 
 def convert_to_number(answer):

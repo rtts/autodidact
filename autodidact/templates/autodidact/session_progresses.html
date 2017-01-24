@@ -1,22 +1,22 @@
 {% extends 'autodidact/session_base.html' %}
 
 {% block content %}
-<section class="students">
-  <h1>{{students|length}} students attended session {{session.number}} in the past {{days}} day{{days|pluralize}}</h1>
-  <form method="GET" style="float: left">
-	<input type="hidden" name="days" value="{{days}}" />
-	<input type="hidden" name="filetype" value="csv" />
-	<input type="submit" value="Export as CSV file" style="padding: 5px; margin-right: 5px" />
-  </form>
-  <form method="GET">
-	<input type="hidden" name="days" value="{{days}}" />
-	<input type="hidden" name="filetype" value="xlsx" />
-	<input type="submit" value="Export as XSLX file" style="padding: 5px" />
-  </form>
+  <section class="students">
+    <h1>{{students|length}} students attended session {{session.number}} in the past {{days}} day{{days|pluralize}}</h1>
+    <form method="GET" style="float: left">
+      <input type="hidden" name="days" value="{{days}}" />
+      <input type="hidden" name="filetype" value="csv" />
+      <input type="submit" value="Export as CSV file" style="padding: 5px; margin-right: 5px" />
+    </form>
+    <form method="GET">
+      <input type="hidden" name="days" value="{{days}}" />
+      <input type="hidden" name="filetype" value="xlsx" />
+      <input type="submit" value="Export as XSLX file" style="padding: 5px" />
+    </form>
 
-  <hr>
+    <hr>
 
-  {% include 'autodidact/include/progresses.html' %}
+    {% include 'autodidact/include/progresses.html' %}
 
-</section>
+  </section>
 {% endblock %}

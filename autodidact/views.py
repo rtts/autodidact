@@ -239,94 +239,93 @@ def progresses(request, course, session):
 @needs_course
 @needs_session
 @needs_assignment
-def assignment(request, course, session, assignment):
-    if 'fullscreen' in request.GET:
-        template = 'autodidact/assignment_fullscreen.html'
-        fullscreen_parameter = '&fullscreen'
-    else:
-        template = 'autodidact/assignment.html'
-        fullscreen_parameter = ''
+@needs_step
+def assignment(request, course, session, assignment, step):
+    completedstep    = request.user.completed.filter(step=step).first()
+    fullscreen       = 'fullscreen' in request.GET
+    right_answers    = [a.value for a in step.right_answers.all()]
+    wrong_answers    = [a.value for a in step.wrong_answers.all()]
+    grade_answer     = bool(right_answers) and step.answer_required
+    multiple_choice  = bool(wrong_answers)
+    multiple_answers = multiple_choice and len(right_answers) > 1
+    please_try_again = False
+    template         = 'autodidact/assignment_fullscreen.html' if fullscreen else 'autodidact/assignment.html'
 
-    try:
-        step = assignment.steps.filter(number=request.GET.get('step')).first()
-        if step is None:
-            return redirect(assignment.steps.first())
-    except ValueError:
-        return HttpResponseBadRequest('Invalid step number')
-    completedstep = request.user.completed.filter(step=step).first()
-
-    right_answers = [a.value for a in step.right_answers.all()]
-    wrong_answers = [a.value for a in step.wrong_answers.all()]
-    grade_answer = bool(right_answers)
-    multiple_choice = bool(wrong_answers)
-    multiple_answers_allowed = multiple_choice and len(right_answers) > 1
-
+    # Retrieve, parse, and store answers
     if request.method == 'POST':
         given_answers = request.POST.getlist('answer')
-        answer = '\x1e'.join(given_answers) # Use ASCII 1e as the record separator
+        answer = '\x1e'.join(given_answers)
         if completedstep:
             completedstep.answer = answer
         else:
             completedstep = CompletedStep(step=step, whom=request.user, answer=answer)
-
         if grade_answer:
-            if multiple_choice and multiple_answers_allowed:
+            if multiple_choice and multiple_answers:
                 completedstep.passed = gift.all_correct(given_answers, right_answers)
             else:
                 completedstep.passed = gift.any_correct(given_answers, right_answers)
         else:
             completedstep.passed = True
-
         completedstep.save()
 
+        # Redirect after successfull POST:
         if 'previous' in request.POST:
             new_step = assignment.steps.filter(number__lt=step.number).last()
+            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
+        elif 'step' in request.POST:
+            new_step = assignment.steps.filter(number=request.POST['step']).first()
+            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
         elif 'next' in request.POST and completedstep.passed:
             new_step = assignment.steps.filter(number__gt=step.number).first()
+            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
         else:
-            new_step = step
+            please_try_again = True
 
-        if new_step:
-            return redirect(new_step.get_absolute_url() + fullscreen_parameter)
-        else:
-            return redirect(session)
-
-    # Calculate for all steps whether they have answers
-    step_overview = []
-    all_answers = request.user.completed.filter(passed=True, step__assignment=assignment).select_related('step')
+    # Calculate progress
+    step_overview  = []
+    all_answers    = request.user.completed.filter(passed=True, step__assignment=assignment).select_related('step')
     answered_steps = [ans.step for ans in all_answers]
-    steps = list(assignment.steps.all())
+    steps          = list(assignment.steps.all())
+    last           = step == steps[-1]
+    first          = step == steps[0]
+    count          = len(steps)
     for s in steps:
         if s in answered_steps:
-            step_overview.append(True)
+            step_overview.append((s, True))
         else:
-            step_overview.append(False)
+            step_overview.append((s, False))
 
-    last = step == s
-    first = step == steps[0]
-    count = len(steps)
-
+    # Retrieve {possible,given} answers
     answers = right_answers + wrong_answers
     random.shuffle(answers)
-
+    try:
+        # Move these to the front if they exist
+        for val in ['Yes', 'yes', 'True', 'true']:
+            answers.remove(val)
+            answers.insert(0, val)
+    except ValueError:
+        pass
     if completedstep:
         given_answers = completedstep.answer.split('\x1e')
     else:
         given_answers = []
 
     return render(request, template, {
+        'last': last,
+        'step': step,
+        'count': count,
+        'first': first,
         'course': course,
+        'answers': answers,
         'session': session,
         'assignment': assignment,
-        'step': step,
-        'completedstep': completedstep,
-        'count': count,
-        'answers': answers,
-        'given_answers': given_answers,
         'grade_answer': grade_answer,
+        'completedstep': completedstep,
+        'given_answers': given_answers,
         'step_overview': step_overview,
-        'first': first,
-        'last': last,
+        'multiple_choice': multiple_choice,
+        'multiple_answers': multiple_answers,
+        'please_try_again': please_try_again,
     })
 
 # @login_required

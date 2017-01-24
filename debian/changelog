@@ -1,7 +1,8 @@
 python3-django-autodidact (1.4.1) UNRELEASED; urgency=medium
 
+  * Improved layout of the step progress monitor
+  * New answer-checking functionality for steps
   * Change ANR to emplId in Excel writer
-  * New quiz-taking functionality for each course (work in progress)
   * Fix bug where staff members cannot be removed from class
   * Improved formatting of answers
 

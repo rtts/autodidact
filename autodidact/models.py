@@ -161,12 +161,13 @@ class Step(NumberedModel):
     def __str__(self):
         return 'Step {}'.format(self.number)
 
-    def get_absolute_url(self):
+    def get_absolute_url(self, fullscreen=False):
+        parameter = '&fullscreen' if fullscreen else ''
         return reverse('assignment', args=[
             self.assignment.session.course.slug,
             self.assignment.session.number,
             self.assignment.number,
-        ]) + '?step=' + str(self.number)
+        ]) + '?step=' + str(self.number) + parameter
 
     def number_with_respect_to(self):
         return self.assignment.steps.all()

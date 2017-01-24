@@ -8,6 +8,11 @@ $reallylightgrey: #f9f9f9;
 $bordergrey: #ccc;
 $red: #f45b3d;
 $green: #390;
+$step_color: $lightgrey;
+$current_step_color: white;
+$passed_step_color: #dcf7dc;
+
+$border: 2px solid $darkblue;
 
 body, html {
   font-family: "Arial", sans-serif;
@@ -46,6 +51,7 @@ a.quiz {
 
 div.correct {
   color: $green;
+  font-size: 12px;
 }
 div.incorrect {
   color: $red;
@@ -56,7 +62,7 @@ ul.answers {
   padding: 0;
   display: inline-block;
   padding-right: 15px;
-  max-width: 400px;
+  max-width: 389px;
   vertical-align: top;
   border: 1px solid #ccc;
   list-style: none;
@@ -611,34 +617,91 @@ section.step {
   }
 
   div.step_footer {
+    padding-top: 20px;
     border-top: 2px solid #036;
-    padding-top: 15px;
-    height: 10px;
 
-    input[type=submit] {
-      width: 100px;
-      padding: 5px;
-    }
+    ul.progress {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: -webkit-box;
+      display: -moz-box;
+      display: -ms-flexbox;
+      display: -webkit-flex;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      align-items: center;
 
-    input.left {
-      float: left;
-    }
+      li {
+        vertical-align: middle;
+        height: 24px;
+        flex: 1 1 20px;
+        margin: 0.5px;
+        text-align: center;
+        max-width: 50%;
+      }
+      li:first-child {
+        height: 34px;
+        text-align: left;
+        margin-right: 1.5px;
+      }
+      li:last-child {
+        height: 34px;
+        text-align: right;
+        margin-left: 2px;
+      }
 
-    input.right {
-      float: right;
+      input {
+        display: block;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        border: none;
+        outline: none;
+        background: none;
+        cursor: pointer;
+      }
+      input.previous, input.next {
+        min-width: 100px;
+        margin: 0;
+      }
+      $rad: 8px;
+      input.previous {
+        background: $step_color;
+        text-align: left;
+        border-radius: $rad 0 0 $rad;
+        padding-left: 10px;
+      }
+      input.previous:disabled {
+        cursor: default;
+        color: #bbb;
+      }
+      input.next {
+        text-align: right;
+        border-radius: 0 $rad $rad 0;
+        color: white;
+        background: #008ec6;
+        font-weight: bold;
+        padding-right: 10px;
+      }
+      input.step {
+        background: $step_color;
+      }
+      input.current {
+        background: none;
+        cursor: default;
+        font-weight: bold;
+        color: black;
+      }
+      input.passed {
+        background: $passed_step_color;
+      }
     }
   }
+}
 
-  div.step_progress {
-    clear: both;
-    margin-top: 4em;
-  }
-
-  $step_height: 20px;
-  $finished_color: #A7E3A7;
-  $current_color: #F0BD7D;
-  $unfinished_color: $lightgrey;
-
+/*
   ul.progress {
     list-style: none;
     margin: 0;
@@ -728,7 +791,8 @@ section.step {
       border-left: $step_height/2 solid $unfinished_color;
     }
   }
-}
+*/
+
 
 main.fullscreen {
   display: flex;
@@ -738,8 +802,10 @@ main.fullscreen {
   align-items: center;
   justify-content: center;
   width: 100%;
+  background: #f6f6f6;
 
   article {
+    background: white;
     display: inline-block;
     text-align: left;
     width: 100%;

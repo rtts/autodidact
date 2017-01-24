@@ -7,18 +7,18 @@
   {% for assignment in assignments %}
 
   {% if user.is_staff and not assignment.active %}
-  <li class="futurePage inactive"><a href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+  <li class="futurePage inactive"><a href="{% url 'assignment' session.course.slug session.number assignment.number %}">Assignment {{assignment.number}}: {{assignment.name}}</a></li>
 
   {% elif user.is_staff and assignment.locked and not current_class %}
-  <li class="futurePage"><a class="locked" href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
+  <li class="futurePage"><a class="locked" href="{% url 'assignment' session.course.slug session.number assignment.number %}">Assignment {{assignment.number}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</a></li>
 
   {% elif not assignment.active %}
 
   {% elif not current_class and assignment.locked %}
-  <li class="locked">Assignment {{forloop.counter}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
+  <li class="locked">Assignment {{assignment.number}}: Locked {% if session.registration_enabled %} until class starts{% endif %}</li>
 
   {% else %}
-  <li class="futurePage"><a href="{% url 'assignment' session.course.slug session.number forloop.counter %}">Assignment {{forloop.counter}}: {{assignment.name}}</a></li>
+  <li class="futurePage"><a href="{% url 'assignment' session.course.slug session.number assignment.number %}">Assignment {{assignment.number}}: {{assignment.name}}</a></li>
   {% endif %}
 
   {% endfor %}

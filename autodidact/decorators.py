@@ -1,6 +1,6 @@
 from functools import wraps
-from django.shortcuts import get_object_or_404
-from django.http import Http404, HttpResponseForbidden
+from django.shortcuts import get_object_or_404, redirect
+from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
 from .models import *
 
 def needs_course(view):
@@ -52,4 +52,22 @@ def needs_assignment(view):
             if not assignment.active and not request.user.is_staff:
                 raise Http404()
         return view(request, course, session, assignment, *args, **kwargs)
+    return wrapper
+
+def needs_step(view):
+    @wraps(view)
+    def wrapper(request, course, session, assignment, *args, **kwargs):
+        if not isinstance(course, Course):
+            raise TypeError('Course object required')
+        if not isinstance(session, Session):
+            raise TypeError('Session object required')
+        if not isinstance(assignment, Assignment):
+            raise TypeError('Assignment object required')
+        try:
+            step = assignment.steps.filter(number=request.GET.get('step')).first()
+            if step is None:
+                return redirect(assignment.steps.first())
+        except ValueError:
+            return HttpResponseBadRequest('Invalid step number')
+        return view(request, course, session, assignment, step, *args, **kwargs)
     return wrapper
