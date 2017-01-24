@@ -2,15 +2,15 @@
 {% load autodidact %}
 
 <section class="step{% if fullscreen %} fullscreen{% endif %}">
-  <form method="POST" action="{% url 'assignment' course.slug session.number assignment.number %}?step={{step.number}}{% if fullscreen %}&fullscreen{% endif %}">
+  <form method="POST" action="{% url 'assignment' course.slug session.number assignment.number %}?step={{step.number}}{% if step.fullscreen %}&fullscreen{% endif %}">
     {% csrf_token %}
 
     <table class="wizard">
       <tr>
 	<td class="header">
-          <a href="{{step.get_absolute_url}}{% if not fullscreen %}&fullscreen{% endif %}"><img id="fullscreen_toggle" src="{% if fullscreen %}{% static 'fullscreen_off.png' %}{% else %}{% static 'fullscreen_on.png' %}{% endif %}" width="24" height="24"></a>
-	  <img id="checkbox" src="{% if completedstep.passed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24">
-	  <h1>Assignment {{assignment.number}} &ndash; step {{step.number}} of {{count}}</h1>
+          <a href="{% url 'assignment' course.slug session.number assignment.number %}?step={{step.number}}{% if not step.fullscreen %}&fullscreen{% endif %}"><img id="fullscreen_toggle" src="{% if step.fullscreen %}{% static 'fullscreen_off.png' %}{% else %}{% static 'fullscreen_on.png' %}{% endif %}" width="24" height="24"></a>
+	  <img id="checkbox" src="{% if step.completedstep.passed %}{% static 'checked.png' %}{% else %}{% static 'unchecked.png' %}{% endif %}" alt="Completed" width="24" height="24">
+	  <h1>Assignment {{assignment.number}} &ndash; step {{step.number}} of {{steps|length}}</h1>
 	</td>
       </tr>
 
@@ -23,32 +23,32 @@
       {% if step.answer_required %}
         <tr>
 	  <td class="answer">
-            {% if grade_answer %}
-              {% if completedstep.passed %}
+            {% if step.graded %}
+              {% if step.completedstep.passed %}
                 <div class="correct">
                   Correct
                 </div>
-              {% elif please_try_again %}
+              {% elif step.please_try_again %}
                 <div class="incorrect">
-                  Sorry, that answer is incorrect. Please try again.
+                  Incorrect. Please try again.
                 </div>
               {% endif %}
             {% endif %}
             Your answer
-            {% if multiple_choice %}
+            {% if step.multiple_choice %}
               <ul class="answers">
-                {% for answer in answers %}
+                {% for answer in step.answers %}
                   <li>
-                    <input type="{% if multiple_answers %}checkbox{% else %}radio{% endif %}" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}" {% if answer in given_answers %}checked{% endif %}>
+                    <input type="{% if step.multiple_answers %}checkbox{% else %}radio{% endif %}" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}" {% if answer in step.given_answers %}checked{% endif %}>
                     <label for="answer_{{forloop.counter}}">{{answer}}</label>
                   </li>
                 {% endfor %}
               </ul>
-              {% if multiple_answers %}
+              {% if step.multiple_answers %}
                 <div><small>(multiple answers are allowed)</small></div>
               {% endif %}
             {% else %}
-	      <textarea id="answerbox" name="answer">{{given_answers.0}}</textarea>
+	      <textarea id="answerbox" name="answer">{{step.given_answers.0}}</textarea>
             {% endif %}
 	  </td>
         </tr>
@@ -71,16 +71,16 @@
     <div class="step_footer">
       <ul class="progress">
         <li>
-	  <input class="previous" type="submit" name="previous" value="« Previous" {% if first %}disabled{% endif %}>
+	  <input class="previous" type="submit" name="previous" value="« Previous" {% if step.is_first %}disabled{% endif %}>
         </li>
 
-        {% for s, passed in step_overview %}
+        {% for s in steps %}
           <li>
-            <input class="step {% if s == step %}current{% elif passed %}passed{% endif %}" type="submit" name="step" value="{{s.number}}" {% if s == step %}disabled{% endif %}>
+            <input class="step {% if s == step %}current{% elif s.passed %}passed{% endif %}" type="submit" name="step" value="{{s.number}}" {% if s == step %}disabled{% endif %}>
            </li>
         {% endfor %}
         <li>
-          <input class="next" type="submit" name="next" value="{% if last %}Finish!{% else %}Next{% endif %} »">
+          <input class="next" type="submit" name="next" value="{% if step.is_last %}Finish!{% else %}Next{% endif %} »">
         </li>
       </ul>
     </div>

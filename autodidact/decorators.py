@@ -69,5 +69,16 @@ def needs_step(view):
                 return redirect(assignment.steps.first())
         except ValueError:
             return HttpResponseBadRequest('Invalid step number')
+
+        step.fullscreen = 'fullscreen' in request.GET
+        step.completedstep = request.user.completed.filter(step=step).first()
+        step.given_answers = step.completedstep.answer.split('\x1e') if step.completedstep else []
+        step.right_values = [a.value for a in step.right_answers.all()]
+        step.wrong_values = [a.value for a in step.wrong_answers.all()]
+        step.graded = bool(step.right_values) and step.answer_required
+        step.multiple_choice = bool(step.wrong_values)
+        step.multiple_answers = step.multiple_choice and len(step.right_values) > 1
+        step.please_try_again = False
+
         return view(request, course, session, assignment, step, *args, **kwargs)
     return wrapper

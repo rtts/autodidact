@@ -253,33 +253,12 @@ class AssignmentViewTest(TestCase):
         self.klass.students.add(self.student)
         self.klass.save()
 
-    def test_get_parameter(self):
-        '''The GET parameter "step", if present, must be valid. If the requested step doesn't exist, a 404 is returned.'''
-
-        c = Client()
-        c.login(username='student', password=password)
-        url = reverse('assignment', args=[course_slug, '1', '1'])
-        response = c.get(url)
-        self.assertEqual(response.status_code, 404)
-        self.assignment.active = True
-        self.assignment.save()
-        response = c.get(url)
-        self.assertEqual(response.status_code, 200)
-        response = c.get(url, {'step': 'haha'})
-        self.assertEqual(response.status_code, 400)
-        response = c.get(url, {'step': -1})
-        self.assertEqual(response.status_code, 400)
-        response = c.get(url, {'step': 4})
-        self.assertEqual(response.status_code, 404)
-        response = c.get(url, {'step': 1})
-        self.assertEqual(response.status_code, 200)
-
     def test_context_variables(self):
         '''The assignment() view supplies the context variables "course", "session", "assignment", "step", "first", "last", and "count"'''
 
         c = Client()
         c.login(username='student', password=password)
-        url = reverse('assignment', args=[course_slug, '1', '1'])
+        url = reverse('assignment', args=[course_slug, '1', '1']) + '?step=1'
         self.assignment.active = True
         self.assignment.save()
         response = c.get(url)
@@ -287,9 +266,6 @@ class AssignmentViewTest(TestCase):
         self.assertEqual(response.context['session'], self.session)
         self.assertEqual(response.context['assignment'], self.assignment)
         self.assertEqual(response.context['step'], self.step1)
-        self.assertEqual(response.context['first'], True)
-        self.assertEqual(response.context['last'], False)
-        self.assertEqual(response.context['count'], 3)
 
     def test_post_answer(self):
         '''When an answer is submitted in a POST request, a CompletedStep object is created or updated'''
@@ -298,17 +274,17 @@ class AssignmentViewTest(TestCase):
         answer2 = '𝑝 < 0.05'
         c = Client()
         c.login(username='student', password=password)
-        url = reverse('assignment', args=[course_slug, '1', '1'])
+        url = reverse('assignment', args=[course_slug, '1', '1']) + '?step=1'
         self.assignment.active = True
         self.assignment.save()
         response = c.post(url, {'answer': answer1})
         self.assertEqual(response.status_code, 302)
         response = c.get(url)
-        self.assertEqual(response.context['completedstep'].answer, answer1)
+        self.assertEqual(response.context['step'].completedstep.answer, answer1)
         response = c.post(url, {'answer': answer2})
         self.assertEqual(response.status_code, 302)
         response = c.get(url)
-        self.assertEqual(response.context['completedstep'].answer, answer2)
+        self.assertEqual(response.context['step'].completedstep.answer, answer2)
 
 class StartclassViewTest(TestCase):
     def setUp(self):

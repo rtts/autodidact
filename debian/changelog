@@ -1,5 +1,6 @@
 python3-django-autodidact (1.4.1) UNRELEASED; urgency=medium
 
+  * Major code refactoring
   * Improved layout of the step progress monitor
   * New answer-checking functionality for steps
   * Change ANR to emplId in Excel writer
