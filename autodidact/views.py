@@ -268,18 +268,17 @@ def assignment(request, course, session, assignment, step):
             completedstep.passed = True
         completedstep.save()
 
-        # Redirect after successfull POST:
         if 'previous' in request.POST:
             new_step = assignment.steps.filter(number__lt=step.number).last()
-            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
         elif 'step' in request.POST:
             new_step = assignment.steps.filter(number=request.POST['step']).first()
-            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
-        elif 'next' in request.POST and completedstep.passed:
+        elif 'next' in request.POST:
             new_step = assignment.steps.filter(number__gt=step.number).first()
-            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
-        else:
+
+        if 'next' in request.POST and not completedstep.passed:
             please_try_again = True
+        else:
+            return redirect(new_step.get_absolute_url(fullscreen=fullscreen)) if new_step else redirect(session)
 
     # Calculate progress
     step_overview  = []
