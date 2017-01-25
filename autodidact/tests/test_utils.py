@@ -44,7 +44,7 @@ class UtilsTest(TestCase):
         self.assertEqual(get_current_class(self.session, self.teacher), self.klass)
 
     def test_calculate_progress(self):
-        '''Given a user and a list of assignments, calculate_progress() returns a tuple of answers and progresses of each assignment. Answers is a list of lists; each lists contains an assignment's answers for each step. Progress is a list of percentages; the percentage of completed steps for each assignment.'''
+        '''Given a user and a list of assignments, calculate_progress() returns a list of percentages.'''
 
         Step(assignment=self.assignment1).save()
         Step(assignment=self.assignment1).save()
@@ -56,25 +56,24 @@ class UtilsTest(TestCase):
         CompletedStep(step=self.assignment1.steps.all()[2], whom=self.student).save()
         # 3 of 4 steps are now completed, i.e. 75%
 
-        (answers, progress) = calculate_progress(self.student, [self.assignment1])
-        self.assertEqual(len(progress), 1)
-        self.assertEqual(len(answers), 1)
-        self.assertEqual(len(answers[0]), 0)
-        self.assertEqual(progress[0], None)
+        progress = calculate_progress(self.student, [self.assignment1])
+        self.assertEqual(len(progress), 0)
 
         self.assignment1.active = True
         self.assignment1.save()
 
-        (answers, progress) = calculate_progress(self.student, [self.assignment1])
+        progress = calculate_progress(self.student, [self.assignment1])
         self.assertEqual(len(progress), 1)
-        self.assertEqual(len(answers), 1)
-        self.assertEqual(len(answers[0]), 4)
         self.assertEqual(progress[0], 75)
         self.assertTrue(isinstance(progress[0], int))
 
-        (answers, progress) = calculate_progress(self.student, Assignment.objects.all())
+        self.assignment2.active = True
+        self.assignment2.save()
+        self.assignment3.active = True
+        self.assignment3.save()
+
+        progress = calculate_progress(self.student, Assignment.objects.all())
         self.assertEqual(len(progress), 3)
-        self.assertEqual(len(answers), 3)
 
     def test_clean(self):
         '''Cleans dirty filenames'''
