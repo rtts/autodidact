@@ -1,4 +1,4 @@
-python3-django-autodidact (1.4.1) UNRELEASED; urgency=medium
+python3-django-autodidact (1.4.1~rc1) stable; urgency=medium
 
   * Major code refactoring
   * Improved layout of the step progress monitor
