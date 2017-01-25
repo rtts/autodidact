@@ -30,6 +30,9 @@ def convert_to_number(answer):
     # remove whitespace
     answer = "".join(answer.split())
 
+    # replace comma's (it's a dutch thing...)
+    answer = answer.replace(',','.')
+
     try:
         return int(answer)
     except ValueError:

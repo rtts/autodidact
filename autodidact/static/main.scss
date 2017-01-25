@@ -4,11 +4,11 @@ $darkblue: #036;
 $lightblue: #008ec6;
 $grey: #e1ddd8;
 $lightgrey: #e9e7e4;
-$reallylightgrey: #f9f9f9;
+$reallylightgrey: #f4f3f1;
 $bordergrey: #ccc;
 $red: #f45b3d;
 $green: #390;
-$step_color: $lightgrey;
+$step_color: $reallylightgrey;
 $current_step_color: white;
 $passed_step_color: #dcf7dc;
 
@@ -622,7 +622,7 @@ section.step {
 
     ul.progress {
       list-style: none;
-      margin: 0;
+      margin: -1px;
       padding: 0;
       display: -webkit-box;
       display: -moz-box;
@@ -635,21 +635,17 @@ section.step {
 
       li {
         vertical-align: middle;
-        height: 24px;
+        height: 34px;
         flex: 1 1 20px;
-        margin: 0.5px;
+        margin: 1px;
         text-align: center;
         max-width: 50%;
       }
       li:first-child {
-        height: 34px;
         text-align: left;
-        margin-right: 1.5px;
       }
       li:last-child {
-        height: 34px;
         text-align: right;
-        margin-left: 2px;
       }
 
       input {
@@ -668,7 +664,7 @@ section.step {
       }
       $rad: 8px;
       input.previous {
-        background: $step_color;
+        background: $lightgrey;
         text-align: left;
         border-radius: $rad 0 0 $rad;
         padding-left: 10px;
@@ -802,7 +798,7 @@ main.fullscreen {
   align-items: center;
   justify-content: center;
   width: 100%;
-  background: #f6f6f6;
+  background: $reallylightgrey;
 
   article {
     background: white;
