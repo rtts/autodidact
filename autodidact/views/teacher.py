@@ -44,12 +44,7 @@ def progresses(request, course, session):
     for s in students:
         s.progress = calculate_progress(s, assignments)
 
-    if filetype == 'csv':
-        response = render(request, 'autodidact/students.csv', {'assignments': assignments, 'students': students})
-        response['Content-Disposition'] = 'attachment; filename="{} Session {} attendees from {} to {}.csv"'.format(course.colloquial_name(), session.number, startdate.strftime("%Y-%m-%d"), enddate.strftime("%Y-%m-%d"))
-        return response
-
-    elif filetype == 'xlsx':
+    if filetype == 'xlsx':
         try:
             # Python 2
             from StringIO import StringIO
@@ -82,15 +77,14 @@ def progresses(request, course, session):
         file.close()
         return response
 
-    else:
-        return render(request, 'autodidact/session_progresses.html', {
-            'days': days,
-            'course': course,
-            'session': session,
-            'assignments': assignments,
-            'students': students,
-            'current_class': current_class,
-        })
+    return render(request, 'autodidact/session_progresses.html', {
+        'days': days,
+        'course': course,
+        'session': session,
+        'assignments': assignments,
+        'students': students,
+        'current_class': current_class,
+    })
 
 @staff_member_required
 @needs_course

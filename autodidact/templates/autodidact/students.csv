@@ -1,2 +1,0 @@
-"Name","UID"{% for student in students %}
-"{{student.get_full_name}}","{{student.username}}"{% endfor %}
