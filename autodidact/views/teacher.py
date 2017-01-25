@@ -9,9 +9,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 
-from autodidact.decorators import *
 from autodidact.utils import *
 from autodidact.models import *
+from autodidact.views.decorators import *
 
 @staff_member_required
 @needs_course
@@ -40,11 +40,9 @@ def progresses(request, course, session):
     startdate = (enddate - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     classes = Class.objects.filter(session=session, date__range=[startdate, enddate]).prefetch_related('students')
-    students = get_user_model().objects.filter(attends__in=classes).distinct()
+    students = get_user_model().objects.filter(attends__in=classes).distinct().select_related('uvt_user')
     for s in students:
-        (answers, progress) = calculate_progress(s, assignments)
-        s.progress = progress
-        s.answers = answers
+        s.progress = calculate_progress(s, assignments)
 
     if filetype == 'csv':
         response = render(request, 'autodidact/students.csv', {'assignments': assignments, 'students': students})
@@ -106,14 +104,13 @@ def progress(request, course, session, username):
     except get_user_model().DoesNotExist:
         raise Http404
     assignments = session.assignments.prefetch_related('steps')
-    (answers, progress) = calculate_progress(student, assignments)
+    progress = calculate_progress(student, assignments)
     current_class = get_current_class(session, request.user)
     student_attends = (student.attends.all() & session.classes.all()).first()
     return render(request, 'autodidact/session_progress.html', {
         'course': course,
         'session': session,
         'assignments': assignments,
-        'answers': answers,
         'progress': progress,
         'student': student,
         'current_class': current_class,

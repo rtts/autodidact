@@ -2,16 +2,16 @@ import random
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from autodidact import gift
-from autodidact.decorators import *
 from autodidact.utils import *
 from autodidact.models import *
+from autodidact.views.decorators import *
 
 @login_required
 def page(request, slug=''):
     '''Serves a particular page. Mainly used for serving the homepage.
     '''
     page = get_object_or_404(Page, slug=slug)
-    programmes = Programme.objects.all()
+    programmes = Programme.objects.all().prefetch_related('courses')
     return render(request, 'autodidact/page.html', {
         'page': page,
         'programmes': programmes,
@@ -47,8 +47,9 @@ def session(request, course, session):
     current_class = None
     ticket_error = False
     assignments = session.assignments.prefetch_related('steps')
-    (answers, progress) = calculate_progress(user, assignments)
     students = None
+
+    calculate_progress(user, assignments)
 
     if session.registration_enabled:
         if request.method == 'POST':
@@ -67,16 +68,12 @@ def session(request, course, session):
         if user.is_staff and current_class:
             students = current_class.students.all()
             for s in students:
-                (answers, progress) = calculate_progress(s, assignments)
-                s.progress = progress
-                s.answers = answers
+                s.progress = calculate_progress(s, assignments)
 
     return render(request, 'autodidact/session_base.html', {
         'course': course,
         'session': session,
         'assignments': assignments,
-        'answers': answers,
-        'progress': progress,
         'students': students,
         'current_class': current_class,
         'ticket_error': ticket_error,
@@ -94,17 +91,17 @@ def assignment(request, course, session, assignment, step):
 
     '''
     if request.method == 'POST':
-        given_values = request.POST.getlist('answer')
-        concatenated_values = '\x1e'.join(given_values)
+        step.given_values = request.POST.getlist('answer')
+        concatenated_values = '\x1e'.join(step.given_values)
         if step.completedstep:
             step.completedstep.answer = concatenated_values
         else:
             step.completedstep = CompletedStep(step=step, whom=request.user, answer=concatenated_values)
         if step.graded:
             if step.multiple_choice and step.multiple_answers:
-                step.completedstep.passed = gift.all_correct(given_values, step.right_values)
+                step.completedstep.passed = gift.all_correct(step.given_values, step.right_values)
             else:
-                step.completedstep.passed = gift.any_correct(given_values, step.right_values)
+                step.completedstep.passed = gift.any_correct(step.given_values, step.right_values)
         else:
             step.completedstep.passed = True
         step.completedstep.save()

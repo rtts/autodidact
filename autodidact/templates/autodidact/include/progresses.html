@@ -2,7 +2,9 @@
   <tr>
     <th>Student</th>
     {% for assignment in assignments %}
-      <th>Assignment {{assignment.number}}</th>
+      {% if assignment.active %}
+        <th>Assignment {{assignment.number}}</th>
+      {% endif %}
     {% endfor %}
   </tr>
   {% for student in students %}

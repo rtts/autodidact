@@ -7,47 +7,54 @@ import unicodedata
 HUMAN_FRIENDLY_CHARS = '234679ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnpqrstuvwxyz'
 
 def get_current_class(session, user):
+    '''For teachers, returns the class they are teaching. For students,
+    returns the class they are registered for. Returns none otherwise.
+
+    '''
     if user.is_staff:
         classes = user.teaches.filter(dismissed=False) & session.classes.all()
     else:
         classes = user.attends.all() & session.classes.all()
     return classes[0] if classes else None
 
-def calculate_progress(student, assignments):
-    answers   = []
-    progress  = []
-    completed = student.completed.select_related('step').order_by('step')
+def calculate_progress(user, assignments):
+    '''Calculate and returns a list of percentages, indicating the user's
+    progress in the corresponding assignment. As a side effect, it
+    adds a 'progress' attribute to assignment objects and a
+    'completedstep' attribute to step objects.
+
+    '''
+    progresses = []
+    completed = user.completed.select_related('step')
 
     for ass in assignments:
-        step_count = 0
-        completed_count = 0
-        answers.append([])
-        progress.append(None)
         if not ass.active:
             continue
+        step_count = 0
+        completed_count = 0
         for step in ass.steps.all():
             step_count += 1
-            answers[-1].append('')
             for com in completed:
                 if step == com.step:
                     completed_count += 1
-                    if step.answer_required and not com.answer:
-                        answers[-1][-1] = "mispoes"
-                    else:
-                        answers[-1][-1] = com.answer
+                    step.completedstep = com
+                    step.given_values = com.answer.split('\x1e')
                     break
-        if step_count:
-            progress[-1] = int(100 * completed_count/step_count)
-        else:
-            progress[-1] = 0
-        if not completed_count:
-            answers[-1] = []
-    return (answers, progress)
+        ass.progress = int(100 * completed_count/step_count) if step_count else 0
+        progresses.append(ass.progress)
+
+    return progresses
 
 def random_string(length):
+    '''Generates a random string of human friendly characters
+
+    '''
     return ''.join(random.choice(HUMAN_FRIENDLY_CHARS) for x in range(length))
 
 def clean(dirty_filename):
+    '''Cleans dirty filenames
+
+    '''
     valid_chars = '-_.() %s%s' % (string.ascii_letters, string.digits)
 
     # Replace accented characters with unaccented ones

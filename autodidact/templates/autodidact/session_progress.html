@@ -2,7 +2,7 @@
 
 {% block content %}
   {% if student_attends %}
-    <a class="staff remove_student" href="{% url 'remove_student' course.slug session.number student.username %}" onclick="window.confirm('Are you sure?')">Remove this student from class</a>
+    <a class="staff remove_student" href="{% url 'remove_student' course.slug session.number student.username %}" onclick="return window.confirm('Are you sure?')">Remove this student from class</a>
   {% else %}
     <span class="staff remove_student">This student is not registered for {{session}}</span>
   {% endif %}

@@ -39,7 +39,7 @@
               <ul class="answers">
                 {% for answer in step.answers %}
                   <li>
-                    <input type="{% if step.multiple_answers %}checkbox{% else %}radio{% endif %}" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}" {% if answer in step.given_answers %}checked{% endif %}>
+                    <input type="{% if step.multiple_answers %}checkbox{% else %}radio{% endif %}" name="answer" value="{{answer}}" id="answer_{{forloop.counter}}" {% if answer in step.given_values %}checked{% endif %}>
                     <label for="answer_{{forloop.counter}}">{{answer}}</label>
                   </li>
                 {% endfor %}
@@ -48,7 +48,7 @@
                 <div><small>(multiple answers are allowed)</small></div>
               {% endif %}
             {% else %}
-	      <textarea id="answerbox" name="answer">{{step.given_answers.0}}</textarea>
+	      <textarea id="answerbox" name="answer">{{step.given_values.0}}</textarea>
             {% endif %}
 	  </td>
         </tr>

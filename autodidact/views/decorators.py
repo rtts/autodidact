@@ -1,7 +1,7 @@
 from functools import wraps
 from django.shortcuts import get_object_or_404, redirect
 from django.http import Http404, HttpResponseForbidden, HttpResponseBadRequest
-from .models import *
+from autodidact.models import *
 
 def needs_course(view):
     @wraps(view)
@@ -46,11 +46,11 @@ def needs_assignment(view):
             assignment = session.assignments.filter(number=assignment_nr).first()
             if assignment is None:
                 raise Http404()
+            if not assignment.active and not request.user.is_staff:
+                raise Http404()
             if assignment.locked and not request.user.is_staff:
                 if not request.user.attends.all() & session.classes.all():
                     return HttpResponseForbidden('Permission Denied')
-            if not assignment.active and not request.user.is_staff:
-                raise Http404()
         return view(request, course, session, assignment, *args, **kwargs)
     return wrapper
 
@@ -72,7 +72,7 @@ def needs_step(view):
 
         step.fullscreen = 'fullscreen' in request.GET
         step.completedstep = request.user.completed.filter(step=step).first()
-        step.given_answers = step.completedstep.answer.split('\x1e') if step.completedstep else []
+        step.given_values = step.completedstep.answer.split('\x1e') if step.completedstep else []
         step.right_values = [a.value for a in step.right_answers.all()]
         step.wrong_values = [a.value for a in step.wrong_answers.all()]
         step.graded = bool(step.right_values) and step.answer_required

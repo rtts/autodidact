@@ -1,23 +1,32 @@
 <table>
-  {% for answers_per_assignment in answers %}
-    {% if answers_per_assignment %}
+  {% for assignment in assignments %}
+    {% if assignment.active %}
       <tr>
         <td colspan="2">
-	  <h2>Assignment {{forloop.counter}}</h2>
+	  <h2>Assignment {{assignment.number}}</h2>
         </td>
       </tr>
+      {% if not assignment.progress %}
+        <tr>
+          <td colspan="2">
+            You have not yet started this assignment
+          </td>
+        </tr>
+      {% endif %}
     {% endif %}
-    {% for answer in answers_per_assignment %}
-      {% if answer %}
+    {% for step in assignment.steps.all %}
+      {% if step.answer_required and step.completedstep %}
         <tr>
           <td class="step">
-            <a href="{{session.get_absolute_url}}assignment/{{forloop.parentloop.counter}}/?step={{forloop.counter}}">Step {{forloop.counter}})</a>
+            <a href="{{step.get_absolute_url}}">Step {{step.number}})</a>
 	  </td>
 	  <td>
-	    {% if answer == "mispoes" %}
-	      <pre class="missing">Required answer is missing</pre>
+	    {% if step.given_values.0 %}
+              {% for answer in step.given_values %}
+	        <pre {% if not step.completedstep.passed %}class="missing"{% endif %}>{{answer}}</pre>
+              {% endfor %}
 	    {% else %}
-	      <pre>{{answer}}</pre>
+	      <pre class="missing">Required answer is missing</pre>
 	    {% endif %}
 	  </td>
         </tr>
