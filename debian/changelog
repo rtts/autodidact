@@ -1,4 +1,4 @@
-python3-django-autodidact (1.4.1~rc1) stable; urgency=medium
+python3-django-autodidact (1.4.1) stable; urgency=medium
 
   * Major code refactoring
   * Improved layout of the step progress monitor
@@ -7,7 +7,7 @@ python3-django-autodidact (1.4.1~rc1) stable; urgency=medium
   * Fix bug where staff members cannot be removed from class
   * Improved formatting of answers
 
- -- Jaap Joris Vens <jj@rtts.eu>  Tue, 08 Nov 2016 11:56:49 +0100
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 31 Jan 2017 16:02:35 +0100
 
 python3-django-autodidact (1.4.0) stable; urgency=medium
 
