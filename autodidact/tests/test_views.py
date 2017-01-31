@@ -208,7 +208,7 @@ class ProgressesViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_context_variables(self):
-        '''The progress() view supplies the context variables "course", "session", "current_class", "assignments", and "students". If a CSV file is requested, the template "autodidact/students.csv" is used.'''
+        '''The progresses() view supplies the context variables "course", "session", "current_class", "assignments", and "students".'''
 
         c = Client()
         c.login(username='teacher', password=password)
@@ -219,15 +219,6 @@ class ProgressesViewTest(TestCase):
         self.assertEqual(response.context['current_class'], self.klass)
         self.assertQuerysetEqual(response.context['students'], map(repr, self.klass.students.all()), ordered=False)
         self.assertQuerysetEqual(response.context['assignments'], map(repr, self.session.assignments.all()))
-
-        response = c.get(url, {'days': 1, 'filetype': 'csv'})
-        self.assertTemplateUsed(response, 'autodidact/students.csv')
-        with self.assertRaises(KeyError):
-            response.context['course']
-            response.context['session']
-            response.context['current_class']
-            response.context['assignments']
-        self.assertQuerysetEqual(response.context['students'], map(repr, self.klass.students.all()), ordered=False)
 
 class AssignmentViewTest(TestCase):
     def setUp(self):
