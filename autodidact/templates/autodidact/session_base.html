@@ -3,50 +3,50 @@
 {% load autodidact %}
 
 {% block navigation %}
-{% include 'autodidact/include/session_navigation.html' %}
+  {% include 'autodidact/include/session_navigation.html' %}
 {% endblock %}
 
 {% block content %}
 
-{% if session.registration_enabled %}
-{% include 'autodidact/include/registration.html' %}
-{% endif %}
-
-<section class="session description">
-  <h1>Session {{session.number}}: {{session.name}}</h1>
-  {% for presentation in session.presentations.all %}
-  {% if presentation.visibility == 1 and request.user.is_staff %}
-  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
-  {% elif presentation.visibility == 2 and current_class or request.user.is_staff %}
-  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
-  {% elif presentation.visibility == 3 %}
-  <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+  {% if session.registration_enabled %}
+    {% include 'autodidact/include/registration.html' %}
   {% endif %}
-  {% endfor %}
-  {{session.description|upload_urls:session}}
-</section>
 
-{% if user.is_staff and current_class %}
-<section class="session students">
-  <h1>Students in this class:</h1>
-  {% include 'autodidact/include/progresses.html' %}
-  Add students manually:<br>
-  <form method="POST" action="{% url 'add_student' course.slug session.number %}">
-    {% csrf_token %}
-    <input type="text" name="username" placeholder="Username" style="width: 7.5em">
-    <input type="submit" value="Add">
-  </form>
-</section>
+  <section class="session description">
+    <h1>Session {{session.number}}: {{session.name}}</h1>
+    {% for presentation in session.presentations.all %}
+      {% if presentation.visibility == 1 and request.user.is_staff %}
+        <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+      {% elif presentation.visibility == 2 and current_class or request.user.is_staff %}
+        <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+      {% elif presentation.visibility == 3 %}
+        <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
+      {% endif %}
+    {% endfor %}
+    {{session.description|upload_urls:session.get_absolute_url}}
+  </section>
 
-{% else %}
-<section class="session progress">
-  <h1>Your progress:</h1>
-  {% include 'autodidact/include/progress.html' %}
-</section>
-<section class="session answers">
-  <h1>Your answers:</h1>
-  {% include 'autodidact/include/answers.html' %}
-</section>
+  {% if user.is_staff and current_class %}
+    <section class="session students">
+      <h1>Students in this class:</h1>
+      {% include 'autodidact/include/progresses.html' %}
+      Add students manually:<br>
+      <form method="POST" action="{% url 'add_student' course.slug session.number %}">
+        {% csrf_token %}
+        <input type="text" name="username" placeholder="Username" style="width: 7.5em">
+        <input type="submit" value="Add">
+      </form>
+    </section>
 
-{% endif %}
+  {% else %}
+    <section class="session progress">
+      <h1>Your progress:</h1>
+      {% include 'autodidact/include/progress.html' %}
+    </section>
+    <section class="session answers">
+      <h1>Your answers:</h1>
+      {% include 'autodidact/include/answers.html' %}
+    </section>
+
+  {% endif %}
 {% endblock %}
