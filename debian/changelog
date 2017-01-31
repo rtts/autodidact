@@ -1,3 +1,9 @@
+python3-django-autodidact (1.4.2) stable; urgency=medium
+
+  * Fix failed test
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 31 Jan 2017 17:46:20 +0100
+
 python3-django-autodidact (1.4.1) stable; urgency=medium
 
   * Major code refactoring
