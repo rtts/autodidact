@@ -8,7 +8,7 @@ if sys.argv[-1] == 'test':
 
 setup(
     name = 'autodidact',
-    version = '1.4.2',
+    version = '1.4.3',
     url = 'https://github.com/JaapJoris/autodidact',
     author = 'Jaap Joris Vens',
     author_email = 'jj@rtts.eu',

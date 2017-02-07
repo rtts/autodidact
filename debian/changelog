@@ -1,3 +1,9 @@
+python3-django-autodidact (1.4.3) stable; urgency=medium
+
+  * Fix CSS issues in Internet Explorer
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Tue, 07 Feb 2017 17:11:05 +0100
+
 python3-django-autodidact (1.4.2) stable; urgency=medium
 
   * Fix failed test

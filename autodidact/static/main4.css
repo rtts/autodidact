@@ -18,46 +18,6 @@ a.button {
 small {
   font-weight: normal; }
 
-a.quiz {
-  color: white;
-  border-radius: 10px;
-  padding: 6px 12px;
-  background: #f45b3d;
-  text-decoration: none;
-  font-size: 1em;
-  display: inline-block;
-  margin-right: 10px; }
-
-div.correct {
-  color: #390;
-  font-size: 12px; }
-
-div.incorrect {
-  color: #f45b3d; }
-
-ul.answers {
-  margin: 0;
-  padding: 0;
-  display: inline-block;
-  padding-right: 15px;
-  max-width: 389px;
-  vertical-align: top;
-  border: 1px solid #ccc;
-  list-style: none;
-  text-align: left;
-  font-weight: normal; }
-  ul.answers li {
-    text-indent: -24px;
-    margin: 0;
-    margin-left: 24px;
-    padding: 0; }
-  ul.answers input {
-    vertical-align: top;
-    position: relative;
-    top: 2px; }
-  ul.answers input, ul.answers label {
-    cursor: pointer; }
-
 h1 {
   font-size: 1.5em; }
 
@@ -413,6 +373,11 @@ section.step table.wizard {
     text-align: right;
     font-weight: bold;
     height: 0; }
+    section.step table.wizard td.answer div.correct {
+      color: #390;
+      font-size: 12px; }
+    section.step table.wizard td.answer div.incorrect {
+      color: #f45b3d; }
     section.step table.wizard td.answer textarea {
       vertical-align: top;
       width: 100%;
@@ -420,6 +385,28 @@ section.step table.wizard {
       height: 70px;
       border: none;
       border: 1px solid #ccc; }
+    section.step table.wizard td.answer ul.answers {
+      margin: 0;
+      padding: 0;
+      display: inline-block;
+      padding-right: 15px;
+      max-width: 389px;
+      vertical-align: top;
+      border: 1px solid #ccc;
+      list-style: none;
+      text-align: left;
+      font-weight: normal; }
+      section.step table.wizard td.answer ul.answers li {
+        text-indent: -24px;
+        margin: 0;
+        margin-left: 24px;
+        padding: 0; }
+      section.step table.wizard td.answer ul.answers input {
+        vertical-align: top;
+        position: relative;
+        top: 2px; }
+      section.step table.wizard td.answer ul.answers input, section.step table.wizard td.answer ul.answers label {
+        cursor: pointer; }
 section.step div.step_clarifications {
   position: relative; }
   section.step div.step_clarifications div.clarification {
@@ -451,27 +438,23 @@ section.step div.step_footer {
     list-style: none;
     margin: -1px;
     padding: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-end;
     align-items: center; }
     section.step div.step_footer ul.progress li {
-      vertical-align: middle;
       height: 34px;
-      flex: 1 1 20px;
+      flex: 1 0 20px;
       margin: 1px;
-      text-align: center;
-      max-width: 50%; }
-    section.step div.step_footer ul.progress li:first-child {
+      text-align: center; }
+    section.step div.step_footer ul.progress li:first-child,
+    section.step div.step_footer ul.progress li:last-child {
+      flex: 2 0 80px;
+      max-width: 200px;
       text-align: left; }
     section.step div.step_footer ul.progress li:last-child {
       text-align: right; }
     section.step div.step_footer ul.progress input {
-      display: block;
       height: 100%;
       width: 100%;
       padding: 0;
@@ -480,7 +463,6 @@ section.step div.step_footer {
       background: none;
       cursor: pointer; }
     section.step div.step_footer ul.progress input.previous, section.step div.step_footer ul.progress input.next {
-      min-width: 100px;
       margin: 0; }
     section.step div.step_footer ul.progress input.previous {
       background: #e9e7e4;
@@ -507,101 +489,10 @@ section.step div.step_footer {
     section.step div.step_footer ul.progress input.passed {
       background: #dcf7dc; }
 
-/*
-  ul.progress {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    width:98%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    flex-wrap: wrap;
-
-    li {
-      margin: 0;
-      padding: 0;
-      display: block;
-      -webkit-box-flex: 1;
-      -moz-box-flex: 1;
-      -ms-flex: 1 1 0;
-      -webkit-flex: 1 1 0;
-      flex: 1 1 auto;
-      margin-bottom: 5px;
-    }
-
-    .step {
-      padding-left: $step_height;
-      display: block;
-      color: $darkblue;
-      text-decoration: none;
-      font-size: 12px;
-      font-weight: normal;
-      position: relative;
-      overflow: hide;
-      height: $step_height;
-      line-height: 1.8;
-    }
-
-    .step:after {
-      content: "";
-      display: block;
-      width: 0;
-      height: 0;
-      border-top: $step_height/2 solid transparent;
-      border-bottom: $step_height/2 solid transparent;
-      position: absolute;
-      top: 50%;
-      margin-top: -$step_height/2;
-      left: 100%;
-      z-index: 2;
-    }
-
-    .step:before {
-      content: " ";
-      display: block;
-      width: 0;
-      height: 0;
-      $shadow_width: 5px;
-      $shadow_height: $step_height + $shadow_width;
-      border-top: $shadow_height/2 solid transparent;
-      border-bottom: $shadow_height/2 solid transparent;
-      border-left: $shadow_height/2 solid white;
-      position: absolute;
-      top: 1.66*$shadow_width;
-      margin-top: -$shadow_width*2;
-      margin-left: 0px;
-      left: 100%;
-      z-index: 1;
-    }
-    .finished {
-      background: $finished_color;
-    }
-    .finished:after {
-      border-left: $step_height/2 solid $finished_color;
-    }
-
-    .current {
-      background: $current_color;
-    }
-    .current:after {
-      border-left: $step_height/2 solid $current_color;
-    }
-
-    .unfinished {
-      background: $unfinished_color;
-    }
-    .unfinished:after {
-      border-left: $step_height/2 solid $unfinished_color;
-    }
-  }
-*/
 main.fullscreen {
   display: flex;
-  display: -webkit-flex;
   text-align: center;
+  /* fallback in case flex is not supported */
   min-height: 100vh;
   align-items: center;
   justify-content: center;
