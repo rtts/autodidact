@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.forms import CheckboxSelectMultiple
+from .utils import duplicate_assignment
 from .models import *
 
 class FunkySaveAdmin(object):
@@ -116,6 +117,10 @@ class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display_links = ['name']
     list_filter = ['active', 'locked', 'session__course', 'session']
     inlines = [InlineStepAdmin]
+    actions = ['duplicate_assignment']
+
+    # Oh, the irony
+    duplicate_assignment = duplicate_assignment
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):

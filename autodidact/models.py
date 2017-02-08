@@ -123,7 +123,7 @@ class Session(NumberedModel):
 @python_2_unicode_compatible
 class Assignment(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
-    session = models.ForeignKey(Session, related_name="assignments")
+    session = models.ForeignKey(Session, related_name='assignments', help_text='You can move assignments between sessions by using this dropdown menu')
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')

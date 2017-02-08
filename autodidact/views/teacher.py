@@ -188,7 +188,7 @@ def endclass(request):
     return redirect(session)
 
 @staff_member_required
-@permission_required(['autodidact.add_assignment', 'autodidact.change_assignment'])
+@permission_required(['autodidact.add_assignment'])
 @needs_course
 @needs_session
 def add_assignment(request, course, session):
@@ -198,6 +198,20 @@ def add_assignment(request, course, session):
     '''
     assignment = Assignment(session=session)
     assignment.save()
+    return redirect(assignment)
+
+@staff_member_required
+@permission_required(['autodidact.add_assignment'])
+@needs_course
+@needs_session
+@needs_assignment
+def copy_assignment(request, course, session, assignment):
+    '''Duplicates an assignment and redirects to the assignment admin,
+    where users can optionally move the duplicated assignment to a
+    different session
+
+    '''
+    [assignment] = duplicate_assignment(None, None, [assignment])
     return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
 
 @staff_member_required

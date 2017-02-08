@@ -23,7 +23,7 @@
 
   {% endfor %}
 
-  {% if perms.autodidact.add_assignment %}
+  {% if user.is_staff and perms.autodidact.add_assignment %}
     <li>
       <div class='add'>
         <a class="editlink" href="{% url 'add_assignment' course.slug session.number %}">Add an assignment</a>

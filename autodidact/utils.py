@@ -45,6 +45,43 @@ def calculate_progress(user, assignments):
 
     return progresses
 
+def duplicate_assignment(modeladmin, request, queryset):
+    '''Duplicates an assignment including all underlying steps. Can be used as an admin action.'''
+
+    duplicated_assignments = []
+    for assignment in queryset:
+        steps = assignment.steps.all()
+        assignment.pk = None
+        assignment.active = False
+        assignment.name = (assignment.name + ' (duplicate)').lstrip()
+        assignment.number = None
+        assignment.save()
+        assignment.steps.all().delete() # this deletes the empty step
+
+        for step in steps:
+            right_answers = step.right_answers.all()
+            wrong_answers = step.wrong_answers.all()
+            clarifications = step.clarifications.all()
+            step.pk = None
+            step.assignment = assignment
+            step.save()
+
+            for right_answer in right_answers:
+                right_answer.pk = None
+                right_answer.save()
+
+            for wrong_answer in wrong_answers:
+                wrong_answer.pk = None
+                wrong_answer.save()
+
+            for clarification in clarifications:
+                clarification.pk = None
+                clarification.save()
+
+        duplicated_assignments.append(assignment)
+    return duplicated_assignments
+duplicate_assignment.short_description = 'Duplicate the selected assignments'
+
 def random_string(length):
     '''Generates a random string of human friendly characters
 
