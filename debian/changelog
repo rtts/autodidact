@@ -1,3 +1,12 @@
+python3-django-autodidact (1.4.5) stable; urgency=medium
+
+  * Users can change order of programmes
+  * All "active" fields now default to false
+  * Presentations can be made completely invisible
+  * Easier way to add new sessions
+
+ -- Jaap Joris Vens <jj@rtts.eu>  Wed, 08 Mar 2017 19:33:24 +0100
+
 python3-django-autodidact (1.4.4) stable; urgency=medium
 
   * Provide a way to duplicate assignments

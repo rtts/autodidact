@@ -43,11 +43,15 @@ class Tag(models.Model):
         ordering = ['name']
 
 @python_2_unicode_compatible
-class Programme(models.Model):
+class Programme(NumberedModel):
+    order = models.PositiveIntegerField(blank=True)
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['order']
 
 def week_later():
     return timezone.now() + timedelta(days=7)
@@ -59,7 +63,7 @@ class Course(NumberedModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = PandocField(blank=True)
-    active = models.BooleanField(default=True, help_text='Inactive courses are not visible to students')
+    active = models.BooleanField(default=False, help_text='Inactive courses are not visible to students')
     tags = GenericRelation(Tag)
 
     def __str__(self):
@@ -105,7 +109,7 @@ class Session(NumberedModel):
     name = models.CharField(max_length=255, blank=True)
     description = PandocField(blank=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
-    active = models.BooleanField(default=True, help_text='Inactive sessions are not visible to students')
+    active = models.BooleanField(default=False, help_text='Inactive sessions are not visible to students')
     tags = GenericRelation(Tag)
 
     def __str__(self):
@@ -126,7 +130,7 @@ class Assignment(NumberedModel):
     session = models.ForeignKey(Session, related_name='assignments', help_text='You can move assignments between sessions by using this dropdown menu')
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
-    locked = models.BooleanField(default=True, help_text='Locked assignments can only be made by students in class')
+    locked = models.BooleanField(default=False, help_text='Locked assignments can only be made by students in class')
     tags = GenericRelation(Tag)
 
     def __str__(self):
@@ -209,62 +213,6 @@ class CompletedStep(models.Model):
     class Meta:
         verbose_name_plural = 'completed steps'
 
-# @python_2_unicode_compatible
-# class Quiz(NumberedModel):
-#     number = models.PositiveIntegerField(blank=True)
-#     course = models.ForeignKey(Course, related_name="quizzes")
-
-#     def __str__(self):
-#         return 'Quiz for {} (alternative {})'.format(self.course.colloquial_name(), self.number)
-
-#     def nr_of_questions(self):
-#         return self.questions.count()
-
-#     def number_with_respect_to(self):
-#         return self.course.quizzes.all()
-
-#     def save(self, *args, **kwargs):
-#         super(Quiz, self).save(*args, **kwargs)
-
-#         # Ensure at least one question
-#         if not self.questions.first():
-#             Question(quiz=self).save()
-
-#     class Meta:
-#         verbose_name_plural = 'quizzes'
-#         ordering = ['number']
-
-# @python_2_unicode_compatible
-# class Question(NumberedModel):
-#     number = models.PositiveIntegerField(blank=True)
-#     quiz = models.ForeignKey(Quiz, related_name='questions')
-#     description = PandocField(blank=True)
-#     multiple_answers_allowed = models.BooleanField(default=False)
-
-#     def __str__(self):
-#         return 'Question {}'.format(self.number)
-
-#     def number_with_respect_to(self):
-#         return self.quiz.questions.all()
-
-#     class Meta:
-#         verbose_name = 'quiz question'
-#         ordering = ['number']
-
-
-
-# @python_2_unicode_compatible
-# class CompletedQuiz(models.Model):
-#     quiz = models.ForeignKey(Quiz, related_name='completed_quizzes')
-#     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed_quizzes')
-#     date = models.DateTimeField(auto_now_add=True)
-
-#     def __str__(self):
-#         return '%s has completed %s' % (self.whom.username, str(self.quiz))
-
-#     class Meta:
-#         verbose_name_plural = 'completed quizzes'
-
 @python_2_unicode_compatible
 class Class(models.Model):
     session = models.ForeignKey(Session, related_name='classes')
@@ -283,23 +231,6 @@ class Class(models.Model):
 
     class Meta:
         verbose_name_plural = 'classes'
-
-# def course_path(obj, filename):
-#     return os.path.join(obj.quiz.course.get_absolute_url()[1:], clean(filename))
-
-# @python_2_unicode_compatible
-# class QuizFile(models.Model):
-#     quiz = models.ForeignKey(Quiz, related_name='files')
-#     file = models.FileField(upload_to=course_path)
-
-#     def __str__(self):
-#         return os.path.basename(str(self.file))
-
-#     def url(self):
-#         return self.file.url
-
-#     class Meta:
-#         ordering = ['file']
 
 def session_path(obj, filename):
     return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))
@@ -323,6 +254,7 @@ class Presentation(models.Model):
     session = models.ForeignKey(Session, related_name='presentations')
     file = models.FileField(upload_to=session_path)
     visibility = models.IntegerField(choices=(
+        (0, 'Invisible'),
         (1, 'Only visible to teacher'),
         (2, 'Visible to students in class'),
         (3, 'Visible to everyone'),

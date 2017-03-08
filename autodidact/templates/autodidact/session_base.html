@@ -15,7 +15,8 @@
   <section class="session description">
     <h1>Session {{session.number}}: {{session.name}}</h1>
     {% for presentation in session.presentations.all %}
-      {% if presentation.visibility == 1 and request.user.is_staff %}
+      {% if presentation.visibility == 0 %}
+      {% elif presentation.visibility == 1 and request.user.is_staff %}
         <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
       {% elif presentation.visibility == 2 and current_class or request.user.is_staff %}
         <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>

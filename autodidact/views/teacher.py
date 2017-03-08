@@ -188,6 +188,18 @@ def endclass(request):
     return redirect(session)
 
 @staff_member_required
+@permission_required(['autodidact.add_session'])
+@needs_course
+def add_session(request, course):
+    '''This allows teachers to add new sessions, without being bothered
+    to choose a course when using the regular admin:add view
+
+    '''
+    session = Session(course=course, active=False)
+    session.save()
+    return redirect(session)
+
+@staff_member_required
 @permission_required(['autodidact.add_assignment'])
 @needs_course
 @needs_session

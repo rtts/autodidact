@@ -60,7 +60,7 @@ class InlineClarificationAdmin(admin.StackedInline):
 
 @admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
-    pass
+    list_display = ['order', 'name']
 
 @admin.register(Page)
 class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
