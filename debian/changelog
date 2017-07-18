@@ -1,3 +1,9 @@
+python3-django-autodidact (1.4.6) UNRELEASED; urgency=medium
+
+  * Trigger updates in dependent packages whenever we are updated.
+
+ -- Wessel Dankers <wsl@uvt.nl>  Fri, 10 Mar 2017 15:10:38 +0100
+
 python3-django-autodidact (1.4.5) stable; urgency=medium
 
   * Users can change order of programmes
