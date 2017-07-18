@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Best Practices in Statistics - Tilburg University{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'main4.css' %}"/>
+    <link rel="stylesheet" href="{% static 'main5.css' %}"/>
     <link rel="stylesheet" href="{% static 'uvt.css' %}"/>
     {% block extrahead %}{% endblock %}
   </head>
@@ -22,7 +22,8 @@
             <a href="{% url 'logout' %}">Log out</a>
             {% if user.is_staff %}
               <br>
-              <span class="staff">You are a staff member</span>
+              <span class="staff">You are a staff member</span><br>
+              <a class="editlink" href="{% url 'manage' %}">Management console</a>
             {% endif %}
           </div>
         {% endif %}

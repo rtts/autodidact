@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block navigation %}
+  <ul>
+    <li class="visitedPage"><a href="/">Home</a></li>
+    <li class="visitedPage"><a href="{% url 'manage' %}">Management console</a></li>
+    <li class="currentPage"><a href="">Look up student</a></li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+  <section>
+    <h1>Look up student</h1>
+
+    <p>
+      Please fill out one or more of the following fields.
+    </p>
+
+    <form action="" method="POST" class="management">
+      {% csrf_token %}
+      {{form.as_p}}
+      <input type="submit" value="Search">
+    </form>
+  </section>
+{% endblock %}

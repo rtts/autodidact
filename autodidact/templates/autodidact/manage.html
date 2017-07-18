@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block navigation %}
+  <ul>
+    <li class="visitedPage"><a href="/">Home</a></li>
+    <li class="currentPage"><a href="{% url 'manage' %}">Management console</a></li>
+    <li class="futurePage"><a href="{% url 'manage_student' %}">Look up student</a></li>
+    <li class="futurePage"><a href="{% url 'manage_employee' %}">Add staff member</a></li>
+    <li class="futurePage"><a href="">Create a new course</a></li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+<section>
+  <h1>Management console</h1>
+  <p>
+    Welcome to the exclusive staff member-only area! Here you can perform all kinds of administrative tasks, such as look up students, add other staff members, and manage courses. Please choose one of the options from the menu on the left. The goal is to centralize all management related stuff on this page, so if you have a request for a management feature please send an email to <a href="mailto:J.J.Vens@uvt.nl">J.J.Vens@uvt.nl</a>
+</section>
+{% endblock %}

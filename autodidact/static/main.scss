@@ -698,3 +698,10 @@ main.fullscreen {
     position: relative;
   }
 }
+
+form.management {
+  label {
+    display: inline-block;
+    width: 120px;
+  }
+}
