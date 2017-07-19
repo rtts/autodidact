@@ -704,4 +704,10 @@ form.management {
     display: inline-block;
     width: 120px;
   }
+  ul#id_groups {
+    list-style: none;
+    label {
+      width: auto;
+    }
+  }
 }

@@ -510,5 +510,9 @@ main.fullscreen {
 form.management label {
   display: inline-block;
   width: 120px; }
+form.management ul#id_groups {
+  list-style: none; }
+  form.management ul#id_groups label {
+    width: auto; }
 
 /*# sourceMappingURL=main5.css.map */
