@@ -14,7 +14,6 @@ from .utils import clean
 
 TICKET_LENGTH = 4
 
-@python_2_unicode_compatible
 class Page(models.Model):
     slug = models.SlugField(blank=True, unique=True, help_text='Leave this field blank for the homepage')
     title = models.CharField(max_length=255, blank=True)
@@ -29,7 +28,19 @@ class Page(models.Model):
         else:
             return reverse('homepage')
 
-@python_2_unicode_compatible
+class PageFile(models.Model):
+    def path(self, filename):
+        return os.path.join(self.page.get_absolute_url()[1:], clean(filename))
+
+    page = models.ForeignKey(Page, related_name='files')
+    file = models.FileField(upload_to=path)
+
+    def __str__(self):
+        return os.path.basename(str(self.file))
+
+    class Meta:
+        ordering = ['file']
+
 class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
     content_type = models.ForeignKey(ContentType)
@@ -42,7 +53,6 @@ class Tag(models.Model):
     class Meta:
         ordering = ['name']
 
-@python_2_unicode_compatible
 class Programme(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
     name = models.CharField(max_length=255)
@@ -56,7 +66,6 @@ class Programme(NumberedModel):
 def week_later():
     return timezone.now() + timedelta(days=7)
 
-@python_2_unicode_compatible
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
     programmes = models.ManyToManyField(Programme, related_name='courses')
@@ -82,7 +91,6 @@ class Course(NumberedModel):
     class Meta:
         ordering = ['order']
 
-@python_2_unicode_compatible
 class Topic(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     course = models.ForeignKey(Course, related_name="topics")
@@ -102,7 +110,6 @@ class Topic(NumberedModel):
     class Meta:
         ordering = ['number']
 
-@python_2_unicode_compatible
 class Session(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     course = models.ForeignKey(Course, related_name="sessions")
@@ -124,7 +131,6 @@ class Session(NumberedModel):
     class Meta:
         ordering = ['number']
 
-@python_2_unicode_compatible
 class Assignment(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     session = models.ForeignKey(Session, related_name='assignments', help_text='You can move assignments between sessions by using this dropdown menu')
@@ -155,7 +161,6 @@ class Assignment(NumberedModel):
     class Meta:
         ordering = ['number']
 
-@python_2_unicode_compatible
 class Step(NumberedModel):
     number = models.PositiveIntegerField(blank=True)
     assignment = models.ForeignKey(Assignment, related_name='steps')
@@ -183,7 +188,6 @@ class Step(NumberedModel):
     class Meta:
         ordering = ['number']
 
-@python_2_unicode_compatible
 class RightAnswer(models.Model):
     step = models.ForeignKey(Step, related_name='right_answers')
     value = models.CharField(max_length=255, help_text='This value can either be a case-insensitive string or a numeric value. For numeric values you can use the <a target="_blank" href="https://docs.moodle.org/23/en/GIFT_format">GIFT notation</a> of "answer:tolerance" or "low..high".')
@@ -191,7 +195,6 @@ class RightAnswer(models.Model):
     def __str__(self):
         return 'Right answer for {}'.format(self.step)
 
-@python_2_unicode_compatible
 class WrongAnswer(models.Model):
     step = models.ForeignKey(Step, related_name='wrong_answers')
     value = models.CharField(max_length=255, help_text='Supplying one or more wrong answers will turn this into a multiple choice question.')
@@ -199,7 +202,6 @@ class WrongAnswer(models.Model):
     def __str__(self):
         return 'Wrong answer for {}'.format(self.step)
 
-@python_2_unicode_compatible
 class CompletedStep(models.Model):
     step = models.ForeignKey(Step, related_name='completed')
     whom = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='completed')
@@ -213,7 +215,6 @@ class CompletedStep(models.Model):
     class Meta:
         verbose_name_plural = 'completed steps'
 
-@python_2_unicode_compatible
 class Class(models.Model):
     session = models.ForeignKey(Session, related_name='classes')
     number = models.CharField(max_length=16)
@@ -232,13 +233,12 @@ class Class(models.Model):
     class Meta:
         verbose_name_plural = 'classes'
 
-def session_path(obj, filename):
-    return os.path.join(obj.session.get_absolute_url()[1:], clean(filename))
-
-@python_2_unicode_compatible
 class Download(models.Model):
+    def path(self, filename):
+        return os.path.join(self.session.get_absolute_url()[1:], clean(filename))
+
     session = models.ForeignKey(Session, related_name='downloads')
-    file = models.FileField(upload_to=session_path)
+    file = models.FileField(upload_to=path)
 
     def __str__(self):
         return os.path.basename(str(self.file))
@@ -249,10 +249,12 @@ class Download(models.Model):
     class Meta:
         ordering = ['file']
 
-@python_2_unicode_compatible
 class Presentation(models.Model):
+    def path(self, filename):
+        return os.path.join(self.session.get_absolute_url()[1:], clean(filename))
+
     session = models.ForeignKey(Session, related_name='presentations')
-    file = models.FileField(upload_to=session_path)
+    file = models.FileField(upload_to=path)
     visibility = models.IntegerField(choices=(
         (0, 'Invisible'),
         (1, 'Only visible to teacher'),
@@ -269,15 +271,14 @@ class Presentation(models.Model):
     class Meta:
         ordering = ['file']
 
-def image_path(obj, filename):
-    return os.path.join(obj.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
-
-@python_2_unicode_compatible
 class Clarification(NumberedModel):
+    def path(self, filename):
+        return os.path.join(self.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
+
     number = models.PositiveIntegerField(blank=True)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = PandocField(blank=True)
-    image = models.ImageField(upload_to=image_path, blank=True)
+    image = models.ImageField(upload_to=path, blank=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
@@ -287,3 +288,16 @@ class Clarification(NumberedModel):
 
     class Meta:
         ordering = ['number']
+
+class StepFile(models.Model):
+    def path(self, filename):
+        return os.path.join(self.step.assignment.get_absolute_url()[1:], clean(filename))
+
+    step = models.ForeignKey(Step, related_name='files')
+    file = models.FileField(upload_to=path)
+
+    def __str__(self):
+        return os.path.basename(str(self.file))
+
+    class Meta:
+        ordering = ['file']

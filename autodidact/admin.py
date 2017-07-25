@@ -26,6 +26,14 @@ class FunkySaveAdmin(object):
 
     save_on_top = True
 
+class InlinePageFileAdmin(admin.StackedInline):
+    model = PageFile
+    extra = 0
+
+class InlineStepFileAdmin(admin.StackedInline):
+    model = StepFile
+    extra = 0
+
 class InlineTopicAdmin(admin.StackedInline):
     model = Topic
     extra = 0
@@ -66,6 +74,7 @@ class ProgrammeAdmin(admin.ModelAdmin):
 class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display = ['name', 'title']
     save_on_top = False
+    inlines = [InlinePageFileAdmin]
     def name(self, page):
         return page.slug if page.slug else 'homepage'
 
@@ -129,7 +138,7 @@ class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     ordering = ['assignment__session__course__order', 'assignment__session__number', 'assignment__number', 'number']
     list_display = ['__str__', 'assignment', 'get_description', 'answer_required']
     list_filter = ['assignment__session', 'assignment']
-    inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin, InlineClarificationAdmin]
+    inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin, InlineClarificationAdmin, InlineStepFileAdmin]
     exclude = ['assignment']
 
     def get_description(self, obj):
