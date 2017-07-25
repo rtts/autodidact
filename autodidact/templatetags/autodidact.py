@@ -28,13 +28,22 @@ def autodidact_editor(context):
     return context
 
 @register.filter()
-def upload_urls(string, url):
-    '''Replaces filenames between [brackets] with a Markdown hyperlink to the correct uploads directory'''
+def upload_urls(string, path):
+    '''Replaces filenames between [[square brackets]] with a hyperlink'''
+    return substitute(string, path, r'\[\[(?P<filename>[^\]]+)\]\]', '<a download href="{url}">{filename}</a>')
+
+@register.filter()
+def insert_images(string, path):
+    '''Replaces filenames between {{curly brackets}} with an HTML <img> tag'''
+    return substitute(string, path, r'\{\{(?P<filename>[^\}]+)\}\}', '<img src="{url}" alt="{filename}">')
+
+def substitute(string, path, regexp, subst):
+    '''Searches the string for the filename as formatted in the regular expression. Substitutes it with `subst`.'''
 
     # Some people, when confronted with a problem, think "I know,
     # I'll use regular expressions."  Now they have two problems.
     # -- Jamie Zawinski
-    pattern = re.compile(r'\[\[(?P<filename>[^\]]+)\]\]')
+    pattern = re.compile(regexp)
 
     # Convert possible model instance to string
     string = str(string)
@@ -43,8 +52,8 @@ def upload_urls(string, url):
         match = pattern.search(string)
         if match:
             filename = match.group('filename')
-            url = settings.MEDIA_URL + url[1:] + filename
-            html = '<a download href="{url}">{filename}</a>'.format(
+            url = settings.MEDIA_URL + path[1:] + filename
+            html = subst.format(
                 filename = filename,
                 url = url,
             )
