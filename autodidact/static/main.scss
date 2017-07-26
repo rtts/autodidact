@@ -637,6 +637,7 @@ section.step {
       }
 
       input {
+        font-size: 1em;
         height: 100%;
         width: 100%;
         padding: 0;
@@ -669,6 +670,7 @@ section.step {
       }
       input.step {
         background: $step_color;
+        color: black;
       }
       input.current {
         background: none;

@@ -458,6 +458,7 @@ section.step div.step_footer {
     section.step div.step_footer ul.progress li:last-child {
       text-align: right; }
     section.step div.step_footer ul.progress input {
+      font-size: 1em;
       height: 100%;
       width: 100%;
       padding: 0;
@@ -483,7 +484,8 @@ section.step div.step_footer {
       font-weight: bold;
       padding-right: 10px; }
     section.step div.step_footer ul.progress input.step {
-      background: #f4f3f1; }
+      background: #f4f3f1;
+      color: black; }
     section.step div.step_footer ul.progress input.current {
       background: none;
       cursor: default;
