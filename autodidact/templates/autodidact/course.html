@@ -1,4 +1,9 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block extrahead %}
+  <script src="{% static 'mathjax/MathJax.js' %}?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
 
 {% block navigation %}
 {% include 'autodidact/include/course_navigation.html' %}

@@ -10,7 +10,7 @@ Build-Depends: debhelper (>= 7), apache2-dev, python3, dh-python, python3-setupt
         python3-xlsxwriter,
 	python3-django,
 	python3-django-cleanup,
-        python3-django-pandocfield (>= 0.2.4),
+        python3-django-pandocfield (>= 0.2.5),
         python3-django-numberedmodel (>= 0.1),
 Standards-Version: 3.9.7
 

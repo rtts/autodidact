@@ -1,5 +1,10 @@
 {% extends 'base.html' %}
 {% load autodidact %}
+{% load static %}
+
+{% block extrahead %}
+  <script src="{% static 'mathjax/MathJax.js' %}?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
 
 {% block navigation %}
   {% if not page.slug %}

@@ -2,6 +2,10 @@
 {% load static %}
 {% load autodidact %}
 
+{% block extrahead %}
+  <script src="{% static 'mathjax/MathJax.js' %}?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
+
 {% block navigation %}
   {% include 'autodidact/include/session_navigation.html' %}
 {% endblock %}

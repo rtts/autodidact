@@ -1,4 +1,9 @@
 {% extends 'fullscreen.html' %}
+{% load static %}
+
+{% block extrahead %}
+  <script src="{% static 'mathjax/MathJax.js' %}?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
 
 {% block content %}
   {% include 'autodidact/include/step.html' with fullscreen=True %}

@@ -33,6 +33,10 @@ a.button {
   font-size: 1.15em;
 }
 
+input, select {
+  font-size: 1em;
+}
+
 small {
   font-weight: normal;
 }
@@ -637,7 +641,6 @@ section.step {
       }
 
       input {
-        font-size: 1em;
         height: 100%;
         width: 100%;
         padding: 0;
