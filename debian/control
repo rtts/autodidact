@@ -16,7 +16,7 @@ Standards-Version: 3.9.7
 
 Package: python3-django-autodidact
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, makepasswd,
+Depends: ${python3:Depends}, ${misc:Depends}, libjs-jquery, libjs-mathjax, makepasswd,
 	python3-six,
 	python3-markdown,
 	python3-pil,
