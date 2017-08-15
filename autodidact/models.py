@@ -60,6 +60,9 @@ class Programme(NumberedModel):
     def __str__(self):
         return self.name
 
+    def has_active_courses(self):
+        return self.courses.filter(active=True).exists()
+
     class Meta:
         ordering = ['order']
 
