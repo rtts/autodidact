@@ -25,6 +25,9 @@
 {% if edit_type == 'assignment' %}
   {% if request.user.is_staff and perms.autodidact.change_step %}
     <a class="editlink" href="{% url 'admin:autodidact_step_change' step.pk %}">Edit this step</a>
+    {% if perms.autodidact.delete_step %}
+      - <a class="editlink" href="{% url 'delete_step' course.slug session.number assignment.number %}?step={{step.number}}" onclick="return window.confirm('Are you sure?')">Delete this step</a>
+    {% endif %}
     {% if perms.autodidact.add_step %}
       - <a class="editlink" href="{% url 'add_step' course.slug session.number assignment.number %}">Add new step</a>
     {% endif %}

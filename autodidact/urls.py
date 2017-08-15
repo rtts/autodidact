@@ -24,4 +24,5 @@ urlpatterns = [
     url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/duplicate/$', copy_assignment, name='copy_assignment'),
 #    url(r'^([^/]+)/quiz/$', quiz, name='quiz'),
     url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/add_step/$', add_step, name='add_step'),
+    url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/delete_step/$', delete_step, name='delete_step'),
 ]

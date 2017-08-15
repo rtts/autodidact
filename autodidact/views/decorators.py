@@ -66,7 +66,14 @@ def needs_step(view):
         try:
             step = assignment.steps.filter(number=request.GET.get('step')).first()
             if step is None:
+
+                # Not sure if this is the right place, but let's
+                # ensure that an assignment has at least one step
+                if not assignment.steps.exists():
+                    Step(assignment=assignment).save()
+
                 return redirect(assignment.steps.first())
+
         except ValueError:
             return HttpResponseBadRequest('Invalid step number')
 

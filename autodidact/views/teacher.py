@@ -239,3 +239,21 @@ def add_step(request, course, session, assignment):
     step = Step(assignment=assignment)
     step.save()
     return HttpResponseRedirect(reverse('admin:autodidact_step_change', args=[step.pk]))
+
+@staff_member_required
+@permission_required(['autodidact.delete_step', 'autodidact.change_step'])
+@needs_course
+@needs_session
+@needs_assignment
+@needs_step
+def delete_step(request, course, session, assignment, step):
+    '''Delete a step and reorders the remaining ones
+
+    '''
+    step.delete()
+    try:
+        assignment.steps.first().save()
+    except AttributeError:
+        pass
+
+    return HttpResponseRedirect(reverse('assignment', args=[course.slug, session.number, assignment.number]))
