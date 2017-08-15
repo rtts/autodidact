@@ -52,6 +52,13 @@
             {% endif %}
 	  </td>
         </tr>
+        {% if step.graded and user.is_staff %}
+          <tr>
+            <td align="right">
+              <small><i>(the correct answer is: {% for a in step.right_values %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %})</i></small>
+            </td>
+          </tr>
+        {% endif %}
       {% endif %}
     </table>
 
