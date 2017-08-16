@@ -1,8 +1,18 @@
-python3-django-autodidact (1.4.6) UNRELEASED; urgency=medium
+python3-django-autodidact (1.4.6~rc1) stable; urgency=medium
 
+  [ Wessel Dankers ]
   * Trigger updates in dependent packages whenever we are updated.
 
- -- Wessel Dankers <wsl@uvt.nl>  Fri, 10 Mar 2017 15:10:38 +0100
+  [ Jaap Joris Vens ]
+  * Show correct answers to teachers
+  * Button to delete steps
+  * Hide empty programmes for students
+  * Explicitly include MathJax since the latest version of PandocField removed the CDN
+  * Fix input foreground color in dark-themed Firefox
+  * Added possibility to add files to steps and pages, and a template tags to display them as images
+  * Fixed long-standing bug in template tag
+
+ -- Jaap Joris Vens <jj@telos.rtts.eu>  Wed, 16 Aug 2017 14:59:09 +0200
 
 python3-django-autodidact (1.4.5) stable; urgency=medium
 
