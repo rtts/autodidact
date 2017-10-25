@@ -73,7 +73,7 @@ Configuration
             'django.contrib.auth.context_processors.auth',
             'django.contrib.messages.context_processors.messages',
         ]
-    
+
     (Or, in newer Django versions using the [TEMPLATES](https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-TEMPLATES) setting)
 
 4. Run the database migrations and create the first Django user if you haven't already:
@@ -82,5 +82,5 @@ Configuration
         $ ./manage.py createsuperuser
 
 5. You're all set! Start the development server (`./manage.py runserver`) and visit
-[http://localhost:8000/](http://localhost:8000/). In the admin you can add Programmes, Courses, Sessions, Assignments, and Steps. Have fun! If you have any questions or bug reports, feel free to
+[http://localhost:8000/](http://localhost:8000/). In the admin you can add Programs, Courses, Sessions, Assignments, and Steps. Have fun! If you have any questions or bug reports, feel free to
 contact the author or submit a Github issue.

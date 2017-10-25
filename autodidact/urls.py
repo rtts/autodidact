@@ -10,10 +10,10 @@ urlpatterns = [
     url(r'^settings/$', user_settings, name='settings'),
     url(r'^$', homepage, name='homepage'),
     url(r'^doc/$', documentation, name='documentation'),
-    url(r'^doc/([^/]+)/$', documentation),
+    url(r'^doc/([^/]+)/$', documentation, name='documentation'),
     url(r'^startclass/$', startclass, name='startclass'),
     url(r'^endclass/$', endclass, name='endclass'),
-    url(r'^([^/]+)_courses/$', programme, name='programme'),
+    url(r'^([^/]+)_courses/$', program, name='program'),
 
     url(r'^([^/]+)/$', course, name='course'),
     url(r'^([^/]+)/duplicate/$', copy_course, name='copy_course'),

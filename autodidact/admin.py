@@ -71,8 +71,8 @@ class InlineClarificationAdmin(admin.StackedInline):
 class TagAdmin(admin.ModelAdmin):
     pass
 
-@admin.register(Programme)
-class ProgrammeAdmin(admin.ModelAdmin):
+@admin.register(Program)
+class ProgramAdmin(admin.ModelAdmin):
     list_display = ['order', 'name', 'slug', 'degree']
     list_display_links = ['name']
     ordering = ['degree', 'order']
@@ -80,11 +80,9 @@ class ProgrammeAdmin(admin.ModelAdmin):
 
 @admin.register(Page)
 class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    list_display = ['name', 'title']
+    list_display = ['title', 'slug']
     save_on_top = False
     inlines = [InlinePageFileAdmin]
-    def name(self, page):
-        return page.slug if page.slug else 'homepage'
 
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):

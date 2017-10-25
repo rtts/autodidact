@@ -9,14 +9,13 @@ python3-django-autodidact (1.4.6~rc1) stable; urgency=medium
   * True hierarchical relation between Programs, Courses, Sessions, and Assignments
   * Updated all dependencies
   * New "Print this session" feature
-  * Sub-divided study programmes according to degree
+  * Sub-divided study programs according to degree
   * Added tags to sessions
   * General features menu at top of page
   * Modified pages model to be suited for documentation
-  * Automatically remember students' study programme
   * Show correct answers to teachers
   * Button to delete steps
-  * Hide empty programmes for students
+  * Hide empty programs for students
   * Explicitly include MathJax since the latest version of PandocField removed the CDN
   * Fix input foreground color in dark-themed Firefox
   * Added possibility to add files to steps and pages, and a template tags to display them as images

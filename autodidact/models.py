@@ -15,8 +15,8 @@ from .utils import clean
 TICKET_LENGTH = 4
 
 class Page(models.Model):
-    slug = models.SlugField(blank=True, unique=True, help_text='Leave this field blank for the homepage')
-    title = models.CharField(max_length=255, blank=True)
+    slug = models.SlugField(blank=True, unique=True)
+    title = models.CharField(max_length=255, null=True)
     content = PandocField(blank=True)
 
     def __str__(self):
@@ -24,9 +24,9 @@ class Page(models.Model):
 
     def get_absolute_url(self):
         if self.slug:
-            return reverse('page', args=[self.slug])
+            return reverse('documentation', args=[self.slug])
         else:
-            return reverse('homepage')
+            return reverse('documentation')
 
 class PageFile(models.Model):
     page = models.ForeignKey(Page, related_name='files')
@@ -47,7 +47,7 @@ class Tag(models.Model):
     class Meta:
         ordering = ['name']
 
-class Programme(NumberedModel):
+class Program(NumberedModel):
     DEGREES = [
         (10, 'Bachelor'),
         (20, 'Pre-master'),
@@ -73,7 +73,7 @@ class Programme(NumberedModel):
 
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
-    program = models.ForeignKey(Programme, related_name='courses')
+    program = models.ForeignKey(Program, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = PandocField(blank=True)

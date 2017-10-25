@@ -16,29 +16,20 @@ def user_settings(request):
 @login_required
 def homepage(request):
     '''Serves the homepage'''
-
-    if hasattr(request.user, 'uvt_user'):
-        red = request.GET.get('redirect')
-        if red != 'no' and request.user.uvt_user.programme:
-            return redirect('programme', request.user.uvt_user.programme.slug)
-
-    bachelor_programmes = Programme.objects.filter(degree=10)
-    premaster_programmes = Programme.objects.filter(degree=20)
-    master_programmes = Programme.objects.filter(degree=30)
+    bachelor_programs = Program.objects.filter(degree=10)
+    premaster_programs = Program.objects.filter(degree=20)
+    master_programs = Program.objects.filter(degree=30)
     return render(request, 'autodidact/homepage.html', {
-        'bachelor_programmes': bachelor_programmes,
-        'premaster_programmes': premaster_programmes,
-        'master_programmes': master_programmes,
+        'bachelor_programs': bachelor_programs,
+        'premaster_programs': premaster_programs,
+        'master_programs': master_programs,
     })
 
 @login_required
-def programme(request, slug):
-    programme = get_object_or_404(Programme, slug=slug)
-    if hasattr(request.user, 'uvt_user'):
-        request.user.uvt_user.programme = programme
-        request.user.uvt_user.save()
-    return render(request, 'autodidact/programme.html', {
-        'programme': programme,
+def program(request, slug):
+    program = get_object_or_404(Program, slug=slug)
+    return render(request, 'autodidact/program.html', {
+        'program': program,
     })
 
 @login_required
@@ -95,7 +86,7 @@ def session(request, course, session):
                 s.progress = calculate_progress(s, assignments)
 
     return render(request, 'autodidact/session_base.html', {
-        'programme': programme,
+        'program': program,
         'course': course,
         'session': session,
         'assignments': assignments,

@@ -1,16 +1,16 @@
 <ul>
-  {% for programme in programmes %}
-    {% if user.is_staff or programme.has_active_courses %}
-      <li class="heading">{{programme.name}} courses:</li>
+  {% for program in programs %}
+    {% if user.is_staff or program.has_active_courses %}
+      <li class="heading">{{program.name}} courses:</li>
     {% endif %}
-    {% for course in programme.courses.all %}
+    {% for course in program.courses.all %}
       {% if course.active %}
         <li class="futurePage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
       {% elif user.is_staff %}
         <li class="futurePage inactive"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
       {% endif %}
     {% empty %}
-      <li class="empty">No {{programme.name}} courses available</li>
+      <li class="empty">No {{program.name}} courses available</li>
     {% endfor %}
     <li class="spacer"/>
   {% empty %}

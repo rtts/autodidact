@@ -3,29 +3,29 @@
 
 {% block navigation %}
   <ul>
-    {% if bachelor_programmes %}
+    {% if bachelor_programs %}
       <li class="heading">Bachelor programs:</li>
-      {% for programme in bachelor_programmes %}
-        {% if user.is_staff or programme.has_active_courses %}
-          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+      {% for program in bachelor_programs %}
+        {% if user.is_staff or program.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'program' program.slug %}">{{program.name}}</a></li>
         {% endif %}
       {% endfor %}
       <li class="spacer"></li>
     {% endif %}
-    {% if premaster_programmes %}
+    {% if premaster_programs %}
       <li class="heading">Pre-master programs:</li>
-      {% for programme in premaster_programmes %}
-        {% if user.is_staff or programme.has_active_courses %}
-          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+      {% for program in premaster_programs %}
+        {% if user.is_staff or program.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'program' program.slug %}">{{program.name}}</a></li>
         {% endif %}
       {% endfor %}
       <li class="spacer"></li>
     {% endif %}
-    {% if master_programmes %}
+    {% if master_programs %}
       <li class="heading">Master programs:</li>
-      {% for programme in master_programmes %}
-        {% if user.is_staff or programme.has_active_courses %}
-          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+      {% for program in master_programs %}
+        {% if user.is_staff or program.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'program' program.slug %}">{{program.name}}</a></li>
         {% endif %}
       {% endfor %}
       <li class="spacer"></li>
@@ -35,6 +35,6 @@
 {% endblock %}
 
 {% block content %}
-    Hi student! Please select your programme.
+    Hi student! Please select your program.
 
 {% endblock %}

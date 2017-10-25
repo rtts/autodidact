@@ -9,12 +9,17 @@
 {% block navigation %}
   <ul>
     <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
-    <li class="currentPage"><a href="{% url 'documentation' %}">Documentation</a></li>
+    {% if page.slug %}
+      <li class="visitedPage"><a href="{% url 'documentation' %}">Documentation</a></li>
+      <li class="currentPage"><a href="{% url 'documentation' page.slug %}">{{page.title}}</a></li>
+    {% else %}
+      <li class="currentPage"><a href="{% url 'documentation' %}">Documentation</a></li>
+    {% endif %}
   </ul>
 {% endblock %}
 
 {% block content %}
 <section>
-  {{page.content|insert_images:page.get_absolute_url}}
+  {{page.content|insert_images}}
 </section>
 {% endblock %}
