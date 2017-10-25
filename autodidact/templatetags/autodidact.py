@@ -28,16 +28,16 @@ def autodidact_editor(context):
     return context
 
 @register.filter()
-def upload_urls(string, path):
+def upload_urls(string):
     '''Replaces filenames between [[square brackets]] with a hyperlink'''
-    return substitute(string, path, r'\[\[(?P<filename>[^\]]+)\]\]', '<a download href="{url}">{filename}</a>')
+    return substitute(string, r'\[\[(?P<filename>[^\]]+)\]\]', '<a download href="{url}">{filename}</a>')
 
 @register.filter()
-def insert_images(string, path):
+def insert_images(string):
     '''Replaces filenames between {{curly brackets}} with an HTML <img> tag'''
-    return substitute(string, path, r'\{\{(?P<filename>[^\}]+)\}\}', '<img src="{url}" alt="{filename}">')
+    return substitute(string, r'\{\{(?P<filename>[^\}]+)\}\}', '<img src="{url}" alt="{filename}">')
 
-def substitute(string, path, regexp, subst):
+def substitute(string, regexp, subst):
     '''Searches the string for the filename as formatted in the regular expression. Substitutes it with `subst`.'''
 
     # Some people, when confronted with a problem, think "I know,
@@ -52,7 +52,7 @@ def substitute(string, path, regexp, subst):
         match = pattern.search(string)
         if match:
             filename = match.group('filename')
-            url = settings.MEDIA_URL + path[1:] + filename
+            url = settings.MEDIA_URL + filename
             html = subst.format(
                 filename = filename,
                 url = url,

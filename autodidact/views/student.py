@@ -95,6 +95,7 @@ def session(request, course, session):
                 s.progress = calculate_progress(s, assignments)
 
     return render(request, 'autodidact/session_base.html', {
+        'programme': programme,
         'course': course,
         'session': session,
         'assignments': assignments,

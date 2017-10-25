@@ -29,11 +29,8 @@ class Page(models.Model):
             return reverse('homepage')
 
 class PageFile(models.Model):
-    def path(self, filename):
-        return os.path.join(self.page.get_absolute_url()[1:], clean(filename))
-
     page = models.ForeignKey(Page, related_name='files')
-    file = models.FileField(upload_to=path)
+    file = models.FileField()
 
     def __str__(self):
         return os.path.basename(str(self.file))
@@ -76,7 +73,7 @@ class Programme(NumberedModel):
 
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
-    programmes = models.ManyToManyField(Programme, related_name='courses')
+    program = models.ForeignKey(Programme, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = PandocField(blank=True)
@@ -154,10 +151,11 @@ class Assignment(NumberedModel):
         return reverse('assignment', args=[self.session.course.slug, self.session.number, self.number])
 
     def number_with_respect_to(self):
+        #raise ValueError(self)
         return self.session.assignments.all()
 
     def save(self, *args, **kwargs):
-        super(Assignment, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
         # Ensure at least one step
         if not self.steps.first():
@@ -239,11 +237,8 @@ class Class(models.Model):
         verbose_name_plural = 'classes'
 
 class Download(models.Model):
-    def path(self, filename):
-        return os.path.join(self.session.get_absolute_url()[1:], clean(filename))
-
     session = models.ForeignKey(Session, related_name='downloads')
-    file = models.FileField(upload_to=path)
+    file = models.FileField()
 
     def __str__(self):
         return os.path.basename(str(self.file))
@@ -255,11 +250,8 @@ class Download(models.Model):
         ordering = ['file']
 
 class Presentation(models.Model):
-    def path(self, filename):
-        return os.path.join(self.session.get_absolute_url()[1:], clean(filename))
-
     session = models.ForeignKey(Session, related_name='presentations')
-    file = models.FileField(upload_to=path)
+    file = models.FileField()
     visibility = models.IntegerField(choices=(
         (0, 'Invisible'),
         (1, 'Only visible to teacher'),
@@ -277,13 +269,10 @@ class Presentation(models.Model):
         ordering = ['file']
 
 class Clarification(NumberedModel):
-    def path(self, filename):
-        return os.path.join(self.step.assignment.session.get_absolute_url()[1:], 'images', clean(filename))
-
     number = models.PositiveIntegerField(blank=True)
     step = models.ForeignKey(Step, related_name='clarifications')
     description = PandocField(blank=True)
-    image = models.ImageField(upload_to=path, blank=True)
+    image = models.ImageField(blank=True)
 
     def __str__(self):
         return 'Clarification for %s' % str(self.step)
@@ -295,11 +284,8 @@ class Clarification(NumberedModel):
         ordering = ['number']
 
 class StepFile(models.Model):
-    def path(self, filename):
-        return os.path.join(self.step.assignment.get_absolute_url()[1:], clean(filename))
-
     step = models.ForeignKey(Step, related_name='files')
-    file = models.FileField(upload_to=path)
+    file = models.FileField()
 
     def __str__(self):
         return os.path.basename(str(self.file))

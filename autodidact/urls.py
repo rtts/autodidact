@@ -16,9 +16,11 @@ urlpatterns = [
     url(r'^([^/]+)_courses/$', programme, name='programme'),
 
     url(r'^([^/]+)/$', course, name='course'),
+    url(r'^([^/]+)/duplicate/$', copy_course, name='copy_course'),
     url(r'^([^/]+)/topic/([0-9]+)/$', topic, name='topic'),
     url(r'^([^/]+)/session/([0-9]+)/$', session, name='session'),
     url(r'^([^/]+)/session/([0-9]+)/print/$', print_session, name='print_session'),
+    url(r'^([^/]+)/session/([0-9]+)/duplicate/$', copy_session, name='copy_session'),
     url(r'^([^/]+)/session/([0-9]+)/assignment/([0-9]+)/$', assignment, name='assignment'),
     url(r'^([^/]+)/session/([0-9]+)/students/$', progresses, name='progresses'),
     url(r'^([^/]+)/session/([0-9]+)/student/([^/]+)/$', progress, name='progress'),

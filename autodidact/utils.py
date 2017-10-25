@@ -3,6 +3,8 @@ import sys
 import random
 import string
 import unicodedata
+from django.utils import timezone
+from django.core.files.base import ContentFile
 
 HUMAN_FRIENDLY_CHARS = '234679ABCDEFGHJKLMNPRSTUVWXYZabcdefghijkmnpqrstuvwxyz'
 
@@ -45,25 +47,28 @@ def calculate_progress(user, assignments):
 
     return progresses
 
-def duplicate_assignment(modeladmin, request, queryset):
+def duplicate_assignment(modeladmin, request, queryset, rename=True):
     '''Duplicates an assignment including all underlying steps. Can be used as an admin action.'''
 
     duplicated_assignments = []
     for assignment in queryset:
         steps = assignment.steps.all()
         assignment.pk = None
-        assignment.active = False
-        assignment.name = (assignment.name + ' (duplicate)').lstrip()
+        if rename:
+            assignment.active = False
+            assignment.name = (assignment.name + ' (duplicate)').lstrip()
         assignment.number = None
         assignment.save()
-        assignment.steps.all().delete() # this deletes the empty step
+        assignment.steps.first().delete() # this deletes the automatically generated empty step
 
         for step in steps:
             right_answers = step.right_answers.all()
             wrong_answers = step.wrong_answers.all()
             clarifications = step.clarifications.all()
+            stepfiles = step.files.all()
+
+            # The following Just Works™ because id(assignment) == id(step.assignment)
             step.pk = None
-            step.assignment = assignment
             step.save()
 
             for right_answer in right_answers:
@@ -76,11 +81,100 @@ def duplicate_assignment(modeladmin, request, queryset):
 
             for clarification in clarifications:
                 clarification.pk = None
+                try:
+                    clarification.image.save(clarification.image.name, ContentFile(clarification.image.read()))
+                except:
+                    pass
                 clarification.save()
+
+            for stepfile in stepfiles:
+                stepfile.pk = None
+                try:
+                    stepfile.file.save(stepfile.file.name, ContentFile(stepfile.file.read()))
+                except:
+                    pass
 
         duplicated_assignments.append(assignment)
     return duplicated_assignments
 duplicate_assignment.short_description = 'Duplicate the selected assignments'
+
+def duplicate_session(modeladmin, request, queryset, rename=True):
+    '''Duplicates a session, including all assignments'''
+
+    duplicated_sessions = []
+    for session in queryset:
+        assignments = session.assignments.all()
+        downloads = session.downloads.all()
+        presentations = session.presentations.all()
+
+        session.pk = None
+        if rename:
+            session.active = False
+            session.name = session.name + ' (duplicate)'
+        session.number = None
+        session.save()
+
+        for assignment in assignments:
+            [assignment] = duplicate_assignment(None, None, [assignment], rename=False)
+            assignment.session = session
+            assignment.save()
+
+        for download in downloads:
+            download.pk = None
+            try:
+                download.file.save(download.file.name, ContentFile(download.file.read()))
+            except:
+                pass
+
+        for presentation in presentations:
+            presentation.pk = None
+            try:
+                presentation.file.save(presentation.file.name, ContentFile(presentation.file.read()))
+            except:
+                pass
+
+        duplicated_sessions.append(session)
+    return duplicated_sessions
+duplicate_session.short_description = 'Duplicate the selected sessions'
+
+def duplicate_course(modeladmin, request, queryset):
+    '''Duplicates an entire course'''
+
+    # deferred import to prevent circularity
+    from .models import Course
+
+    duplicated_courses = []
+    for course in queryset:
+        sessions = course.sessions.all()
+        topics = course.topics.all()
+        course.pk = None
+        course.order = None
+        course.active = False
+
+        year = str(timezone.now().year)
+        original_slug = course.slug
+        course.name = (course.name + ' ' + year)
+        course.slug = (original_slug + year)
+        i = 1
+        while Course.objects.filter(slug=course.slug).exists():
+            course.slug = (original_slug + year + string.ascii_lowercase[i])
+            i += 1
+            if i > 25:
+                course.slug = (original_slug + year + random_string(5))
+        course.save()
+
+        for session in sessions:
+            [session] = duplicate_session(None, None, [session], rename=False)
+            session.course = course
+            session.save()
+
+        for topic in topics:
+            topic.pk = None
+            topic.save()
+
+        duplicated_courses.append(course)
+    return duplicated_courses
+duplicate_course.short_description = 'Duplicate the selected courses'
 
 def random_string(length):
     '''Generates a random string of human friendly characters

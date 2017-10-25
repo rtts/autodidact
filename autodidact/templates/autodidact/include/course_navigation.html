@@ -1,5 +1,6 @@
 <ul>
   <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+  <li class="visitedPage"><a href="{% url 'programme' course.program.slug %}">{{course.program}}</a></li>
   <li class="currentPage"><a href="{% url 'course' course.slug %}">{{course.name}}<br>(<code>{{course.colloquial_name}}</code>)</a></li>
 
   {% if course.topics.all %}
@@ -22,11 +23,10 @@
     <li class="empty">No sessions available</li>
   {% endfor %}
   {% if user.is_staff and perms.autodidact.add_session %}
-    <li>
-      <div class='add'>
-        <a class="editlink" href="{% url 'add_session' course.slug %}">Add a session</a>
-      </div>
-    </li>
+    <li><div class="add"><a class="editlink" href="{% url 'add_session' course.slug %}">Add a session</a></div></li>
+  {% endif %}
+  {% if user.is_staff and perms.autodidact.add_course %}
+    <li><div class="add"><a class="editlink" href="{% url 'copy_course' course.slug %}">Duplicate this course</a></div></li>
   {% endif %}
 
 </ul>

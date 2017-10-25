@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
             name='PageFile',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('file', models.FileField(upload_to=autodidact.models.PageFile.path)),
+                ('file', models.FileField()),
                 ('page', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='files', to='autodidact.Page')),
             ],
             options={

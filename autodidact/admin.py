@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.forms import CheckboxSelectMultiple
 from django.contrib.contenttypes.admin import GenericStackedInline
-from .utils import duplicate_assignment
+from .utils import duplicate_assignment, duplicate_session, duplicate_course
 from .models import *
 
 class FunkySaveAdmin(object):
@@ -91,10 +91,11 @@ class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
     inlines = [InlineTopicAdmin, InlineSessionAdmin]
     list_display = ['order', 'name', 'url']
     list_display_links = ['name']
-    list_filter = ['programmes']
+    list_filter = ['program']
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
+    actions = [duplicate_course]
 
 @admin.register(Topic)
 class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
@@ -125,6 +126,7 @@ class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
+    actions = [duplicate_session]
 
 class InlineStepAdmin(admin.StackedInline):
     model = Step
@@ -137,10 +139,7 @@ class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display_links = ['name']
     list_filter = ['active', 'locked', 'session__course', 'session']
     inlines = [InlineStepAdmin]
-    actions = ['duplicate_assignment']
-
-    # Oh, the irony
-    duplicate_assignment = duplicate_assignment
+    actions = [duplicate_assignment]
 
 @admin.register(Step)
 class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):

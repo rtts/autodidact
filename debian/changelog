@@ -4,6 +4,10 @@ python3-django-autodidact (1.4.6~rc1) stable; urgency=medium
   * Trigger updates in dependent packages whenever we are updated.
 
   [ Jaap Joris Vens ]
+  * Ability to duplicate sessions and complete courses
+  * Central upload location for all uploaded files
+  * True hierarchical relation between Programs, Courses, Sessions, and Assignments
+  * Updated all dependencies
   * New "Print this session" feature
   * Sub-divided study programmes according to degree
   * Added tags to sessions

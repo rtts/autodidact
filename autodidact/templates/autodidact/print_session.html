@@ -77,7 +77,7 @@
 
   <article>
     <h1>Session {{session.number}}: {{session.name}}</h1>
-    {{session.description|upload_urls:session.get_absolute_url}}
+    {{session.description|upload_urls}}
 
     {% for assignment in assignments %}
       {% for step in assignment.steps.all %}
@@ -92,7 +92,7 @@
 
             <tr>
 	      <td class="content">
-                {{step.description|upload_urls:session.get_absolute_url|insert_images:assignment.get_absolute_url}}
+                {{step.description|upload_urls|insert_images}}
 	      </td>
             </tr>
           </table>

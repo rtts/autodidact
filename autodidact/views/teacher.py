@@ -238,13 +238,32 @@ def add_assignment(request, course, session):
 @needs_session
 @needs_assignment
 def copy_assignment(request, course, session, assignment):
-    '''Duplicates an assignment and redirects to the assignment admin,
-    where users can optionally move the duplicated assignment to a
-    different session
+    '''Duplicates an assignment
 
     '''
     [assignment] = duplicate_assignment(None, None, [assignment])
     return HttpResponseRedirect(reverse('admin:autodidact_assignment_change', args=[assignment.pk]))
+
+@staff_member_required
+@permission_required(['autodidact.add_session'])
+@needs_course
+@needs_session
+def copy_session(request, course, session):
+    '''Duplicates a session
+
+    '''
+    [session] = duplicate_session(None, None, [session])
+    return HttpResponseRedirect(reverse('admin:autodidact_session_change', args=[session.pk]))
+
+@staff_member_required
+@permission_required(['autodidact.add_course'])
+@needs_course
+def copy_course(request, course):
+    '''Duplicates a course
+
+    '''
+    [course] = duplicate_course(None, None, [course])
+    return HttpResponseRedirect(reverse('admin:autodidact_course_change', args=[course.pk]))
 
 @staff_member_required
 @permission_required(['autodidact.add_step', 'autodidact.change_step'])

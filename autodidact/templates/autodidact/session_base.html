@@ -28,7 +28,7 @@
         <iframe src="{% static 'ViewerJS/index.html' %}#{{presentation.url}}" width="400" height="300" allowfullscreen></iframe>
       {% endif %}
     {% endfor %}
-    {{session.description|upload_urls:session.get_absolute_url}}
+    {{session.description|upload_urls}}
   </section>
 
   {% if user.is_staff and current_class %}

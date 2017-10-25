@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
                 ('description', pandocfield.fields.PandocField(blank=True, auto_create_html_field=False)),
-                ('image', models.ImageField(blank=True, upload_to=autodidact.models.Clarification.path)),
+                ('image', models.ImageField(blank=True)),
                 ('_description_html', models.TextField(editable=False, blank=True)),
             ],
             options={
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
             name='Download',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('file', models.FileField(upload_to=autodidact.models.Download.path)),
+                ('file', models.FileField()),
             ],
             options={
                 'ordering': ['file'],
@@ -113,7 +113,7 @@ class Migration(migrations.Migration):
             name='Presentation',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True, serialize=False)),
-                ('file', models.FileField(upload_to=autodidact.models.Presentation.path)),
+                ('file', models.FileField()),
                 ('visibility', models.IntegerField(default=1, choices=[(1, 'Only visible to teacher'), (2, 'Visible to students in class'), (3, 'Visible to everyone')])),
             ],
             options={
