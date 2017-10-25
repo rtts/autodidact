@@ -7,14 +7,38 @@ from autodidact.models import *
 from autodidact.views.decorators import *
 
 @login_required
-def page(request, slug=''):
-    '''Serves a particular page. Mainly used for serving the homepage.
-    '''
-    page = get_object_or_404(Page, slug=slug)
-    programmes = Programme.objects.all().prefetch_related('courses')
-    return render(request, 'autodidact/page.html', {
-        'page': page,
-        'programmes': programmes,
+def user_settings(request):
+    if request.POST:
+        form = UserForm
+    return render(request, 'autodidact/settings.html', {
+    })
+
+@login_required
+def homepage(request):
+    '''Serves the homepage'''
+
+    if hasattr(request.user, 'uvt_user'):
+        red = request.GET.get('redirect')
+        if red != 'no' and request.user.uvt_user.programme:
+            return redirect('programme', request.user.uvt_user.programme.slug)
+
+    bachelor_programmes = Programme.objects.filter(degree=10)
+    premaster_programmes = Programme.objects.filter(degree=20)
+    master_programmes = Programme.objects.filter(degree=30)
+    return render(request, 'autodidact/homepage.html', {
+        'bachelor_programmes': bachelor_programmes,
+        'premaster_programmes': premaster_programmes,
+        'master_programmes': master_programmes,
+    })
+
+@login_required
+def programme(request, slug):
+    programme = get_object_or_404(Programme, slug=slug)
+    if hasattr(request.user, 'uvt_user'):
+        request.user.uvt_user.programme = programme
+        request.user.uvt_user.save()
+    return render(request, 'autodidact/programme.html', {
+        'programme': programme,
     })
 
 @login_required

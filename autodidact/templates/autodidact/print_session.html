@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static autodidact %}
+
+{% block extrahead %}
+  <style>
+    body {
+        background: #f4f3f1;
+    }
+    article {
+        background: white;
+        width: 21cm;
+        /* height: 29.7cm; */
+        display: block;
+        margin: .5cm auto;
+        padding: 2.5cm;
+        box-sizing: border-box;
+    }
+    section {
+        padding-top: 1em;
+    }
+
+    table.wizard {
+        height: auto !important;
+    }
+
+    @media print {
+        @page {
+            margin: 2.5cm;
+        }
+        body, article {
+            margin: 0;
+            padding: 0;
+            box-shadow: none;
+            background: white;
+        }
+        .noprint {
+            display: none;
+        }
+    }
+
+    .blue {
+        color: #0072a8;
+    }
+    .bold {
+        font-weight: bold;
+    }
+
+    #logo, #details {
+        width: 5cm;
+        position: absolute;
+        top: 0;
+        right: 2cm;
+        white-space: nowrap;
+    }
+    #logo img {
+        display: block;
+        width: 100%;
+    }
+    #details {
+        top: auto;
+        bottom: 2cm;
+        right: 2cm;
+    }
+    #print {
+        position: fixed;
+        top: 10px;
+        left: 10px;
+    }
+  </style>
+  <script src="{% static 'mathjax/MathJax.js' %}?config=TeX-AMS-MML_HTMLorMML"></script>
+{% endblock %}
+
+{% block header %}{% endblock %}
+
+{% block main %}
+  <a class="noprint" id="print" onclick="window.print(); return false" href="">Print this session</a>
+
+  <article>
+    <h1>Session {{session.number}}: {{session.name}}</h1>
+    {{session.description|upload_urls:session.get_absolute_url}}
+
+    {% for assignment in assignments %}
+      {% for step in assignment.steps.all %}
+        <section class="step">
+          <table class="wizard">
+            <tr>
+	      <td class="header">
+                <img id="checkbox" src="{% static 'unchecked.png' %}" alt="Completed" width="24" height="24">
+               	<h1>Assignment {{assignment.number}} &ndash; step {{step.number}} of {{assignment.steps.count}}</h1>
+	      </td>
+            </tr>
+
+            <tr>
+	      <td class="content">
+                {{step.description|upload_urls:session.get_absolute_url|insert_images:assignment.get_absolute_url}}
+	      </td>
+            </tr>
+          </table>
+        </section>
+      {% endfor %}
+    {% endfor %}
+  </article>
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+{% block extrascript %}
+  <script>
+    window.print();
+  </script>
+{% endblock %}

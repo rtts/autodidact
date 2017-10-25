@@ -43,9 +43,6 @@ class PageFile(models.Model):
 
 class Tag(models.Model):
     name = models.CharField(max_length=255, unique=True)
-    content_type = models.ForeignKey(ContentType)
-    object_id = models.PositiveIntegerField()
-    material = GenericForeignKey()
 
     def __str__(self):
         return self.name
@@ -54,20 +51,28 @@ class Tag(models.Model):
         ordering = ['name']
 
 class Programme(NumberedModel):
+    DEGREES = [
+        (10, 'Bachelor'),
+        (20, 'Pre-master'),
+        (30, 'Master'),
+    ]
     order = models.PositiveIntegerField(blank=True)
+    degree = models.PositiveIntegerField(choices=DEGREES)
     name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, null=True)
+    description = PandocField(blank=True)
 
     def __str__(self):
         return self.name
+
+    def number_with_respect_to(self):
+        return self.__class__.objects.filter(degree=self.degree)
 
     def has_active_courses(self):
         return self.courses.filter(active=True).exists()
 
     class Meta:
         ordering = ['order']
-
-def week_later():
-    return timezone.now() + timedelta(days=7)
 
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
@@ -76,7 +81,6 @@ class Course(NumberedModel):
     slug = models.SlugField(unique=True)
     description = PandocField(blank=True)
     active = models.BooleanField(default=False, help_text='Inactive courses are not visible to students')
-    tags = GenericRelation(Tag)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.colloquial_name())
@@ -99,7 +103,6 @@ class Topic(NumberedModel):
     course = models.ForeignKey(Course, related_name="topics")
     name = models.CharField(max_length=255, blank=True)
     description = PandocField(blank=True)
-    tags = GenericRelation(Tag)
 
     def __str__(self):
         return self.name
@@ -120,7 +123,7 @@ class Session(NumberedModel):
     description = PandocField(blank=True)
     registration_enabled = models.BooleanField(default=True, help_text='When enabled, class attendance will be registered')
     active = models.BooleanField(default=False, help_text='Inactive sessions are not visible to students')
-    tags = GenericRelation(Tag)
+    tags = models.ManyToManyField(Tag, related_name='sessions', blank=True)
 
     def __str__(self):
         return '%s: Session %i' % (self.course.colloquial_name(), self.number)
@@ -140,7 +143,6 @@ class Assignment(NumberedModel):
     name = models.CharField(max_length=255, blank=True)
     active = models.BooleanField(default=False, help_text='Inactive assignments are not visible to students')
     locked = models.BooleanField(default=False, help_text='Locked assignments can only be made by students in class')
-    tags = GenericRelation(Tag)
 
     def __str__(self):
         return 'Assignment {}'.format(self.number)

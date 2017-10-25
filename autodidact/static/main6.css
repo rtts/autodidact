@@ -1,0 +1,549 @@
+body, html {
+  font-family: "Arial", sans-serif;
+  color: #036;
+  margin: 0;
+  padding: 0;
+  font-size: 14px; }
+
+a {
+  color: #008ec6; }
+
+a.button {
+  color: white;
+  background: #008ec6;
+  padding: 8px 16px;
+  text-decoration: none;
+  font-size: 1.15em; }
+
+input, select {
+  font-size: 1em; }
+
+small {
+  font-weight: normal; }
+
+h1 {
+  font-size: 1.5em; }
+
+h2 {
+  font-size: 1.25em; }
+
+blockquote {
+  margin: 0;
+  padding: 0 1em;
+  border: 1px solid #008ec6;
+  border-radius: 10px;
+  font-size: 1.15em;
+  width: 70%; }
+
+code {
+  font-size: 1em;
+  background: #f4f3f1;
+  padding: 2px 4px 1px 4px;
+  border-radius: 5px;
+  border: 1px solid #ccc; }
+
+pre {
+  display: block;
+  border: 1px solid red;
+  border-radius: 5px;
+  padding: 5px 10px;
+  background: #f4f3f1;
+  border: 1px solid #ccc;
+  width: 80%;
+  white-space: pre-wrap;
+  overflow-x: hidden; }
+  pre code {
+    border: none;
+    background: none;
+    padding: 0; }
+
+img {
+  max-width: 100%; }
+
+#logo {
+  width: 960px;
+  height: 100px;
+  padding-top: 20px;
+  margin: auto;
+  position: relative; }
+  #logo img {
+    vertical-align: top; }
+
+#login {
+  padding-top: 33px;
+  float: right;
+  text-align: right; }
+
+#menu {
+  position: absolute;
+  right: 0;
+  bottom: .25em; }
+  #menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0; }
+    #menu ul li {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      float: left; }
+      #menu ul li a {
+        text-decoration: none; }
+    #menu ul li:before {
+      content: '-';
+      margin: 0 .25em; }
+    #menu ul li:first-child:before {
+      content: ''; }
+
+#banner {
+  width: 100%;
+  background: #036;
+  margin-bottom: 30px; }
+  #banner #banner_image {
+    height: 137px;
+    width: 960px;
+    margin: auto;
+    background: #036;
+    position: relative; }
+    #banner #banner_image #banner_text {
+      color: white;
+      background: rgba(0, 142, 198, 0.75);
+      position: absolute;
+      top: 30px;
+      left: 60px;
+      height: 80px;
+      width: 60%; }
+      #banner #banner_image #banner_text h1 {
+        font-size: 20px;
+        margin: 17px 0 0 0; }
+      #banner #banner_image #banner_text h2 {
+        font-size: 18px;
+        margin: 0;
+        font-weight: normal; }
+      #banner #banner_image #banner_text :before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 100%;
+        top: 0;
+        height: 50px;
+        width: 30px;
+        background: rgba(0, 142, 198, 0.5); }
+      #banner #banner_image #banner_text :after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        right: 100%;
+        width: 0px;
+        height: 0px;
+        border-top: 30px solid rgba(0, 142, 198, 0.5);
+        border-left: 30px solid transparent; }
+
+nav {
+  width: 240px;
+  margin-right: 10px;
+  float: left; }
+  nav code {
+    font-size: 0.8em;
+    background: none;
+    padding: 0;
+    border: none; }
+  nav ul {
+    font-size: 13px;
+    padding-bottom: 20px;
+    margin: 0;
+    padding: 0; }
+    nav ul li {
+      margin-bottom: 1px;
+      list-style-type: none; }
+      nav ul li > a {
+        transition: all 0.1s ease-out;
+        text-decoration: none;
+        color: #036;
+        background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
+        padding: 6px 0px 5px 35px;
+        background-color: #e9e7e4;
+        display: block; }
+    nav ul li.locked {
+      background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
+      padding: 6px 0px 5px 35px;
+      background-color: #e9e7e4;
+      color: #CD9999; }
+    nav ul a.locked {
+      color: #CD9999; }
+    nav ul li.inactive a {
+      color: #B5B5B5 !important; }
+    nav ul li.inactive a:after {
+      content: " - not visible to students";
+      font-style: italic; }
+    nav ul li.visitedPage a {
+      background: #e9e7e4 url("/static/nav_arrow_visited.png") 15px 15px no-repeat;
+      padding: 10px 5px 5px 35px;
+      display: block;
+      font-size: 16px; }
+    nav ul li.visitedPage a:hover {
+      background-color: #e1ddd8; }
+    nav ul li.currentPage a {
+      background: #fff;
+      font-weight: bold !important;
+      color: #000;
+      padding: 10px 5px 5px 15px;
+      margin-bottom: 1px;
+      font-size: 14px;
+      display: block; }
+    nav ul li.futurePage a:hover {
+      background: url("/static/nav_arrow_list.png") 20px 10px no-repeat;
+      background-color: #e1ddd8;
+      color: #008ec6; }
+    nav ul li.heading {
+      color: #666;
+      padding: 6px 0px 5px 16px;
+      background-color: #e9e7e4;
+      display: block;
+      font-style: italic; }
+    nav ul li.spacer {
+      height: 15px;
+      background-color: #fff; }
+    nav ul li.empty {
+      color: #666;
+      padding: 6px 0px 5px 16px;
+      background-color: #e9e7e4;
+      display: block; }
+
+main {
+  display: block;
+  width: 960px;
+  margin: auto;
+  position: relative; }
+
+#editor {
+  position: absolute;
+  top: -23px;
+  right: 0; }
+
+article {
+  margin-left: 260px;
+  padding: 20px;
+  padding-bottom: 1px;
+  padding-top: 1px;
+  box-shadow: 0px 1px 6px #b8afa2;
+  line-height: 24px;
+  overflow: hidden;
+  min-height: 10em; }
+  article h1:first-child {
+    margin-top: 0; }
+
+section {
+  margin: 20px 0;
+  position: relative; }
+
+footer {
+  clear: both;
+  width: 960px;
+  margin: auto;
+  padding: 20px 0;
+  height: 100px;
+  color: #c3bcb2;
+  font-size: 12px; }
+  footer a {
+    color: #A8D7E1; }
+
+div.add {
+  margin: 8px 35px; }
+
+a.editlink, .staff {
+  font-size: 12px;
+  font-weight: bold;
+  color: #f45b3d !important; }
+
+.remove_student {
+  position: absolute;
+  top: -23px;
+  right: 0; }
+
+section.attendance {
+  float: right;
+  z-index: 1000;
+  width: 180px;
+  background: #f4f3f1;
+  border: 1px solid #ccc;
+  padding: 10px;
+  font-size: 11px;
+  line-height: 1.5;
+  margin-left: 20px; }
+  section.attendance hr {
+    margin-top: 20px; }
+  section.attendance form {
+    text-align: right;
+    margin-top: 15px; }
+    section.attendance form .ticket_error {
+      border: 1px solid red; }
+    section.attendance form .ticket_error_text {
+      color: red; }
+    section.attendance form input {
+      margin: 2px;
+      box-sizing: border-box; }
+    section.attendance form input[type=text] {
+      width: 60px; }
+    section.attendance form input[type=submit] {
+      min-width: 60px; }
+  section.attendance div.ticket {
+    font-size: 2em;
+    font-weight: bold;
+    text-align: center; }
+
+section.session {
+  margin-bottom: 50px; }
+
+section.students {
+  clear: right; }
+  section.students table {
+    border: 1px solid #ccc;
+    background-color: #f4f3f1;
+    width: 100%;
+    border-radius: 3px;
+    color: #333;
+    margin-bottom: 40px; }
+    section.students table td, section.students table th {
+      border-top-color: white;
+      border-bottom: 1px solid #DFDFDF;
+      color: #555; }
+    section.students table th {
+      text-shadow: rgba(255, 255, 255, 0.8) 0px 1px 0px;
+      font-weight: normal;
+      padding: 7px 7px 8px;
+      text-align: left;
+      line-height: 1.3em;
+      font-size: 12px; }
+    section.students table td {
+      padding: 4px 7px 2px;
+      vertical-align: top; }
+
+section.progress {
+  clear: right; }
+  section.progress table {
+    width: 100%;
+    border-collapse: collapse;
+    background: url("/static/grid.png"); }
+    section.progress table .y-axis {
+      background: white;
+      border-right: 1px solid #036;
+      width: 8em;
+      text-align: right;
+      padding: 6px; }
+    section.progress table .x-axis {
+      background: white;
+      border-top: 1px solid #036; }
+      section.progress table .x-axis .right {
+        float: right; }
+      section.progress table .x-axis .left {
+        float: left; }
+    section.progress table .origin {
+      background: white; }
+
+.bar {
+  height: 20px;
+  background-color: #6c3;
+  text-align: right;
+  box-sizing: border-box;
+  padding-left: 10px;
+  font-size: 12px; }
+
+section.answers table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: -20px; }
+  section.answers table h2 {
+    margin: 0;
+    margin-top: 20px;
+    margin-bottom: 10px; }
+  section.answers table pre {
+    font-size: 12px;
+    margin: 0;
+    margin-bottom: 10px;
+    white-space: pre-wrap; }
+  section.answers table pre.missing {
+    color: red; }
+  section.answers table td {
+    vertical-align: top; }
+  section.answers table td.step {
+    width: 77px;
+    text-align: right;
+    padding-right: 10px;
+    padding-top: 5px; }
+
+section.step table.wizard {
+  width: 100%;
+  height: 400px;
+  margin-top: -15px;
+  border-collapse: collapse; }
+  section.step table.wizard td {
+    vertical-align: top;
+    height: 100%; }
+  section.step table.wizard td.header {
+    border-bottom: 2px solid #036;
+    margin-top: -15px;
+    padding: 10px;
+    height: 10px; }
+    section.step table.wizard td.header img#checkbox {
+      margin-left: -12px;
+      vertical-align: top; }
+    section.step table.wizard td.header img#fullscreen_toggle {
+      float: right;
+      margin-right: -12px; }
+    section.step table.wizard td.header h1, section.step table.wizard td.header h2 {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: normal;
+      margin: 3px 0 0 4px; }
+    section.step table.wizard td.header h2 {
+      float: right; }
+  section.step table.wizard td.answer {
+    padding-bottom: 15px;
+    text-align: right;
+    font-weight: bold;
+    height: 0; }
+    section.step table.wizard td.answer div.correct {
+      color: #390;
+      font-size: 12px; }
+    section.step table.wizard td.answer div.incorrect {
+      color: #f45b3d; }
+    section.step table.wizard td.answer textarea {
+      vertical-align: top;
+      width: 100%;
+      max-width: 400px;
+      height: 70px;
+      border: none;
+      border: 1px solid #ccc; }
+    section.step table.wizard td.answer ul.answers {
+      margin: 0;
+      padding: 0;
+      display: inline-block;
+      padding-right: 15px;
+      max-width: 389px;
+      vertical-align: top;
+      border: 1px solid #ccc;
+      list-style: none;
+      text-align: left;
+      font-weight: normal; }
+      section.step table.wizard td.answer ul.answers li {
+        text-indent: -24px;
+        margin: 0;
+        margin-left: 24px;
+        padding: 0; }
+      section.step table.wizard td.answer ul.answers input {
+        vertical-align: top;
+        position: relative;
+        top: 2px; }
+      section.step table.wizard td.answer ul.answers input, section.step table.wizard td.answer ul.answers label {
+        cursor: pointer; }
+section.step div.step_clarifications {
+  position: relative; }
+  section.step div.step_clarifications div.clarification {
+    height: 0;
+    overflow: hidden; }
+    section.step div.step_clarifications div.clarification img {
+      margin-top: 1em;
+      max-width: 100%; }
+  section.step div.step_clarifications input.toggle {
+    display: none; }
+  section.step div.step_clarifications input.toggle + label {
+    position: absolute;
+    top: -18px;
+    margin-left: -16px;
+    height: 14px;
+    width: 14px;
+    cursor: pointer;
+    background-image: url("/static/info.png");
+    background-size: contain; }
+  section.step div.step_clarifications input.toggle:checked + label {
+    background-image: url("/static/info2.png"); }
+  section.step div.step_clarifications input.toggle:checked + label + div.clarification {
+    height: auto;
+    border-top: 2px solid #036; }
+section.step div.step_footer {
+  padding-top: 20px;
+  border-top: 2px solid #036; }
+  section.step div.step_footer ul.progress {
+    list-style: none;
+    margin: -1px;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center; }
+    section.step div.step_footer ul.progress li {
+      height: 34px;
+      flex: 1 0 20px;
+      margin: 1px;
+      text-align: center; }
+    section.step div.step_footer ul.progress li:first-child,
+    section.step div.step_footer ul.progress li:last-child {
+      flex: 2 0 80px;
+      max-width: 200px;
+      text-align: left; }
+    section.step div.step_footer ul.progress li:last-child {
+      text-align: right; }
+    section.step div.step_footer ul.progress input {
+      height: 100%;
+      width: 100%;
+      padding: 0;
+      border: none;
+      outline: none;
+      background: none;
+      cursor: pointer; }
+    section.step div.step_footer ul.progress input.previous, section.step div.step_footer ul.progress input.next {
+      margin: 0; }
+    section.step div.step_footer ul.progress input.previous {
+      background: #e9e7e4;
+      text-align: left;
+      border-radius: 8px 0 0 8px;
+      padding-left: 10px; }
+    section.step div.step_footer ul.progress input.previous:disabled {
+      cursor: default;
+      color: #bbb; }
+    section.step div.step_footer ul.progress input.next {
+      text-align: right;
+      border-radius: 0 8px 8px 0;
+      color: white;
+      background: #008ec6;
+      font-weight: bold;
+      padding-right: 10px; }
+    section.step div.step_footer ul.progress input.step {
+      background: #f4f3f1;
+      color: black; }
+    section.step div.step_footer ul.progress input.current {
+      background: none;
+      cursor: default;
+      font-weight: bold;
+      color: black; }
+    section.step div.step_footer ul.progress input.passed {
+      background: #dcf7dc; }
+
+main.fullscreen {
+  display: flex;
+  text-align: center;
+  /* fallback in case flex is not supported */
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #f4f3f1; }
+  main.fullscreen article {
+    background: white;
+    display: inline-block;
+    text-align: left;
+    width: 100%;
+    max-width: 660px;
+    margin: 2em 0;
+    position: relative; }
+
+form.management label {
+  display: inline-block;
+  width: 120px; }
+form.management ul#id_groups {
+  list-style: none; }
+  form.management ul#id_groups label {
+    width: auto; }
+
+/*# sourceMappingURL=main6.css.map */

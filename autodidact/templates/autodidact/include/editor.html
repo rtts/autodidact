@@ -1,4 +1,4 @@
-{% if edit_type == 'homepage' or edit_type == 'page' %}
+{% if edit_type == 'page' %}
   {% if perms.autodidact.change_page %}
     <a class="editlink" href="{% url 'admin:autodidact_page_change' page.pk %}">Edit this page</a>
   {% endif %}
@@ -12,8 +12,9 @@
 
 {% if edit_type == 'session' %}
   {% if request.user.is_staff and perms.autodidact.change_session %}
-    <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a>
+    <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a> -
   {% endif %}
+  <a class="editlink" href="{% url 'print_session' course.slug session.number %}" target="_blank">Print this session</a>
 {% endif %}
 
 {% if edit_type == 'topic' %}

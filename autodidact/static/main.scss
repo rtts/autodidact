@@ -79,7 +79,7 @@ pre {
   background: $reallylightgrey;
   border: 1px solid $bordergrey;
   width: 80%;
-  white-space:pre-wrap;
+  white-space: pre-wrap;
   overflow-x: hidden;
 }
 
@@ -92,6 +92,8 @@ img {
   height: 100px;
   padding-top: 20px;
   margin: auto;
+  position: relative;
+
   img {
     vertical-align: top;
   }
@@ -101,6 +103,36 @@ img {
   padding-top: 33px;
   float: right;
   text-align: right;
+}
+
+#menu {
+  position: absolute;
+  right: 0;
+  bottom: .25em;
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+
+    li {
+      display: inline-block;
+      padding: 0;
+      margin: 0;
+      float: left;
+
+      a {
+        text-decoration: none;
+      }
+    }
+    li:before {
+      content: '-';
+      margin: 0 .25em;
+    }
+    li:first-child:before {
+      content: '';
+    }
+  }
 }
 
 #banner {
@@ -286,6 +318,8 @@ article {
   padding-top: 1px;
   box-shadow: 0px 1px 6px #b8afa2;
   line-height: 24px;
+  overflow: hidden;
+  min-height: 10em;
 
   h1:first-child {
     margin-top: 0;

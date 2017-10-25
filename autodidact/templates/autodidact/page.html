@@ -7,11 +7,10 @@
 {% endblock %}
 
 {% block navigation %}
-  {% if not page.slug %}
-    {% include 'autodidact/include/homepage_navigation.html' %}
-  {% else %}
-    {% include 'autodidact/include/page_navigation.html' %}
-  {% endif %}
+  <ul>
+    <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+    <li class="currentPage"><a href="{% url 'documentation' %}">Documentation</a></li>
+  </ul>
 {% endblock %}
 
 {% block content %}

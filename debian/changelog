@@ -4,6 +4,12 @@ python3-django-autodidact (1.4.6~rc1) stable; urgency=medium
   * Trigger updates in dependent packages whenever we are updated.
 
   [ Jaap Joris Vens ]
+  * New "Print this session" feature
+  * Sub-divided study programmes according to degree
+  * Added tags to sessions
+  * General features menu at top of page
+  * Modified pages model to be suited for documentation
+  * Automatically remember students' study programme
   * Show correct answers to teachers
   * Button to delete steps
   * Hide empty programmes for students

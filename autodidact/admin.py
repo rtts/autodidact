@@ -5,6 +5,7 @@ from django.shortcuts import redirect
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse
 from django.forms import CheckboxSelectMultiple
+from django.contrib.contenttypes.admin import GenericStackedInline
 from .utils import duplicate_assignment
 from .models import *
 
@@ -66,9 +67,16 @@ class InlineClarificationAdmin(admin.StackedInline):
     model = Clarification
     extra = 0
 
+@admin.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    pass
+
 @admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
-    list_display = ['order', 'name']
+    list_display = ['order', 'name', 'slug', 'degree']
+    list_display_links = ['name']
+    ordering = ['degree', 'order']
+    prepopulated_fields = {'slug': ['name']}
 
 @admin.register(Page)
 class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
@@ -114,6 +122,9 @@ class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display_links = ['__str__']
     inlines = [InlineAssignmentAdmin, InlineDownloadAdmin, InlinePresentationAdmin]
     exclude = ['course']
+    formfield_overrides = {
+        models.ManyToManyField: {'widget': CheckboxSelectMultiple},
+    }
 
 class InlineStepAdmin(admin.StackedInline):
     model = Step

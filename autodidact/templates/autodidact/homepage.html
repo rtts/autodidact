@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navigation %}
+  <ul>
+    {% if bachelor_programmes %}
+      <li class="heading">Bachelor programs:</li>
+      {% for programme in bachelor_programmes %}
+        {% if user.is_staff or programme.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li class="spacer"></li>
+    {% endif %}
+    {% if premaster_programmes %}
+      <li class="heading">Pre-master programs:</li>
+      {% for programme in premaster_programmes %}
+        {% if user.is_staff or programme.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li class="spacer"></li>
+    {% endif %}
+    {% if master_programmes %}
+      <li class="heading">Master programs:</li>
+      {% for programme in master_programmes %}
+        {% if user.is_staff or programme.has_active_courses %}
+          <li class="futurePage"><a href="{% url 'programme' programme.slug %}">{{programme.name}}</a></li>
+        {% endif %}
+      {% endfor %}
+      <li class="spacer"></li>
+    {% endif %}
+
+  </ul>
+{% endblock %}
+
+{% block content %}
+    Hi student! Please select your programme.
+
+{% endblock %}

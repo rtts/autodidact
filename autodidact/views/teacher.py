@@ -14,6 +14,26 @@ from autodidact.models import *
 from autodidact.views.decorators import *
 
 @staff_member_required
+def documentation(request, slug=''):
+    '''Serves a documentation page.
+    '''
+    page = get_object_or_404(Page, slug=slug)
+    return render(request, 'autodidact/page.html', {
+        'page': page,
+    })
+
+@staff_member_required
+@needs_course
+@needs_session
+def print_session(request, course, session):
+    assignments = session.assignments.filter(active=True).prefetch_related('steps')
+    return render(request, 'autodidact/print_session.html', {
+        'course': course,
+        'session': session,
+        'assignments': assignments,
+    })
+
+@staff_member_required
 @needs_course
 @needs_session
 def progresses(request, course, session):
