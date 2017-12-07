@@ -7,7 +7,6 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^login/$', django.contrib.auth.views.login, name='login'),
     url(r'^logout/$', django.contrib.auth.views.logout, name='logout'),
-    url(r'^settings/$', user_settings, name='settings'),
     url(r'^$', homepage, name='homepage'),
     url(r'^doc/$', documentation, name='documentation'),
     url(r'^doc/([^/]+)/$', documentation, name='documentation'),

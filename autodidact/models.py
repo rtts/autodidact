@@ -68,8 +68,23 @@ class Program(NumberedModel):
     def has_active_courses(self):
         return self.courses.filter(active=True).exists()
 
+    def get_absolute_url(self):
+        return reverse('program', args=[self.slug])
+
+#     def courses(self):
+#         return [c.course for c in self.clones]
+
     class Meta:
         ordering = ['order']
+
+# class Clone(NumberedModel):
+#     order = models.PositiveIntegerField(blank=True)
+#     slug = models.SlugField(unique=True)
+#     program = models.ForeignKey(Program, related_name='clones')
+#     course = models.ForeignKey(Course, related_name='clones')
+
+#     class Meta:
+#         ordering = ['order']
 
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
@@ -92,6 +107,9 @@ class Course(NumberedModel):
     def get_absolute_url(self):
         return reverse('course', args=[self.slug])
 
+    def number_with_respect_to(self):
+        return self.program.courses.all()
+
     class Meta:
         ordering = ['order']
 
@@ -102,7 +120,7 @@ class Topic(NumberedModel):
     description = PandocField(blank=True)
 
     def __str__(self):
-        return self.name
+        return self.name if self.name else 'Topic {}'.format(self.number)
 
     def get_absolute_url(self):
         return reverse('topic', args=[self.course.slug, self.number])
@@ -142,7 +160,7 @@ class Assignment(NumberedModel):
     locked = models.BooleanField(default=False, help_text='Locked assignments can only be made by students in class')
 
     def __str__(self):
-        return 'Assignment {}'.format(self.number)
+        return self.name if self.name else 'Assignment {}'.format(self.number)
 
     def nr_of_steps(self):
         return self.steps.count()
@@ -151,7 +169,6 @@ class Assignment(NumberedModel):
         return reverse('assignment', args=[self.session.course.slug, self.session.number, self.number])
 
     def number_with_respect_to(self):
-        #raise ValueError(self)
         return self.session.assignments.all()
 
     def save(self, *args, **kwargs):

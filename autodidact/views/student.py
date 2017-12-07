@@ -7,13 +7,6 @@ from autodidact.models import *
 from autodidact.views.decorators import *
 
 @login_required
-def user_settings(request):
-    if request.POST:
-        form = UserForm
-    return render(request, 'autodidact/settings.html', {
-    })
-
-@login_required
 def homepage(request):
     '''Serves the homepage'''
     bachelor_programs = Program.objects.filter(degree=10)
@@ -81,7 +74,7 @@ def session(request, course, session):
 
         current_class = get_current_class(session, user)
         if user.is_staff and current_class:
-            students = current_class.students.all()
+            students = current_class.students.order_by('last_name')
             for s in students:
                 s.progress = calculate_progress(s, assignments)
 

@@ -87,55 +87,56 @@ img {
   max-width: 100%;
 }
 
-#logo {
+header#logo {
   width: 960px;
-  height: 100px;
-  padding-top: 20px;
+  height: 80px;
   margin: auto;
   position: relative;
 
-  img {
-    vertical-align: top;
+  div.logo_container {
+    display: inline-block;
+    height: 20px;
+    img {
+      vertical-align: top;
+      height: 80px;
+      max-width: none;
+    }
   }
-}
 
-#login {
-  padding-top: 33px;
-  float: right;
-  text-align: right;
-}
+  div.user_menu {
+    float: right;
+    position: relative;
+    padding-top: 33px;
+    padding-bottom: 10px;
 
-#menu {
-  position: absolute;
-  right: 0;
-  bottom: .25em;
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-
-    li {
-      display: inline-block;
+    ul {
+      list-style: none;
       padding: 0;
       margin: 0;
-      float: left;
 
-      a {
-        text-decoration: none;
+      li {
+        display: inline-block;
+        padding: 0;
+        margin: 0;
+        float: left;
+
+        a {
+          text-decoration: none;
+        }
       }
-    }
-    li:before {
-      content: '-';
-      margin: 0 .25em;
-    }
-    li:first-child:before {
-      content: '';
+      li:before {
+        content: '-';
+        margin: 0 .25em;
+      }
+      li:first-child:before {
+        content: '';
+      }
     }
   }
 }
 
-#banner {
+header#banner {
+  clear: both;
   width: 100%;
   background: $darkblue;
   margin-bottom: 30px;
@@ -209,15 +210,15 @@ nav {
     padding: 0;
 
     li {
-      margin-bottom: 1px;
-      list-style-type	: none;
+      list-style-type: none;
 
       > a {
         transition: all 0.1s ease-out;
         text-decoration:none;
         color: $darkblue;
         background: url("/static/nav_arrow_list.png") 15px 10px no-repeat;
-        padding: 6px 0px 5px 35px;
+        padding: 6px;
+        padding-left: 36px;
         background-color: $lightgrey;
         display: block;
       }
@@ -688,6 +689,7 @@ section.step {
       }
       $rad: 8px;
       input.previous {
+        color: black;
         background: $lightgrey;
         text-align: left;
         border-radius: $rad 0 0 $rad;

@@ -1,9 +1,14 @@
-python3-django-autodidact (1.4.6~rc1) stable; urgency=medium
+python3-django-autodidact (1.5.0~rc1) stable; urgency=medium
 
   [ Wessel Dankers ]
   * Trigger updates in dependent packages whenever we are updated.
 
   [ Jaap Joris Vens ]
+  * Sort students by last name
+  * Correct calculation of progress percentage with graded answers
+  * Add different kinds of save buttons to admin
+  * Remove unused admin stuff
+  * Redesign of the home page
   * Ability to duplicate sessions and complete courses
   * Central upload location for all uploaded files
   * True hierarchical relation between Programs, Courses, Sessions, and Assignments

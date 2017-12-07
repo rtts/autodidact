@@ -25,7 +25,19 @@ class FunkySaveAdmin(object):
         else:
             return super(FunkySaveAdmin, self).response_change(request, obj)
 
-    save_on_top = True
+    def add_view(self, request, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_return'] = True
+        return super().change_view(
+            request, form_url, extra_context=extra_context,
+        )
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        extra_context['show_save_and_return'] = True
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )
 
 class InlinePageFileAdmin(admin.StackedInline):
     model = PageFile
@@ -33,14 +45,6 @@ class InlinePageFileAdmin(admin.StackedInline):
 
 class InlineStepFileAdmin(admin.StackedInline):
     model = StepFile
-    extra = 0
-
-class InlineTopicAdmin(admin.StackedInline):
-    model = Topic
-    extra = 0
-
-class InlineSessionAdmin(admin.StackedInline):
-    model = Session
     extra = 0
 
 class InlineAssignmentAdmin(admin.StackedInline):
@@ -72,8 +76,8 @@ class TagAdmin(admin.ModelAdmin):
     pass
 
 @admin.register(Program)
-class ProgramAdmin(admin.ModelAdmin):
-    list_display = ['order', 'name', 'slug', 'degree']
+class ProgramAdmin(FunkySaveAdmin, admin.ModelAdmin):
+    list_display = ['name', 'slug', 'degree']
     list_display_links = ['name']
     ordering = ['degree', 'order']
     prepopulated_fields = {'slug': ['name']}
@@ -86,9 +90,7 @@ class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
 
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
-    inlines = [InlineTopicAdmin, InlineSessionAdmin]
-    list_display = ['order', 'name', 'url']
-    list_display_links = ['name']
+    list_display = ['__str__', 'order', 'url']
     list_filter = ['program']
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
@@ -99,7 +101,6 @@ class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
 class TopicAdmin(FunkySaveAdmin, admin.ModelAdmin):
     save_on_top = False
     list_filter = ['course']
-    list_display = ['number', 'name', 'short_description']
     exclude = ['course', 'number']
 
     def has_add_permission(self, request):
@@ -119,24 +120,18 @@ class SessionAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_filter = ['course']
     list_display = ['__str__', 'name', 'course', 'registration_enabled', 'active']
     list_display_links = ['__str__']
-    inlines = [InlineAssignmentAdmin, InlineDownloadAdmin, InlinePresentationAdmin]
+    inlines = [InlineDownloadAdmin, InlinePresentationAdmin]
     exclude = ['course']
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
     actions = [duplicate_session]
 
-class InlineStepAdmin(admin.StackedInline):
-    model = Step
-    extra = 0
-
 @admin.register(Assignment)
 class AssignmentAdmin(FunkySaveAdmin, admin.ModelAdmin):
     ordering = ['session__course__order', 'session__number', 'number']
-    list_display = ['number', 'name', 'session', 'nr_of_steps', 'active', 'locked']
-    list_display_links = ['name']
+    list_display = ['__str__', 'session', 'nr_of_steps', 'active', 'locked']
     list_filter = ['active', 'locked', 'session__course', 'session']
-    inlines = [InlineStepAdmin]
     actions = [duplicate_assignment]
 
 @admin.register(Step)
@@ -148,80 +143,10 @@ class StepAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_filter = ['assignment__session', 'assignment']
     inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin, InlineClarificationAdmin, InlineStepFileAdmin]
     exclude = ['assignment']
+    save_on_top = True
 
     def get_description(self, obj):
         return mark_safe(obj.description.raw.replace('\n', '<br>'))
-
-@admin.register(CompletedStep)
-class CompletedStepAdmin(admin.ModelAdmin):
-    def has_add_permission(self, request):
-        return False
-    list_display = ['step', 'whom', 'answer', 'passed', 'date']
-    list_filter = ['step__assignment__session__course', 'whom']
-    ordering = ['-date']
-    exclude = ['step', 'whom']
-
-# class InlineQuestionAdmin(admin.StackedInline):
-#     model = Question
-#     extra = 0
-#     fields = ['number', 'description', 'edit_link', 'multiple_answers_allowed']
-#     readonly_fields = ['edit_link']
-
-#     def edit_link(self, instance):
-#         url = reverse('admin:{}_{}_change'.format(instance._meta.app_label, instance._meta.model_name), args=[instance.pk])
-#         if instance.pk:
-#             answers = [a.value for a in instance.right_answers.all()] + \
-#                       [a.value for a in instance.wrong_answers.all()]
-#             html = ''.join(['&bull; {}<br>'.format(a) for a in answers] + \
-#                            ['<br><a href="{}">Edit answers</a>'.format(url)])
-#             return mark_safe(html)
-#         else:
-#             return '(please save this question first)'
-#     edit_link.short_description = 'Possible answers'
-
-# class InlineQuizFileAdmin(admin.StackedInline):
-#     model = QuizFile
-#     extra = 0
-
-# @admin.register(Quiz)
-# class QuizAdmin(admin.ModelAdmin):
-#     ordering = ['course__order', 'number']
-#     list_display = ['__str__', 'course', 'nr_of_questions']
-#     list_filter = ['course']
-#     exclude = ['number']
-#     inlines = [InlineQuizFileAdmin, InlineQuestionAdmin]
-
-# @admin.register(CompletedQuiz)
-# class CompletedQuizAdmin(admin.ModelAdmin):
-#     def has_add_permission(self, request):
-#         return False
-#     list_display = ['date', 'quiz', 'whom']
-#     list_display_links = ['quiz']
-#     list_filter = ['quiz__course', 'whom']
-#     ordering = ['-date']
-#     exclude = ['quiz', 'whom']
-
-
-# @admin.register(Question)
-# class QuestionAdmin(admin.ModelAdmin):
-#     def response_change(self, request, obj):
-#         if '_save' in request.POST:
-#             return redirect('admin:autodidact_quiz_change', obj.quiz.pk)
-#         else:
-#             return super(QuestionAdmin, self).response_change(request, obj)
-
-#     # Hide this admin from the admin index
-#     def get_model_perms(self, request):
-#         return {}
-
-#     def has_add_permission(self, request):
-#         return False
-
-#     ordering = ['quiz__course__order', 'number']
-#     list_display = ['__str__', 'quiz', 'description']
-#     list_filter = ['quiz__course', 'quiz']
-#     exclude = ['quiz']
-#     inlines = [InlineRightAnswerAdmin, InlineWrongAnswerAdmin]
 
 @admin.register(Class)
 class ClassAdmin(admin.ModelAdmin):

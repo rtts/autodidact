@@ -31,10 +31,6 @@ textarea {
   margin-right: 10px;
 }
 
-a.viewsitelink {
-  display: none !important;
-}
-
 div.submit-row a.deletelink {
   background: none !important;
   color: #B5B5B5 !important;

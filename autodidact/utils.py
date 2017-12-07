@@ -38,7 +38,8 @@ def calculate_progress(user, assignments):
             step_count += 1
             for com in completed:
                 if step == com.step:
-                    completed_count += 1
+                    if com.passed:
+                        completed_count += 1
                     step.completedstep = com
                     step.given_values = com.answer.split('\x1e')
                     break

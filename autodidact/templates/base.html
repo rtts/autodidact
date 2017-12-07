@@ -6,7 +6,7 @@
   <head>
     <meta charset="utf-8">
     <title>{% block title %}Best Practices in Statistics - Tilburg University{% endblock %}</title>
-    <link rel="stylesheet" href="{% static 'main6.css' %}"/>
+    <link rel="stylesheet" href="{% static 'main7.css' %}"/>
     <link rel="stylesheet" href="{% static 'uvt.css' %}"/>
     {% block extrahead %}{% endblock %}
   </head>
@@ -14,18 +14,14 @@
 
     {% block header %}
       <header id="logo">
-        <img src="{% static 'tiulogo.jpg' %}" />
-        <img src="{% static 'tiuslogan.jpg' %}" />
+        <div class="logo_container">
+          <img src="{% static 'tiulogo.jpg' %}">
+          <img src="{% static 'tiuslogan.jpg' %}">
+        </div>
         {% if user.is_authenticated %}
-          <div id="login">
-            Logged in as <b>{{request.user.username}}</b>
-            {% if request.user.is_staff %}
-              (<span class="staff">staff member</span>)
-            {% endif %}
-          </div>
-          <div id="menu">
+          <div class="user_menu">
             <ul>
-              <li><a href="{% url 'settings' %}">Settings</a></li>
+              <li>Logged in as <b>{{request.user.username}}</b></li>
               {% if request.user.is_staff %}
                 <li><a href="{% url 'manage' %}">Management console</a></li>
                 <li><a href="{% url 'documentation' %}">Documentation</a></li>

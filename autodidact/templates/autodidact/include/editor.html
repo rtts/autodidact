@@ -4,6 +4,12 @@
   {% endif %}
 {% endif%}
 
+{% if edit_type == 'program' %}
+  {% if perms.autodidact.change_program %}
+    <a class="editlink" href="{% url 'admin:autodidact_program_change' program.pk %}">Edit this program</a>
+  {% endif %}
+{% endif%}
+
 {% if edit_type == 'course' %}
   {% if perms.autodidact.change_course %}
     <a class="editlink" href="{% url 'admin:autodidact_course_change' course.pk %}">Edit this course</a>
@@ -14,7 +20,9 @@
   {% if request.user.is_staff and perms.autodidact.change_session %}
     <a class="editlink" href="{% url 'admin:autodidact_session_change' session.pk %}">Edit this session</a> -
   {% endif %}
-  <a class="editlink" href="{% url 'print_session' course.slug session.number %}" target="_blank">Print this session</a>
+  {% if request.user.is_staff %}
+    <a class="editlink" href="{% url 'print_session' course.slug session.number %}" target="_blank">Print this session</a>
+  {% endif %}
 {% endif %}
 
 {% if edit_type == 'topic' %}

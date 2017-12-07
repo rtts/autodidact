@@ -60,7 +60,7 @@ def progresses(request, course, session):
     startdate = (enddate - timedelta(days=days)).replace(hour=0, minute=0, second=0, microsecond=0)
 
     classes = Class.objects.filter(session=session, date__range=[startdate, enddate]).prefetch_related('students')
-    students = get_user_model().objects.filter(attends__in=classes).distinct().select_related('uvt_user')
+    students = get_user_model().objects.filter(attends__in=classes).order_by('last_name').distinct().select_related('uvt_user')
     for s in students:
         s.progress = calculate_progress(s, assignments)
 
