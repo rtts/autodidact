@@ -12,10 +12,12 @@ def homepage(request):
     bachelor_programs = Program.objects.filter(degree=10)
     premaster_programs = Program.objects.filter(degree=20)
     master_programs = Program.objects.filter(degree=30)
+    tags = Tag.objects.all()
     return render(request, 'autodidact/homepage.html', {
         'bachelor_programs': bachelor_programs,
         'premaster_programs': premaster_programs,
         'master_programs': master_programs,
+        'tags': tags,
     })
 
 @login_required
@@ -23,6 +25,13 @@ def program(request, slug):
     program = get_object_or_404(Program, slug=slug)
     return render(request, 'autodidact/program.html', {
         'program': program,
+    })
+
+@login_required
+def tag(request, slug):
+    tag = get_object_or_404(Tag, slug=slug)
+    return render(request, 'autodidact/tag.html', {
+        'tag': tag,
     })
 
 @login_required

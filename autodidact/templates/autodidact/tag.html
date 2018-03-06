@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block navigation %}
+  <ul>
+    <li class="visitedPage"><a href="{% url 'homepage' %}">Home</a></li>
+    <li class="currentPage"><a href="">Tag: {{tag.slug}}</a></li>
+  </ul>
+{% endblock %}
+
+{% block content %}
+  <section>
+
+    <h1>{{tag}}</h1>
+
+    <p>
+      You can learn more about <b>{{tag}}</b> in the following sessions:
+    </p>
+
+    <ul>
+      {% for session in tag.sessions.all %}
+        <li>
+          <a href="{{session.get_absolute_url}}">{{session}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+
+  </section>
+{% endblock %}

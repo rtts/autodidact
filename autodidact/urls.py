@@ -13,6 +13,7 @@ urlpatterns = [
     url(r'^startclass/$', startclass, name='startclass'),
     url(r'^endclass/$', endclass, name='endclass'),
     url(r'^([^/]+)_courses/$', program, name='program'),
+    url(r'^tag/([^/]+)/$', tag, name='tag'),
 
     url(r'^([^/]+)/$', course, name='course'),
     url(r'^([^/]+)/duplicate/$', copy_course, name='copy_course'),

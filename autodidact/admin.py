@@ -91,7 +91,7 @@ class PageAdmin(FunkySaveAdmin, admin.ModelAdmin):
 @admin.register(Course)
 class CourseAdmin(FunkySaveAdmin, admin.ModelAdmin):
     list_display = ['__str__', 'order', 'url']
-    list_filter = ['program']
+    list_filter = ['programs']
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }

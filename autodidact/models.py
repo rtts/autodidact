@@ -39,13 +39,16 @@ class PageFile(models.Model):
         ordering = ['file']
 
 class Tag(models.Model):
-    name = models.CharField(max_length=255, unique=True)
+    slug = models.SlugField('name', unique=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
+
+    def get_absolute_url(self):
+        return reverse('tag', args=[self.slug])
 
     class Meta:
-        ordering = ['name']
+        ordering = ['slug']
 
 class Program(NumberedModel):
     DEGREES = [
@@ -77,18 +80,9 @@ class Program(NumberedModel):
     class Meta:
         ordering = ['order']
 
-# class Clone(NumberedModel):
-#     order = models.PositiveIntegerField(blank=True)
-#     slug = models.SlugField(unique=True)
-#     program = models.ForeignKey(Program, related_name='clones')
-#     course = models.ForeignKey(Course, related_name='clones')
-
-#     class Meta:
-#         ordering = ['order']
-
 class Course(NumberedModel):
     order = models.PositiveIntegerField(blank=True)
-    program = models.ForeignKey(Program, related_name='courses')
+    programs = models.ManyToManyField(Program, related_name='courses')
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     description = PandocField(blank=True)
@@ -106,9 +100,6 @@ class Course(NumberedModel):
 
     def get_absolute_url(self):
         return reverse('course', args=[self.slug])
-
-    def number_with_respect_to(self):
-        return self.program.courses.all()
 
     class Meta:
         ordering = ['order']

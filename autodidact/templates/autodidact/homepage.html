@@ -35,6 +35,27 @@
 {% endblock %}
 
 {% block content %}
-    Hi student! Please select your program.
+
+  <section>
+    <div style="float:right; width:160px; background:#008ec6; margin-left:1em">
+      <img src="{% static 'keep-calm.png' %}" style="width:100%">
+    </div>
+    <h1>Best Practices in Statistics</h1>
+    <p>
+      Welcome to Best Practices in Statistics! Our goal is to get you hands-on experience with statistical software such as IBM SPSS during your study in the social sciences. BPS was created by the <a href="https://www.tilburguniversity.edu/about/schools/socialsciences/organization/departments/methodology-statistics/">Department of Methodology and Statistics</a> at the <a href="https://www.tilburguniversity.edu/about/schools/socialsciences/">Tilburg School of Social and Behavioral Sciences</a>.</p>
+    <p>
+      Please select your program on the left or browse the available subjects below.
+    </p>
+  </section>
+
+  <section>
+    <ul class="tagcloud">
+      {% for tag in tags %}
+        <li>
+          <a class="tag" href="{{tag.get_absolute_url}}">{{tag}}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </section>
 
 {% endblock %}
